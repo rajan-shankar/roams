@@ -107,81 +107,11 @@ lambda_grid = function(
     ) {
 
   cl = parallel::makeCluster(cores)
-  doParallel::registerDoParallel(cl)
+  doParallel::registerDoParallel(cl,
+                                 export = list(fn_filter = fn_filter,
+                                               run_IPOD = run_IPOD))
   model_list = foreach::foreach(
-    i = 1:length(lambdas),
-    .export = c("fn_filter",
-                "run_IPOD")) %dopar% {
-
-                  run_IPOD = function(
-    y,
-    lambda,
-    init_par,
-    build,
-    B,
-    lower,
-    upper
-                  ) {
-
-                    if (is.na(lower)[1]) {lower = rep(-Inf, length(init_par))}
-                    if (is.na(upper)[1]) {upper = rep(Inf, length(init_par))}
-
-                    n = ncol(y)
-                    dim_obs = nrow(y)
-                    par = init_par
-                    gamma = matrix(0, nrow = dim_obs, ncol = n)
-                    r = NA
-                    for (j in 1:B) {
-                      res = stats::optim(
-                        par = par,
-                        fn = fn_filter,
-                        y = y,
-                        gamma = gamma,
-                        build = build,
-                        return_obj = TRUE,
-                        method = "L-BFGS-B",
-                        lower = lower,
-                        upper = upper
-                      )
-
-                      par = res$par
-                      filter_output = fn_filter(res$par, y, gamma, build)
-                      r = y - filter_output$predicted_observations
-                      gamma_old = gamma
-                      gamma = matrix(0, nrow = dim_obs, ncol = n)
-                      gamma[,filter_output$mahalanobis_residuals > lambda] = r[,filter_output$mahalanobis_residuals > lambda]
-                      gap = max(abs(gamma - gamma_old))
-
-                      nz = sum(colSums(abs(gamma_old)) != 0)
-                      prop_outlying = nz / n
-
-                      if (gap < 1e-4) {
-                        break
-                      }
-                      # new termination criterion
-                      if (prop_outlying >= 0.5) {
-                        break
-                      }
-                    }
-
-                    p = length(init_par)
-                    RSS = sum((r - gamma_old)^2)
-                    BIC = (n-p)*log(RSS/(n-p)) + (nz+1)*(log(n-p) + 1)
-                    #negloglik = n*fn_filter(model$par, gamma = gamma_old, y = y, return_obj = TRUE)
-
-                    return(list(
-                      "lambda" = lambda,
-                      "par" = res$par,
-                      "prop_outlying" = prop_outlying,
-                      "BIC" = BIC,
-                      "RSS" = RSS,
-                      "gamma" = gamma_old,
-                      "iterations" = j
-                    ))
-                  }
-
-
-
+    i = 1:length(lambdas)) %dopar% {
                   IPOD_output = run_IPOD(y,
                                          lambdas[i],
                                          init_par,
