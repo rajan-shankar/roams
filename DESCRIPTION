@@ -15,8 +15,4 @@ Imports:
   parallel,
   doParallel,
   foreach,
-  magrittr,
-  latex2exp,
-  dplyr
-Depends:
-  ggplot2
+  magrittr
