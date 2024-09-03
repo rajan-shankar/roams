@@ -1,0 +1,202 @@
+#' A Cat Function
+#'
+#' This function allows you to express your love of cats.
+#'
+#' @importFrom magrittr %>%
+#' @importFrom foreach %dopar%
+#' @param love Do you love cats? Defaults to TRUE.
+#' @details
+#' Additional details...
+#' @returns description
+#' @export
+oracle_method = function(
+  y,
+  init_par,
+  build,
+  outlier_locs,
+  B = 20,
+  lower = NA,
+  upper = NA
+  ) {
+
+  if (is.na(lower)[1]) {lower = rep(-Inf, length(init_par))}
+  if (is.na(upper)[1]) {upper = rep(Inf, length(init_par))}
+
+  n = ncol(y)
+  dim_obs = nrow(y)
+  par = init_par
+  gamma = matrix(0, nrow = dim_obs, ncol = n)
+  r = NA
+  for (j in 1:B) {
+    res = stats::optim(
+      par = par,
+      fn = fn_filter,
+      y = y,
+      gamma = gamma,
+      build = build,
+      return_obj = TRUE,
+      method = "L-BFGS-B",
+      lower = lower,
+      upper = upper
+    )
+
+    par = res$par
+    filter_output = fn_filter(res$par, y, gamma, build)
+    r = y - filter_output$predicted_observations
+    gamma_old = gamma
+    gamma = matrix(0, nrow = dim_obs, ncol = n)
+    gamma[,outlier_locs] = r[,outlier_locs]
+    gap = max(abs(gamma - gamma_old))
+
+    nz = sum(colSums(abs(gamma_old)) != 0)
+    prop_outlying = nz / n
+
+    if (gap < 1e-4) {
+      break
+    }
+    # new termination criterion
+    if (prop_outlying >= 0.5) {
+      break
+    }
+  }
+
+  IPOD_output = list(
+    "par" = res$par,
+    "gamma" = gamma_old,
+    "iterations" = j
+  )
+
+  filter_output = fn_filter(res$par,
+                            y,
+                            gamma_old,
+                            build)
+
+  model = c(IPOD_output, filter_output)
+  return(model)
+}
+
+#' #' A Cat Function
+#'
+#' This function allows you to express your love of cats.
+#'
+#' @importFrom magrittr %>%
+#' @importFrom foreach %dopar%
+#' @param love Do you love cats? Defaults to TRUE.
+#' @details
+#' Additional details...
+#' @returns description
+#' @export
+huber_robust_method = function(
+    y,
+    init_par,
+    build,
+    lower = NA,
+    upper = NA
+    ) {
+
+  if (is.na(lower)[1]) {lower = rep(-Inf, length(init_par))}
+  if (is.na(upper)[1]) {upper = rep(Inf, length(init_par))}
+
+  res = stats::optim(
+    par = init_par,
+    fn = ruben_filter,
+    y = y,
+    build = build,
+    return_obj = TRUE,
+    method = "L-BFGS-B",
+    lower = lower,
+    upper = upper
+  )
+
+  filter_output = ruben_filter(res$par,
+                               y,
+                               build)
+
+  model = c(res$par, filter_output)
+  return(model)
+}
+
+psi_huber = function(x, k = 2) {ifelse(abs(x) < k, x, sign(x)*k)}  # Ruben uses k = 2
+rho_huber_mv = function(x, k = sqrt(qchisq(0.95, df = length(x))))
+
+ruben_filter = function(
+    par,
+    y,
+    build,
+    return_obj = FALSE
+) {
+
+  SSM_specs = build(par)
+
+  Phi = SSM_specs$state_transition_matrix
+  Sigma_w = SSM_specs$state_noise_var
+  A = SSM_specs$observation_matrix
+  Sigma_v = SSM_specs$observation_noise_var
+  x_tt = SSM_specs$init_state_mean
+  P_tt = SSM_specs$init_state_var
+
+  n = ncol(y)
+  dim_obs = nrow(y)
+  dim_state = nrow(Phi)
+
+  x_tt_1 = NA
+  P_tt_1 = NA
+  y_tt_1 = NA
+  S_t = NA
+  objective = 0
+
+  if (!return_obj) {
+    filtered_states = matrix(0, nrow = dim_state, ncol = n)
+    filtered_observations = matrix(0, nrow = dim_obs, ncol = n)
+    predicted_states = matrix(0, nrow = dim_state, ncol = n)
+    predicted_observations = matrix(0, nrow = dim_obs, ncol = n)
+    predicted_observations_var = list()
+    mahalanobis_residuals = NA
+  }
+
+  for (t in 1:n) {
+    x_tt_1 = Phi %*% x_tt
+    P_tt_1 = Phi %*% P_tt %*% t(Phi) + Sigma_w
+    y_tt_1 = A %*% x_tt_1
+
+    sqrt_Sigma_v = expm::sqrtm(Sigma_v)
+    inv_sqrt_Sigma_v = solve(sqrt_Sigma_v)
+    W_elements = drop(psi_huber(inv_sqrt_Sigma_v %*% (y[,t] - y_tt_1))) / drop(inv_sqrt_Sigma_v %*% (y[,t] - y_tt_1))
+    inv_W = diag(1/W_elements)
+    S_t = A %*% P_tt_1 %*% t(A) + sqrt_Sigma_v %*% inv_W %*% sqrt_Sigma_v
+    inv_S_t = solve(S_t)
+
+    K_t = P_tt_1 %*% t(A) %*% inv_S_t
+    x_tt = x_tt_1 + K_t %*% (y[,t] - y_tt_1)
+    P_tt = P_tt_1 - K_t %*% A %*% P_tt_1
+
+    if (return_obj) {
+      objective = objective + 1/(2*n) * log(det(S_t)) + c_H/n * rho_huber_mv(expm::sqrtm(inv_S_t) %*% (y[,t] - y_tt_1))
+    } else {
+      filtered_states[,t] = x_tt
+      filtered_observations[,t] = A %*% x_tt
+      predicted_states[,t] = x_tt_1
+      predicted_observations[,t] = y_tt_1
+      predicted_observations_var[[t]] = S_t
+      mahalanobis_residuals[t] = drop(sqrt(t(y[,t] - y_tt_1) %*% inv_S_t %*% (y[,t] - y_tt_1)))
+    }
+  }
+
+  if (return_obj) {
+    return(objective)
+  } else {
+    return(list(
+      "filtered_states" = filtered_states,
+      "filtered_observations" = filtered_observations,
+      "predicted_states" = predicted_states,
+      "predicted_observations" = predicted_observations,
+      "predicted_observations_var" = predicted_observations_var,
+      "mahalanobis_residuals" = mahalanobis_residuals
+    ))
+  }
+}
+
+
+
+
+

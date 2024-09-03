@@ -262,6 +262,7 @@ fn_filter = function(
       mahalanobis_residuals[t] = drop(sqrt(t(y[,t] - y_tt_1) %*% inv_S_t %*% (y[,t] - y_tt_1)))
     }
   }
+
   if (return_obj) {
     return(objective)
   } else {

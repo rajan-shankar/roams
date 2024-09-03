@@ -17,6 +17,7 @@ Imports:
   foreach,
   magrittr,
   latex2exp,
-  dplyr
+  dplyr,
+  expm
 Depends:
   ggplot2
