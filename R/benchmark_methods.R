@@ -148,6 +148,10 @@ ruben_filter = function(
   dim_obs = nrow(y)
   dim_state = nrow(Phi)
 
+  d = dim_obs  # dimension of the observation vector
+  k = sqrt(qchisq(0.95, d))
+  c_H = d / (d*pchisq(k^2, df = d+2) + 2*k*sqrt(2)*gamma((d+1)/2)/gamma(d/2)*(1-pchisq(k^2, df = d+1)) - k^2*(1-pchisq(k^2, df = d)))
+
   x_tt_1 = NA
   P_tt_1 = NA
   y_tt_1 = NA
