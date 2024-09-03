@@ -45,7 +45,7 @@ oracle_method = function(
     r = y - filter_output$predicted_observations
     gamma_old = gamma
     gamma = matrix(0, nrow = dim_obs, ncol = n)
-    gamma[,outlier_locs] = r[,outlier_locs]
+    gamma[,which(outlier_locs == 1)] = r[,which(outlier_locs == 1)]
     gap = max(abs(gamma - gamma_old))
 
     nz = sum(colSums(abs(gamma_old)) != 0)
