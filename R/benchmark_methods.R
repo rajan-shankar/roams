@@ -108,11 +108,13 @@ huber_robust_method = function(
     upper = upper
   )
 
+  optim_output = list("par" = res$par)
+
   filter_output = ruben_filter(res$par,
                                y,
                                build)
 
-  model = c(res$par, filter_output)
+  model = c(optim_output, filter_output)
   return(model)
 }
 
