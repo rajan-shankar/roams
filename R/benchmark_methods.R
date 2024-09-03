@@ -117,7 +117,16 @@ huber_robust_method = function(
 }
 
 psi_huber = function(x, k = 2) {ifelse(abs(x) < k, x, sign(x)*k)}  # Ruben uses k = 2
-rho_huber_mv = function(x, k = sqrt(qchisq(0.95, df = length(x))))
+rho_huber_mv = function(x, k = sqrt(qchisq(0.95, df = length(x)))) {
+
+  # df parameter in qchi is the dimension of the observation vector
+  norm_x = norm(as.matrix(x), type = "2")
+  if (norm_x < k) {
+    1/2 * norm_x^2
+  } else {
+    k*norm_x - 1/2 * k^2
+  }
+}
 
 ruben_filter = function(
     par,
