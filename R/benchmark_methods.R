@@ -67,6 +67,7 @@ oracle_SSM = function(
   )
 
   model = c(IPOD_output, filter_output)
+  class(model) = "oracle_SSM"
   return(model)
 }
 
@@ -116,6 +117,7 @@ classical_SSM = function(
                             build)
 
   model = c(optim_output, filter_output)
+  class(model) = "classical_SSM"
   return(model)
 }
 
@@ -159,12 +161,12 @@ huber_robust_SSM = function(
                                build)
 
   model = c(optim_output, filter_output)
+  class(model) = "huber_robust_SSM"
   return(model)
 }
 
 psi_huber = function(x, k = 2) {ifelse(abs(x) < k, x, sign(x)*k)}  # Ruben uses k = 2
 rho_huber_mv = function(x, k = sqrt(qchisq(0.95, df = length(x)))) {
-
   # df parameter in qchi is the dimension of the observation vector
   norm_x = norm(as.matrix(x), type = "2")
   if (norm_x < k) {
