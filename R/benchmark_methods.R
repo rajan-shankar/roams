@@ -9,7 +9,7 @@
 #' Additional details...
 #' @returns description
 #' @export
-oracle_method = function(
+oracle_SSM = function(
   y,
   init_par,
   build,
@@ -66,12 +66,56 @@ oracle_method = function(
     "iterations" = j
   )
 
+  model = c(IPOD_output, filter_output)
+  return(model)
+}
+
+#' A Cat Function
+#'
+#' This function allows you to express your love of cats.
+#'
+#' @importFrom magrittr %>%
+#' @importFrom foreach %dopar%
+#' @param love Do you love cats? Defaults to TRUE.
+#' @details
+#' Additional details...
+#' @returns description
+#' @export
+classical_SSM = function(
+    y,
+    init_par,
+    build,
+    outlier_locs,
+    lower = NA,
+    upper = NA
+) {
+
+  if (is.na(lower)[1]) {lower = rep(-Inf, length(init_par))}
+  if (is.na(upper)[1]) {upper = rep(Inf, length(init_par))}
+
+  n = ncol(y)
+  dim_obs = nrow(y)
+  gamma = matrix(0, nrow = dim_obs, ncol = n)
+  res = stats::optim(
+    par = init_par,
+    fn = fn_filter,
+    y = y,
+    gamma = gamma,
+    build = build,
+    return_obj = TRUE,
+    method = "L-BFGS-B",
+    lower = lower,
+    upper = upper
+  )
+
+  optim_output = list("par" = res$par)
+
   filter_output = fn_filter(res$par,
                             y,
-                            gamma_old,
+                            gamma,
                             build)
 
-  model = c(IPOD_output, filter_output)
+  model = c(optim_output, filter_output)
   return(model)
 }
 
@@ -86,7 +130,7 @@ oracle_method = function(
 #' Additional details...
 #' @returns description
 #' @export
-huber_robust_method = function(
+huber_robust_SSM = function(
     y,
     init_par,
     build,
