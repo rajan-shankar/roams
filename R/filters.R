@@ -9,9 +9,8 @@
 #' Additional details...
 #' @returns description
 #' @export
-kalman_filter = function(y, par, build) {
+kalman_filter = function(y, par, build, gamma = array(0, dim(y))) {
 
-  gamma = array(0, dim(y))
   out = fn_filter(y = y,
                   par = par,
                   build = build,
