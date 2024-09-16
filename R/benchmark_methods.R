@@ -86,7 +86,6 @@ classical_SSM = function(
     y,
     init_par,
     build,
-    outlier_locs,
     lower = NA,
     upper = NA
 ) {

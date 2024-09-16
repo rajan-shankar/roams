@@ -11,6 +11,9 @@
 #' @export
 best_BIC_model = function(model_list) {
   index = which.min(get_attribute(model_list, "BIC"))
+
+  # Should I also make sure that prop_outlying < 0.45?
+
   return(model_list[[index]])
 }
 
