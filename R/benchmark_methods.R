@@ -82,6 +82,102 @@ oracle_SSM = function(
 #' Additional details...
 #' @returns description
 #' @export
+no_gamma_oracle_SSM = function(
+    y,
+    init_par,
+    build,
+    outlier_locs,
+    lower = NA,
+    upper = NA
+) {
+
+  if (is.na(lower)[1]) {lower = rep(-Inf, length(init_par))}
+  if (is.na(upper)[1]) {upper = rep(Inf, length(init_par))}
+
+  res = stats::optim(
+    par = init_par,
+    fn = no_gamma_oracle_filter,
+    y = y,
+    outlier_locs = outlier_locs,
+    build = build,
+    return_obj = TRUE,
+    method = "L-BFGS-B",
+    lower = lower,
+    upper = upper
+  )
+
+  filter_output = no_gamma_oracle_filter(res$par, y, outlier_locs, build)
+  optim_output = list(
+    "par" = res$par
+  )
+
+  model = c(optim_output, filter_output)
+  class(model) = "no_gamma_oracle_SSM"
+  return(model)
+}
+
+#' A Cat Function
+#'
+#' This function allows you to express your love of cats.
+#'
+#' @importFrom magrittr %>%
+#' @importFrom foreach %dopar%
+#' @param love Do you love cats? Defaults to TRUE.
+#' @details
+#' Additional details...
+#' @returns description
+#' @export
+delete_outliers_oracle_SSM = function(
+    y,
+    init_par,
+    build,
+    outlier_locs,
+    lower = NA,
+    upper = NA
+) {
+
+  if (is.na(lower)[1]) {lower = rep(-Inf, length(init_par))}
+  if (is.na(upper)[1]) {upper = rep(Inf, length(init_par))}
+
+  y_deleted_outliers = y[,-which(outlier_locs == 1)]
+
+  n = ncol(y_deleted_outliers)
+  dim_obs = nrow(y_deleted_outliers)
+  gamma = matrix(0, nrow = dim_obs, ncol = n)
+
+  res = stats::optim(
+    par = init_par,
+    fn = fn_filter,
+    y = y_deleted_outliers,
+    gamma = gamma,
+    build = build,
+    return_obj = TRUE,
+    method = "L-BFGS-B",
+    lower = lower,
+    upper = upper
+  )
+
+  filter_output = no_gamma_oracle_filter(res$par, y, outlier_locs, build)
+  optim_output = list(
+    "par" = res$par
+  )
+
+  model = c(optim_output, filter_output)
+  class(model) = "delete_outliers_oracle_SSM"
+  return(model)
+}
+
+#' A Cat Function
+#'
+#' This function allows you to express your love of cats.
+#'
+#' @importFrom magrittr %>%
+#' @importFrom foreach %dopar%
+#' @param love Do you love cats? Defaults to TRUE.
+#' @details
+#' Additional details...
+#' @returns description
+#' @export
 classical_SSM = function(
     y,
     init_par,
@@ -334,5 +430,79 @@ gamma_start_SSM = function(
   ))
 }
 
+no_gamma_oracle_filter = function(
+    par,
+    y,
+    outlier_locs,
+    build,
+    return_obj = FALSE
+) {
 
+  SSM_specs = build(par)
+
+  Phi = SSM_specs$state_transition_matrix
+  Sigma_w = SSM_specs$state_noise_var
+  A = SSM_specs$observation_matrix
+  Sigma_v = SSM_specs$observation_noise_var
+  x_tt = SSM_specs$init_state_mean
+  P_tt = SSM_specs$init_state_var
+
+  n = ncol(y)
+  dim_obs = nrow(y)
+  dim_state = nrow(Phi)
+
+  x_tt_1 = NA
+  P_tt_1 = NA
+  y_tt_1 = NA
+  S_t = NA
+  objective = 0
+
+  if (!return_obj) {
+    filtered_states = matrix(0, nrow = dim_state, ncol = n)
+    filtered_observations = matrix(0, nrow = dim_obs, ncol = n)
+    predicted_states = matrix(0, nrow = dim_state, ncol = n)
+    predicted_observations = matrix(0, nrow = dim_obs, ncol = n)
+    predicted_observations_var = list()
+    mahalanobis_residuals = NA
+  }
+
+  for (t in 1:n) {
+    x_tt_1 = Phi %*% x_tt
+    P_tt_1 = Phi %*% P_tt %*% t(Phi) + Sigma_w
+    y_tt_1 = A %*% x_tt_1
+    S_t = A %*% P_tt_1 %*% t(A) + Sigma_v
+    inv_S_t = solve(S_t)
+    if (outlier_locs[t] == 0) {
+      K_t = P_tt_1 %*% t(A) %*% inv_S_t
+      x_tt = x_tt_1 + K_t %*% (y[,t] - y_tt_1)
+      P_tt = P_tt_1 - K_t %*% A %*% P_tt_1
+    } else {
+      x_tt = x_tt_1
+      P_tt = P_tt_1
+    }
+    if (return_obj) {
+      objective = objective + 1/(2*n) * (outlier_locs[t] == 0) * (log(det(S_t)) + t(y[,t] - y_tt_1) %*% inv_S_t %*% (y[,t] - y_tt_1))
+    } else {
+      filtered_states[,t] = x_tt
+      filtered_observations[,t] = A %*% x_tt
+      predicted_states[,t] = x_tt_1
+      predicted_observations[,t] = y_tt_1
+      predicted_observations_var[[t]] = S_t
+      mahalanobis_residuals[t] = drop(sqrt(t(y[,t] - y_tt_1) %*% inv_S_t %*% (y[,t] - y_tt_1)))
+    }
+  }
+
+  if (return_obj) {
+    return(objective)
+  } else {
+    return(list(
+      "filtered_states" = filtered_states,
+      "filtered_observations" = filtered_observations,
+      "predicted_states" = predicted_states,
+      "predicted_observations" = predicted_observations,
+      "predicted_observations_var" = predicted_observations_var,
+      "mahalanobis_residuals" = mahalanobis_residuals
+    ))
+  }
+}
 
