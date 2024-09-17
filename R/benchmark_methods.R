@@ -139,7 +139,11 @@ delete_outliers_oracle_SSM = function(
   if (is.na(lower)[1]) {lower = rep(-Inf, length(init_par))}
   if (is.na(upper)[1]) {upper = rep(Inf, length(init_par))}
 
-  y_deleted_outliers = y[,-which(outlier_locs == 1)]
+  if (sum(outlier_locs) > 0) {
+    y_deleted_outliers = y[,-which(outlier_locs == 1)]
+  } else {
+    y_deleted_outliers = y
+  }
 
   n = ncol(y_deleted_outliers)
   dim_obs = nrow(y_deleted_outliers)
