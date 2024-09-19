@@ -49,7 +49,8 @@ robularized_SSM = function(
   # Fit models across the grid
   model_list = lambda_grid(y = y,
                            lambdas = lambdas,
-                           init_par = classical$par,
+                           #init_par = classical$par,
+                           init_par = init_par,
                            build = build,
                            cores = cores,
                            lower = lower,
@@ -78,7 +79,8 @@ robularized_SSM = function(
     # Fit models across the crowding grid
     model_crowding_list = lambda_grid(y = y,
                                       lambdas = crowding_lambdas,
-                                      init_par = classical$par,
+                                      #init_par = classical$par,
+                                      init_par = init_par,
                                       build = build,
                                       cores = cores,
                                       lower = lower,
@@ -165,7 +167,13 @@ run_IPOD = function(
       upper = upper
       )
 
-    par = res$par
+    if ((sum(res$par == lower) + sum(res$par == upper)) == 0) {
+      par = res$par
+    } else {
+      par = init_par
+    }
+    # par = res$par
+
     filter_output = fn_filter(res$par, y, gamma, build)
     r = y - filter_output$predicted_observations
     gamma_old = gamma
@@ -252,7 +260,7 @@ fn_filter = function(
       P_tt = P_tt_1
     }
     if (return_obj) {
-      objective = objective + 1/(2*n) * ((sum(abs(gamma[,t])) == 0)*log(det(S_t)) + t(y[,t] - y_tt_1 - gamma[,t]) %*% inv_S_t %*% (y[,t] - y_tt_1 - gamma[,t]))
+      objective = objective + 1/(2*n) * (sum(abs(gamma[,t])) == 0) * (log(det(S_t)) + t(y[,t] - y_tt_1 - gamma[,t]) %*% inv_S_t %*% (y[,t] - y_tt_1 - gamma[,t]))
     } else {
       filtered_states[,t] = x_tt
       filtered_observations[,t] = A %*% x_tt
