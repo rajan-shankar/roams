@@ -154,7 +154,10 @@ run_IPOD = function(
   par = init_par
   gamma = matrix(0, nrow = dim_obs, ncol = n)
   r = NA
+  theta_old = par
+
   for (j in 1:B) {
+    if (j != 1) {theta_old = res$par}
     res = stats::optim(
       par = par,
       fn = fn_filter,
@@ -172,7 +175,6 @@ run_IPOD = function(
     } else {
       par = init_par
     }
-    # par = res$par
 
     filter_output = fn_filter(res$par, y, gamma, build)
     r = y - filter_output$predicted_observations
@@ -180,11 +182,12 @@ run_IPOD = function(
     gamma = matrix(0, nrow = dim_obs, ncol = n)
     gamma[,filter_output$mahalanobis_residuals > lambda] = r[,filter_output$mahalanobis_residuals > lambda]
     gap = max(abs(gamma - gamma_old))
+    gap_theta = max(abs(res$par - theta_old))
 
     nz = sum(colSums(abs(gamma_old)) != 0)
     prop_outlying = nz / n
 
-    if (gap < 1e-4) {
+    if ((gap < 1e-4) && (gap_theta < 1e-4)) {
       break
     }
     # new termination criterion
@@ -260,7 +263,7 @@ fn_filter = function(
       P_tt = P_tt_1
     }
     if (return_obj) {
-      objective = objective + 1/(2*n) * (sum(abs(gamma[,t])) == 0) * (log(det(S_t)) + t(y[,t] - y_tt_1 - gamma[,t]) %*% inv_S_t %*% (y[,t] - y_tt_1 - gamma[,t]))
+      objective = objective + 1/(2*n) * ((sum(abs(gamma[,t])) == 0) * log(det(S_t)) + t(y[,t] - y_tt_1 - gamma[,t]) %*% inv_S_t %*% (y[,t] - y_tt_1 - gamma[,t]))
     } else {
       filtered_states[,t] = x_tt
       filtered_observations[,t] = A %*% x_tt

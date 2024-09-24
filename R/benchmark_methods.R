@@ -398,7 +398,12 @@ gamma_start_SSM = function(
       upper = upper
     )
 
-    par = res$par
+    # if ((sum(res$par == lower) + sum(res$par == upper)) == 0) {
+    #   par = res$par
+    # } else {
+    #   par = init_par
+    # }
+
     filter_output = fn_filter(res$par, y, gamma, build)
     r = y - filter_output$predicted_observations
     gamma_old = gamma
@@ -430,7 +435,9 @@ gamma_start_SSM = function(
     "BIC" = BIC,
     "RSS" = RSS,
     "gamma" = gamma_old,
-    "iterations" = j
+    "iterations" = j,
+    "r" = r,
+    "predicted_observations_var" = filter_output$predicted_observations_var
   ))
 }
 
