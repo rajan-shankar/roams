@@ -10,11 +10,13 @@
 #' @returns description
 #' @export
 best_BIC_model = function(model_list) {
-  index = which.min(get_attribute(model_list, "BIC"))
+  # Should I also make sure that prop_outlying < 0.45? Yes.
+  valid_indexes = which(get_attribute(model_list, "prop_outlying") < 0.45)
+  model_list = model_list[valid_indexes]
+  class(model_list) = "robularized_SSM_list"
 
-  # Should I also make sure that prop_outlying < 0.45?
-
-  return(model_list[[index]])
+  best_index = which.min(get_attribute(model_list, "BIC"))
+  return(model_list[[best_index]])
 }
 
 #' A Cat Function

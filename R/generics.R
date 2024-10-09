@@ -26,13 +26,16 @@ autoplot.robularized_SSM_list = function(model_list, attribute = "BIC") {
   data = data.frame(
     lambda = get_attribute(model_list, "lambda"),
     BIC = get_attribute(model_list, "BIC"),
+    prop_outlying = get_attribute(model_list, "prop_outlying"),
     attribute = get_attribute(model_list, attribute))
 
   data %>%
     ggplot() +
     aes(x = lambda, y = attribute) +
     geom_line(linewidth = 1) +
-    geom_vline(data = . %>% dplyr::slice(which.min(BIC)),
+    geom_vline(data = . %>%
+                 dplyr::filter(prop_outlying < 0.45) %>%
+                 dplyr::slice(which.min(BIC)),
                aes(xintercept = lambda),
                colour = "red", linetype = "dashed") +
     labs(x = latex2exp::TeX("$\\lambda$"),
