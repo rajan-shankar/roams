@@ -8,8 +8,19 @@ print.robularized_SSM = function(model) {
   print("testing")
 }
 
+# I HAVE MADE THIS NOT A GENERIC FOR NOW. THERE WERE ISSUES WITH FURRR AND PLAN.
+#' A Cat Function
+#'
+#' This function allows you to express your love of cats.
+#'
+#' @importFrom magrittr %>%
+#' @importFrom foreach %dopar%
+#' @param love Do you love cats? Defaults to TRUE.
+#' @details
+#' Additional details...
+#' @returns description
 #' @export
-autoplot.robularized_SSM_list = function(model_list, attribute = "BIC") {
+autoplot = function(model_list, attribute = "BIC") {
 
   vector_attributes = c(
     "lambda",
