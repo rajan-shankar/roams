@@ -9,7 +9,7 @@
 #' Additional details...
 #' @returns description
 #' @export
-robularized_SSM = function(
+robularized_SSM_isv = function(
     y,
     init_par,
     build,
@@ -24,7 +24,7 @@ robularized_SSM = function(
     ) {
 
   # Classical fit by using large lambda
-  classical = run_IPOD(y = y,
+  classical = run_IPOD_isv(y = y,
                        lambda = 100,
                        init_par = init_par,
                        build = build,
@@ -34,7 +34,7 @@ robularized_SSM = function(
 
   # Highest lambda is the supremum norm of mahalanobis residuals of classical fit
   if (is.na(highest_lambda)) {
-    highest_lambda = max(fn_filter(classical$par,
+    highest_lambda = max(fn_filter_isv(classical$par,
                                    y,
                                    classical$gamma,
                                    build)$mahalanobis_residuals
@@ -47,7 +47,7 @@ robularized_SSM = function(
                 length.out = num_lambdas)
 
   # Fit models across the grid
-  model_list = lambda_grid(y = y,
+  model_list = lambda_grid_isv(y = y,
                            lambdas = lambdas,
                            #init_par = classical$par,
                            init_par = init_par,
@@ -77,7 +77,7 @@ robularized_SSM = function(
                            length.out = num_lambdas_crowding + 2)[2:(num_lambdas_crowding+1)]
 
     # Fit models across the crowding grid
-    model_crowding_list = lambda_grid(y = y,
+    model_crowding_list = lambda_grid_isv(y = y,
                                       lambdas = crowding_lambdas,
                                       #init_par = classical$par,
                                       init_par = init_par,
@@ -97,7 +97,7 @@ robularized_SSM = function(
   return(model_list)
 }
 
-lambda_grid = function(
+lambda_grid_isv = function(
     y,
     lambdas,
     init_par,
@@ -110,18 +110,18 @@ lambda_grid = function(
 
   cl = parallel::makeCluster(cores)
   doParallel::registerDoParallel(cl,
-                                 export = list(fn_filter = fn_filter,
-                                               run_IPOD = run_IPOD))
+                                 export = list(fn_filter_isv = fn_filter_isv,
+                                               run_IPOD_isv = run_IPOD_isv))
   model_list = foreach::foreach(
     i = 1:length(lambdas)) %dopar% {
-                  IPOD_output = run_IPOD(y,
+                  IPOD_output = run_IPOD_isv(y,
                                          lambdas[i],
                                          init_par,
                                          build,
                                          B,
                                          lower,
                                          upper)
-                  filter_output = fn_filter(IPOD_output$par,
+                  filter_output = fn_filter_isv(IPOD_output$par,
                                             y,
                                             IPOD_output$gamma,
                                             build)
@@ -136,7 +136,7 @@ lambda_grid = function(
   return(model_list)
 }
 
-run_IPOD = function(
+run_IPOD_isv = function(
     y,
     lambda,
     init_par,
@@ -182,7 +182,7 @@ run_IPOD = function(
       if (j != 1) {theta_old = res$par}
       res = stats::optim(
         par = par,
-        fn = fn_filter,
+        fn = fn_filter_isv,
         y = y,
         gamma = gamma,
         build = function(x) build(x, isv = isv),
@@ -198,7 +198,7 @@ run_IPOD = function(
         par = init_par
       }
 
-      filter_output = fn_filter(res$par, y, gamma, function(x) build(x, isv = isv))
+      filter_output = fn_filter_isv(res$par, y, gamma, function(x) build(x, isv = isv))
       r = y - filter_output$predicted_observations
       gamma_old = gamma
       gamma = matrix(0, nrow = dim_obs, ncol = n)
@@ -241,7 +241,7 @@ run_IPOD = function(
     if (j != 1) {theta_old = res$par}
     res = stats::optim(
       par = par,
-      fn = fn_filter,
+      fn = fn_filter_isv,
       y = y,
       gamma = gamma,
       build = function(x) build(x, isv = best_isv),
@@ -257,7 +257,7 @@ run_IPOD = function(
       par = init_par
     }
 
-    filter_output = fn_filter(res$par, y, gamma, function(x) build(x, isv = best_isv))
+    filter_output = fn_filter_isv(res$par, y, gamma, function(x) build(x, isv = best_isv))
     r = y - filter_output$predicted_observations
     gamma_old = gamma
     gamma = matrix(0, nrow = dim_obs, ncol = n)
@@ -280,7 +280,7 @@ run_IPOD = function(
   p = length(init_par)
   RSS = sum((r - gamma_old)^2)
   BIC = (n-p)*log(RSS/(n-p)) + (nz+1)*(log(n-p) + 1)
-  #negloglik = n*fn_filter(model$par, gamma = gamma_old, y = y, return_obj = TRUE)
+  #negloglik = n*fn_filter_isv(model$par, gamma = gamma_old, y = y, return_obj = TRUE)
 
   return(list(
     "lambda" = lambda,
@@ -298,7 +298,7 @@ run_IPOD = function(
     ))
 }
 
-fn_filter = function(
+fn_filter_isv = function(
     par,
     y,
     gamma,
