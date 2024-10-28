@@ -284,7 +284,8 @@ run_IPOD = function(
     "RSS" = RSS,
     "gamma" = gamma_old,
     "iterations" = j,
-    "best_isv" = best_isv
+    "best_isv" = best_isv,
+    "isv_BICs" = BICs
     ))
 }
 
