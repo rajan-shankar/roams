@@ -149,7 +149,7 @@ run_IPOD = function(
   if (is.na(lower)[1]) {lower = rep(-Inf, length(init_par))}
   if (is.na(upper)[1]) {upper = rep(Inf, length(init_par))}
 
-  build_isv = function(par, isv) {
+  build = function(par, isv) {
 
     Phi = diag(4)
     delta = 0.1
@@ -182,7 +182,7 @@ run_IPOD = function(
         fn = fn_filter,
         y = y,
         gamma = gamma,
-        build = ~ build_isv(., isv = isv),
+        build = function(x) build(x, isv = isv),
         return_obj = TRUE,
         method = "L-BFGS-B",
         lower = lower,
@@ -195,7 +195,7 @@ run_IPOD = function(
         par = init_par
       }
 
-      filter_output = fn_filter(res$par, y, gamma, ~ build_isv(., isv = isv))
+      filter_output = fn_filter(res$par, y, gamma, function(x) build(x, isv = isv))
       r = y - filter_output$predicted_observations
       gamma_old = gamma
       gamma = matrix(0, nrow = dim_obs, ncol = n)
@@ -238,7 +238,7 @@ run_IPOD = function(
       fn = fn_filter,
       y = y,
       gamma = gamma,
-      build = ~ build_isv(., isv = best_isv),
+      build = function(x) build(x, isv = best_isv),
       return_obj = TRUE,
       method = "L-BFGS-B",
       lower = lower,
@@ -251,7 +251,7 @@ run_IPOD = function(
       par = init_par
     }
 
-    filter_output = fn_filter(res$par, y, gamma, ~ build_isv(., isv = best_isv))
+    filter_output = fn_filter(res$par, y, gamma, function(x) build(x, isv = best_isv))
     r = y - filter_output$predicted_observations
     gamma_old = gamma
     gamma = matrix(0, nrow = dim_obs, ncol = n)

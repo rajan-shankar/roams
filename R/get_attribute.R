@@ -21,7 +21,8 @@ get_attribute = function(model_list, attribute) {
     "BIC",
     "RSS",
     "prop_outlying",
-    "iterations"
+    "iterations",
+    "best_isv"
   )
 
   list_attributes = c(
