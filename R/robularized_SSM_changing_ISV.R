@@ -165,7 +165,8 @@ run_IPOD = function(
                 isv*diag(4))
   }
   isvs = c(0.33, 1, 3, 9)^2
-  BICs = numeric(length(isvs))
+  BICs_isv = numeric(length(isvs))
+  prop_outlying_isv = numeric(length(isvs))
   for (isv in isvs) {
 
     n = ncol(y)
@@ -219,10 +220,11 @@ run_IPOD = function(
     RSS = sum((r - gamma_old)^2)
     BIC = (n-p)*log(RSS/(n-p)) + (nz+1)*(log(n-p) + 1)
 
-    BICs[which(isvs == isv)] = BIC
+    BICs_isv[which(isvs == isv)] = BIC
+    prop_outlying_isv[which(isvs == isv)] = prop_outlying
   }
 
-  best_isv = isvs[which.min(BICs)]
+  best_isv = isvs[which.min(BICs_isv)]
 
   n = ncol(y)
   dim_obs = nrow(y)
@@ -285,7 +287,8 @@ run_IPOD = function(
     "gamma" = gamma_old,
     "iterations" = j,
     "best_isv" = best_isv,
-    "isv_BICs" = BICs
+    "BICs_isv" = BICs_isv,
+    "prop_outlying_isv" = prop_outlying_isv
     ))
 }
 
