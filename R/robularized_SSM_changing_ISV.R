@@ -178,7 +178,7 @@ run_IPOD = function(
     r = NA
     theta_old = par
 
-    for (j in 1:2) {
+    for (j in 1:B) {
       if (j != 1) {theta_old = res$par}
       res = stats::optim(
         par = par,
