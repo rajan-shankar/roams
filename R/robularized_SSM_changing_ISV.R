@@ -167,6 +167,8 @@ run_IPOD = function(
   isvs = c(0.33, 1, 3, 9)^2
   BICs_isv = numeric(length(isvs))
   prop_outlying_isv = numeric(length(isvs))
+  par1_isv = numeric(length(isvs))
+  par2_isv = numeric(length(isvs))
   for (isv in isvs) {
 
     n = ncol(y)
@@ -222,6 +224,8 @@ run_IPOD = function(
 
     BICs_isv[which(isvs == isv)] = BIC
     prop_outlying_isv[which(isvs == isv)] = prop_outlying
+    par1_isv[which(isvs == isv)] = res$par[1]
+    par2_isv[which(isvs == isv)] = res$par[2]
   }
 
   best_isv = isvs[which.min(BICs_isv)]
@@ -288,7 +292,9 @@ run_IPOD = function(
     "iterations" = j,
     "best_isv" = best_isv,
     "BICs_isv" = BICs_isv,
-    "prop_outlying_isv" = prop_outlying_isv
+    "prop_outlying_isv" = prop_outlying_isv,
+    "par1_isv" = par1_isv,
+    "par2_isv" = par2_isv
     ))
 }
 
