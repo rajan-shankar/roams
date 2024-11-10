@@ -218,7 +218,7 @@ fn_filter = function(
     gamma,
     build,
     return_obj = FALSE
-    ) {
+) {
 
   SSM_specs = build(par)
 
@@ -232,6 +232,14 @@ fn_filter = function(
   n = ncol(y)
   dim_obs = nrow(y)
   dim_state = nrow(Phi)
+
+  if (class(A) != "list") {
+    A_mat = A
+    A = list()
+    for (t in 1:n) {
+      A[[t]] = A_mat
+    }
+  }
 
   x_tt_1 = NA
   P_tt_1 = NA
@@ -251,13 +259,13 @@ fn_filter = function(
   for (t in 1:n) {
     x_tt_1 = Phi %*% x_tt
     P_tt_1 = Phi %*% P_tt %*% t(Phi) + Sigma_w
-    y_tt_1 = A %*% x_tt_1
-    S_t = A %*% P_tt_1 %*% t(A) + Sigma_v
+    y_tt_1 = A[[t]] %*% x_tt_1
+    S_t = A[[t]] %*% P_tt_1 %*% t(A[[t]]) + Sigma_v
     inv_S_t = solve(S_t)
     if (sum(abs(gamma[,t])) == 0) {
-      K_t = P_tt_1 %*% t(A) %*% inv_S_t
+      K_t = P_tt_1 %*% t(A[[t]]) %*% inv_S_t
       x_tt = x_tt_1 + K_t %*% (y[,t] - y_tt_1)
-      P_tt = P_tt_1 - K_t %*% A %*% P_tt_1
+      P_tt = P_tt_1 - K_t %*% A[[t]] %*% P_tt_1
     } else {
       x_tt = x_tt_1
       P_tt = P_tt_1
@@ -266,7 +274,7 @@ fn_filter = function(
       objective = objective + 1/(2*n) * ((sum(abs(gamma[,t])) == 0) * log(det(S_t)) + t(y[,t] - y_tt_1 - gamma[,t]) %*% inv_S_t %*% (y[,t] - y_tt_1 - gamma[,t]))
     } else {
       filtered_states[,t] = x_tt
-      filtered_observations[,t] = A %*% x_tt
+      filtered_observations[,t] = A[[t]] %*% x_tt
       predicted_states[,t] = x_tt_1
       predicted_observations[,t] = y_tt_1
       predicted_observations_var[[t]] = S_t
@@ -287,6 +295,82 @@ fn_filter = function(
     ))
   }
 }
+
+# fn_filter = function(
+#     par,
+#     y,
+#     gamma,
+#     build,
+#     return_obj = FALSE
+#     ) {
+#
+#   SSM_specs = build(par)
+#
+#   Phi = SSM_specs$state_transition_matrix
+#   Sigma_w = SSM_specs$state_noise_var
+#   A = SSM_specs$observation_matrix
+#   Sigma_v = SSM_specs$observation_noise_var
+#   x_tt = SSM_specs$init_state_mean
+#   P_tt = SSM_specs$init_state_var
+#
+#   n = ncol(y)
+#   dim_obs = nrow(y)
+#   dim_state = nrow(Phi)
+#
+#   x_tt_1 = NA
+#   P_tt_1 = NA
+#   y_tt_1 = NA
+#   S_t = NA
+#   objective = 0
+#
+#   if (!return_obj) {
+#     filtered_states = matrix(0, nrow = dim_state, ncol = n)
+#     filtered_observations = matrix(0, nrow = dim_obs, ncol = n)
+#     predicted_states = matrix(0, nrow = dim_state, ncol = n)
+#     predicted_observations = matrix(0, nrow = dim_obs, ncol = n)
+#     predicted_observations_var = list()
+#     mahalanobis_residuals = NA
+#   }
+#
+#   for (t in 1:n) {
+#     x_tt_1 = Phi %*% x_tt
+#     P_tt_1 = Phi %*% P_tt %*% t(Phi) + Sigma_w
+#     y_tt_1 = A %*% x_tt_1
+#     S_t = A %*% P_tt_1 %*% t(A) + Sigma_v
+#     inv_S_t = solve(S_t)
+#     if (sum(abs(gamma[,t])) == 0) {
+#       K_t = P_tt_1 %*% t(A) %*% inv_S_t
+#       x_tt = x_tt_1 + K_t %*% (y[,t] - y_tt_1)
+#       P_tt = P_tt_1 - K_t %*% A %*% P_tt_1
+#     } else {
+#       x_tt = x_tt_1
+#       P_tt = P_tt_1
+#     }
+#     if (return_obj) {
+#       objective = objective + 1/(2*n) * ((sum(abs(gamma[,t])) == 0) * log(det(S_t)) + t(y[,t] - y_tt_1 - gamma[,t]) %*% inv_S_t %*% (y[,t] - y_tt_1 - gamma[,t]))
+#     } else {
+#       filtered_states[,t] = x_tt
+#       filtered_observations[,t] = A %*% x_tt
+#       predicted_states[,t] = x_tt_1
+#       predicted_observations[,t] = y_tt_1
+#       predicted_observations_var[[t]] = S_t
+#       mahalanobis_residuals[t] = drop(sqrt(t(y[,t] - y_tt_1) %*% inv_S_t %*% (y[,t] - y_tt_1)))
+#     }
+#   }
+#
+#   if (return_obj) {
+#     return(objective)
+#   } else {
+#     return(list(
+#       "filtered_states" = filtered_states,
+#       "filtered_observations" = filtered_observations,
+#       "predicted_states" = predicted_states,
+#       "predicted_observations" = predicted_observations,
+#       "predicted_observations_var" = predicted_observations_var,
+#       "mahalanobis_residuals" = mahalanobis_residuals
+#     ))
+#   }
+# }
 
 
 
