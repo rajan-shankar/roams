@@ -111,7 +111,8 @@ lambda_grid = function(
   cl = parallel::makeCluster(cores)
   doParallel::registerDoParallel(cl,
                                  export = list(fn_filter = fn_filter,
-                                               run_IPOD = run_IPOD))
+                                               run_IPOD = run_IPOD,
+                                               build = build))
   model_list = foreach::foreach(
     i = 1:length(lambdas)) %dopar% {
                   IPOD_output = run_IPOD(y,
