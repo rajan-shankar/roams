@@ -197,7 +197,7 @@ run_IPOD = function(
   }
 
   p = length(init_par)
-  RSS = sum((r - gamma_old)^2)
+  RSS = sum((r - gamma_old)^2, na.rm = TRUE)
   BIC = (n-p)*log(RSS/(n-p)) + (nz+1)*(log(n-p) + 1)
   #negloglik = n*fn_filter(model$par, gamma = gamma_old, y = y, return_obj = TRUE)
 
