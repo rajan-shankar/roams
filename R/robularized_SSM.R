@@ -255,7 +255,7 @@ fn_filter = function(
     S_t = A %*% P_tt_1 %*% t(A) + Sigma_v
     inv_S_t = solve(S_t)
 
-    if (is.na(y[,t])) {
+    if (sum(is.na(y[,t]))) {
       x_tt = x_tt_1
       P_tt = P_tt_1
 
