@@ -259,13 +259,16 @@ fn_filter = function(
       x_tt = x_tt_1
       P_tt = P_tt_1
 
-      objective = objective + 0
-      filtered_states[,t] = x_tt
-      filtered_observations[,t] = A %*% x_tt
-      predicted_states[,t] = x_tt_1
-      predicted_observations[,t] = y_tt_1
-      predicted_observations_var[[t]] = S_t
-      mahalanobis_residuals[t] = 0
+      if (return_obj) {
+        objective = objective + 0
+      } else {
+        filtered_states[,t] = x_tt
+        filtered_observations[,t] = A %*% x_tt
+        predicted_states[,t] = x_tt_1
+        predicted_observations[,t] = y_tt_1
+        predicted_observations_var[[t]] = S_t
+        mahalanobis_residuals[t] = 0
+      }
 
     } else {
 
