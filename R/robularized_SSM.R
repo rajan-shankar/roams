@@ -298,7 +298,7 @@ fn_filter = function(
   smoothed_observations[,n] = A %*% smoothed_states[,n]
   for (t in (n-1):1) {
 
-    C_t = filtered_states_var[[t]] %*% t(Phi) %*% solve(predicted_states_var[[t]])
+    C_t = filtered_states_var[[t]] %*% t(Phi) %*% solve(predicted_states_var[[t+1]])
 
     # if ((sum(abs(gamma[,t])) != 0) | is.na(y[1,t])) {
     #   smoothed_states[,t] = smoothed_states[,t+1]
