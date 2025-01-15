@@ -331,7 +331,6 @@ fn_filter = function(
     if (!is.na(y[1,t])) {
       objective = objective + 1/(2*n) * ((sum(abs(gamma[,t])) == 0) * log(det(S_t)) + t(y[,t] - y_tt_1 - gamma[,t]) %*% inv_S_t %*% (y[,t] - y_tt_1 - gamma[,t]))
       mahalanobis_residuals[t] = drop(sqrt(t(y[,t] - y_tt_1) %*% inv_S_t %*% (y[,t] - y_tt_1)))
-      if (is.na(mahalanobis_residuals[t])) {mahalanobis_residuals[t] = 0} # ONLY TEMPORARY FIX
     } else {
       mahalanobis_residuals[t] = 0
     }
