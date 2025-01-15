@@ -300,13 +300,13 @@ fn_filter = function(
 
     C_t = filtered_states_var[[t]] %*% t(Phi) %*% solve(predicted_states_var[[t]])
 
-    if ((sum(abs(gamma[,t])) != 0) | is.na(y[1,t])) {
-      smoothed_states[,t] = smoothed_states[,t+1]
-      smoothed_states_var[[t]] = smoothed_states_var[[t+1]]
-    } else {
-      smoothed_states[,t] = filtered_states[,t] + C_t %*% (smoothed_states[,t+1] - Phi %*% filtered_states[,t])
-      smoothed_states_var[[t]] = filtered_states_var[[t]] + C_t %*% (smoothed_states_var[[t+1]] - predicted_states_var[[t]]) %*% t(C_t)
-    }
+    # if ((sum(abs(gamma[,t])) != 0) | is.na(y[1,t])) {
+    #   smoothed_states[,t] = smoothed_states[,t+1]
+    #   smoothed_states_var[[t]] = smoothed_states_var[[t+1]]
+    # } else {
+    smoothed_states[,t] = filtered_states[,t] + C_t %*% (smoothed_states[,t+1] - Phi %*% filtered_states[,t])
+    smoothed_states_var[[t]] = filtered_states_var[[t]] + C_t %*% (smoothed_states_var[[t+1]] - predicted_states_var[[t]]) %*% t(C_t)
+    # }
 
     smoothed_observations[,t] = A %*% smoothed_states[,t]
   }
