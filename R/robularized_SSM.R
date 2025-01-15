@@ -352,7 +352,8 @@ fn_filter = function(
       "mahalanobis_residuals" = mahalanobis_residuals,
 
       "smoothed_states_var" = smoothed_states_var,
-      "predicted_states_var" = predicted_states_var
+      "predicted_states_var" = predicted_states_var,
+      "filtered_states_var" = filtered_states_var
     ))
   }
 }
