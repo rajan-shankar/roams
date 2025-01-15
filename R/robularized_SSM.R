@@ -336,7 +336,7 @@ fn_filter = function(
     }
   }
 
-
+  RSS = sum((y - predicted_observations_updated)^2, na.rm = TRUE)
 
   if (return_obj) {
     return(objective)
@@ -350,6 +350,7 @@ fn_filter = function(
       "predicted_observations" = predicted_observations_updated,
       "predicted_observations_var" = predicted_observations_var_updated,
       "mahalanobis_residuals" = mahalanobis_residuals,
+      "RSS" = RSS,
 
       "smoothed_states_var" = smoothed_states_var,
       "predicted_states_var" = predicted_states_var,
