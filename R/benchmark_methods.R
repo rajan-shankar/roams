@@ -326,9 +326,14 @@ ruben_filter = function(
     S_t = A %*% P_tt_1 %*% t(A) + sqrt_Sigma_v %*% inv_W %*% sqrt_Sigma_v
     inv_S_t = solve(S_t)
 
-    K_t = P_tt_1 %*% t(A) %*% inv_S_t
-    x_tt = x_tt_1 + K_t %*% (y[,t] - y_tt_1)
-    P_tt = P_tt_1 - K_t %*% A %*% P_tt_1
+    if (is.na(y[1,t])) {
+      x_tt = x_tt_1
+      P_tt = P_tt_1
+    } else {
+      K_t = P_tt_1 %*% t(A) %*% inv_S_t
+      x_tt = x_tt_1 + K_t %*% (y[,t] - y_tt_1)
+      P_tt = P_tt_1 - K_t %*% A %*% P_tt_1
+    }
 
     if (return_obj) {
       objective = objective + 1/(2*n) * log(det(S_t)) + c_H/n * rho_huber_mv(expm::sqrtm(inv_S_t) %*% (y[,t] - y_tt_1))
