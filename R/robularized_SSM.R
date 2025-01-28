@@ -330,7 +330,7 @@ fn_filter = function(
 
     inv_S_t = solve(predicted_observations_var[[t]])
     if (!is.na(y[1,t])) {
-      objective = objective + 1/(2*n) * ((sum(abs(gamma[,t])) == 0) * log(det(S_t)) + t(y[,t] - predicted_observations[,t] - gamma[,t]) %*% inv_S_t %*% (y[,t] - predicted_observations[,t] - gamma[,t]))
+      objective = objective + 1/(2*n) * ((sum(abs(gamma[,t])) == 0) * log(det(predicted_observations_var[[t]])) + t(y[,t] - predicted_observations[,t] - gamma[,t]) %*% inv_S_t %*% (y[,t] - predicted_observations[,t] - gamma[,t]))
       mahalanobis_residuals[t] = drop(sqrt(t(y[,t] - predicted_observations[,t]) %*% inv_S_t %*% (y[,t] - predicted_observations[,t])))
     } else {
       mahalanobis_residuals[t] = 0
