@@ -235,10 +235,6 @@ fn_filter = function(
   dim_obs = nrow(y)
   dim_state = nrow(Phi)
 
-  location = apply(y, 1, function(y_row) median(y_row, na.rm = TRUE))
-  scale = apply(y, 1, function(y_row) mad(y_row, na.rm = TRUE))
-  y = (y - location) / scale
-
   x_tt_1 = NA
   P_tt_1 = NA
   y_tt_1 = NA
@@ -348,11 +344,11 @@ fn_filter = function(
   } else {
     return(list(
       "filtered_states" = filtered_states,
-      "filtered_observations" = filtered_observations*scale + location,
+      "filtered_observations" = filtered_observations,
       "smoothed_states" = smoothed_states,
-      "smoothed_observations" = smoothed_observations*scale + location,
+      "smoothed_observations" = smoothed_observations,
       "predicted_states" = predicted_states,
-      "predicted_observations" = predicted_observations*scale + location,
+      "predicted_observations" = predicted_observations,
       "predicted_observations_var" = predicted_observations_var,
       "mahalanobis_residuals" = mahalanobis_residuals,
       "squared_errors" = squared_errors,
