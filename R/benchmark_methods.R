@@ -198,30 +198,31 @@ classical_SSM = function(
   n = ncol(y)
   dim_obs = nrow(y)
   gamma = matrix(0, nrow = dim_obs, ncol = n)
-  # res = stats::optim(
-  #   par = init_par,
-  #   fn = fn_filter,
-  #   y = y,
-  #   gamma = gamma,
-  #   build = build,
-  #   return_obj = TRUE,
-  #   method = "L-BFGS-B",
-  #   lower = lower,
-  #   upper = upper,
-  #   control = list(maxit = maxit, parscale = parscale)
-  # )
-
-  res = stats::nlminb(
-    start = init_par,
-    objective = fn_filter,
+  res = stats::optim(
+    par = init_par,
+    fn = fn_filter,
     y = y,
     gamma = gamma,
     build = build,
     return_obj = TRUE,
+    method = "L-BFGS-B",
     lower = lower,
     upper = upper,
-    scale = parscale
+    control = list(maxit = maxit, parscale = parscale),
+    hessian = TRUE
   )
+
+  # res = stats::nlminb(
+  #   start = init_par,
+  #   objective = fn_filter,
+  #   y = y,
+  #   gamma = gamma,
+  #   build = build,
+  #   return_obj = TRUE,
+  #   lower = lower,
+  #   upper = upper,
+  #   scale = parscale
+  # )
 
 
 
