@@ -187,7 +187,9 @@ classical_SSM = function(
     init_par,
     build,
     lower = NA,
-    upper = NA
+    upper = NA,
+    maxit = 1000,
+    parscale = rep(1, length(init_par))
 ) {
 
   if (is.na(lower)[1]) {lower = rep(-Inf, length(init_par))}
@@ -205,7 +207,8 @@ classical_SSM = function(
     return_obj = TRUE,
     method = "L-BFGS-B",
     lower = lower,
-    upper = upper
+    upper = upper,
+    control = list(maxit = maxit, parscale = parscale)
   )
 
   optim_output = list("par" = res$par)
