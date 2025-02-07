@@ -188,8 +188,7 @@ classical_SSM = function(
     build,
     lower = NA,
     upper = NA,
-    maxit = 1000,
-    parscale = rep(1, length(init_par))
+    control = list()
 ) {
 
   if (is.na(lower)[1]) {lower = rep(-Inf, length(init_par))}
@@ -208,8 +207,7 @@ classical_SSM = function(
     method = "L-BFGS-B",
     lower = lower,
     upper = upper,
-    control = list(maxit = maxit, parscale = parscale),
-    hessian = TRUE
+    control = control
   )
 
   # res = stats::nlminb(
