@@ -31,7 +31,8 @@ robularized_SSM = function(
                        build = build,
                        B = B,
                        lower = lower,
-                       upper = upper)
+                       upper = upper,
+                       control = control)
 
   # Highest lambda is the supremum norm of mahalanobis residuals of classical fit
   if (is.na(highest_lambda)) {
@@ -121,7 +122,8 @@ lambda_grid = function(
                                          build,
                                          B,
                                          lower,
-                                         upper)
+                                         upper,
+                                         control)
                   filter_output = fn_filter(IPOD_output$par,
                                             y,
                                             IPOD_output$gamma,
@@ -144,7 +146,8 @@ run_IPOD = function(
     build,
     B,
     lower,
-    upper
+    upper,
+    control
     ) {
 
   if (is.na(lower)[1]) {lower = rep(-Inf, length(init_par))}
