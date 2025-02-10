@@ -57,7 +57,8 @@ robularized_SSM = function(
                            cores = cores,
                            lower = lower,
                            upper = upper,
-                           B = B)
+                           B = B,
+                           control = control)
 
   if (num_lambdas_crowding != 0) {
     BIC = get_attribute(model_list, "BIC")
@@ -87,7 +88,8 @@ robularized_SSM = function(
                                       cores = cores,
                                       lower = lower,
                                       upper = upper,
-                                      B = B)
+                                      B = B,
+                                      control = control)
 
     # Append to model_crowding_list to model_list at appropriate location
     model_list = append(model_list, model_crowding_list, after = diff_argmax)
@@ -107,7 +109,8 @@ lambda_grid = function(
     cores,
     lower,
     upper,
-    B
+    B,
+    control
     ) {
 
   cl = parallel::makeCluster(cores)
