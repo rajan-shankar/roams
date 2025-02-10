@@ -20,7 +20,8 @@ robularized_SSM = function(
     cores = 1,
     B = 20,
     lower = NA,
-    upper = NA
+    upper = NA,
+    control = list()
     ) {
 
   # Classical fit by using large lambda
@@ -167,7 +168,8 @@ run_IPOD = function(
       return_obj = TRUE,
       method = "L-BFGS-B",
       lower = lower,
-      upper = upper
+      upper = upper,
+      control = control
       )
 
     if ((sum(res$par == lower) + sum(res$par == upper)) == 0) {
