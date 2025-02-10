@@ -206,15 +206,15 @@ run_IPOD = function(
   BIC = (n-p)*log(RSS/(n-p)) + (nz+1)*(log(n-p) + 1)
   #negloglik = n*fn_filter(model$par, gamma = gamma_old, y = y, return_obj = TRUE)
 
-  return(list(
+  return(c(list(
     "lambda" = lambda,
-    "par" = res$par,
+    # "par" = res$par,
     "prop_outlying" = prop_outlying,
     "BIC" = BIC,
     "RSS" = RSS,
     "gamma" = gamma_old,
     "iterations" = j
-    ))
+    ), res))
 }
 
 
