@@ -359,11 +359,11 @@ fn_filter = function(
       "predicted_observations" = predicted_observations,
       "predicted_observations_var" = predicted_observations_var,
       "mahalanobis_residuals" = mahalanobis_residuals,
-      "squared_errors" = squared_errors,
+      # "squared_errors" = squared_errors,
 
-      "smoothed_states_var" = smoothed_states_var,
-      "predicted_states_var" = predicted_states_var,
-      "filtered_states_var" = filtered_states_var
+      # "smoothed_states_var" = smoothed_states_var,
+      # "predicted_states_var" = predicted_states_var,
+      # "filtered_states_var" = filtered_states_var
     ))
   }
 }
