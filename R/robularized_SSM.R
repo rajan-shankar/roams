@@ -358,7 +358,7 @@ fn_filter = function(
       "predicted_states" = predicted_states,
       "predicted_observations" = predicted_observations,
       "predicted_observations_var" = predicted_observations_var,
-      "mahalanobis_residuals" = mahalanobis_residuals,
+      "mahalanobis_residuals" = mahalanobis_residuals
       # "squared_errors" = squared_errors,
 
       # "smoothed_states_var" = smoothed_states_var,
