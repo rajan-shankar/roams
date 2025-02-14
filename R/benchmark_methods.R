@@ -88,7 +88,8 @@ no_gamma_oracle_SSM = function(
     build,
     outlier_locs,
     lower = NA,
-    upper = NA
+    upper = NA,
+    control = list()
 ) {
 
   if (is.na(lower)[1]) {lower = rep(-Inf, length(init_par))}
@@ -103,13 +104,12 @@ no_gamma_oracle_SSM = function(
     return_obj = TRUE,
     method = "L-BFGS-B",
     lower = lower,
-    upper = upper
+    upper = upper,
+    control = control
   )
 
   filter_output = no_gamma_oracle_filter(res$par, y, outlier_locs, build)
-  optim_output = list(
-    "par" = res$par
-  )
+  optim_output = res
 
   model = c(optim_output, filter_output)
   class(model) = "no_gamma_oracle_SSM"
@@ -224,7 +224,6 @@ classical_SSM = function(
 
 
 
-  # optim_output = list("par" = res$par)
   optim_output = res
 
   filter_output = fn_filter(res$par,
@@ -253,7 +252,8 @@ huber_robust_SSM = function(
     init_par,
     build,
     lower = NA,
-    upper = NA
+    upper = NA,
+    control = list()
     ) {
 
   if (is.na(lower)[1]) {lower = rep(-Inf, length(init_par))}
@@ -267,10 +267,11 @@ huber_robust_SSM = function(
     return_obj = TRUE,
     method = "L-BFGS-B",
     lower = lower,
-    upper = upper
+    upper = upper,
+    control = control
   )
 
-  optim_output = list("par" = res$par)
+  optim_output = res
 
   filter_output = ruben_filter(res$par,
                                y,
