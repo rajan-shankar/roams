@@ -18,6 +18,7 @@ Imports:
   magrittr,
   latex2exp,
   dplyr,
-  expm
+  expm,
+  dlm
 Depends:
   ggplot2

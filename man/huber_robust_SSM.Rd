@@ -4,7 +4,7 @@
 \alias{huber_robust_SSM}
 \title{#' A Cat Function}
 \usage{
-huber_robust_SSM(y, init_par, build, lower = NA, upper = NA)
+huber_robust_SSM(y, init_par, build, lower = NA, upper = NA, control = list())
 }
 \arguments{
 \item{love}{Do you love cats? Defaults to TRUE.}

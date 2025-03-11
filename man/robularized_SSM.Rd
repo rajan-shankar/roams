@@ -15,7 +15,8 @@ robularized_SSM(
   cores = 1,
   B = 20,
   lower = NA,
-  upper = NA
+  upper = NA,
+  control = list()
 )
 }
 \arguments{

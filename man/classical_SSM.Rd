@@ -4,7 +4,7 @@
 \alias{classical_SSM}
 \title{A Cat Function}
 \usage{
-classical_SSM(y, init_par, build, lower = NA, upper = NA)
+classical_SSM(y, init_par, build, lower = NA, upper = NA, control = list())
 }
 \arguments{
 \item{love}{Do you love cats? Defaults to TRUE.}
