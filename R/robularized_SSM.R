@@ -862,9 +862,9 @@ dlmInfo = function(y, fit, build) {
   A = build(fit$par)$FF
 
   return(list(
-    smoothed_observations = (A %*% t(smoother_output$s))[,2:ncol(y)],
+    smoothed_observations = (A %*% t(smoother_output$s))[,2:(ncol(y)+1)],
     predicted_observations = t(filter_output$f),
-    mahalanobis_residuals = sqrt(rowSums(dlm::residuals.dlmFilter(filter_output)$res^2))
+    mahalanobis_residuals = sqrt(rowSums(residuals(filter_output)$res^2))
   ))
 
 }
