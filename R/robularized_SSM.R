@@ -158,7 +158,7 @@ run_IPOD = function(
   for (j in 1:B) {
     if (j != 1) {theta_old = fit$par}
 
-    fit = dlmMLE(
+    fit = dlm::dlmMLE(
       t(adj_y),
       parm = par,
       build = build,
@@ -857,14 +857,14 @@ fn_filter = function(
 
 dlmInfo = function(y, fit, build) {
 
-  filter_output = dlmFilter(t(y), mod = build(fit$par))
-  smoother_output = dlmSmooth(filter_output)
+  filter_output = dlm::dlmFilter(t(y), mod = build(fit$par))
+  smoother_output = dlm::dlmSmooth(filter_output)
   A = build(fit$par)$FF
 
   return(list(
     smoothed_observations = (A %*% t(smoother_output$s))[,2:ncol(y)],
     predicted_observations = t(filter_output$f),
-    mahalanobis_residuals = sqrt(rowSums(residuals(filter_output)$res^2))
+    mahalanobis_residuals = sqrt(rowSums(dlm::residuals.dlmFilter(filter_output)$res^2))
   ))
 
 }
