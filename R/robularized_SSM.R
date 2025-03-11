@@ -36,11 +36,7 @@ robularized_SSM = function(
 
   # Highest lambda is the supremum norm of mahalanobis residuals of classical fit
   if (is.na(highest_lambda)) {
-    highest_lambda = max(fn_filter(classical$par,
-                                   y,
-                                   classical$gamma,
-                                   build)$mahalanobis_residuals
-                         )
+    highest_lambda = max(classical$mahalanobis_residuals)
   }
 
   # lambda grid
@@ -115,8 +111,7 @@ lambda_grid = function(
 
   cl = parallel::makeCluster(cores)
   doParallel::registerDoParallel(cl,
-                                 export = list(fn_filter = fn_filter,
-                                               run_IPOD = run_IPOD))
+                                 export = list(run_IPOD = run_IPOD))
   model_list = foreach::foreach(
     i = 1:length(lambdas)) %dopar% {
                   IPOD_output = run_IPOD(y,
@@ -127,12 +122,7 @@ lambda_grid = function(
                                          lower,
                                          upper,
                                          control)
-                  filter_output = fn_filter(IPOD_output$par,
-                                            y,
-                                            IPOD_output$gamma,
-                                            build)
-
-                  model = c(IPOD_output, filter_output)
+                  model = c(IPOD_output)
                   class(model) = "robularized_SSM"
                   return(model)
                   }
@@ -142,7 +132,238 @@ lambda_grid = function(
   return(model_list)
 }
 
+
 run_IPOD = function(
+    y,
+    lambda,
+    init_par,
+    build,
+    B,
+    lower,
+    upper,
+    control
+) {
+
+  if (is.na(lower)[1]) {lower = rep(-Inf, length(init_par))}
+  if (is.na(upper)[1]) {upper = rep(Inf, length(init_par))}
+
+  n = ncol(y)
+  dim_obs = nrow(y)
+  par = init_par
+  gamma = matrix(0, nrow = dim_obs, ncol = n)
+  adj_y = y
+  r = NA
+  theta_old = par
+
+  for (j in 1:B) {
+    if (j != 1) {theta_old = fit$par}
+
+    fit = dlmMLE(
+      t(adj_y),
+      parm = par,
+      build = build,
+      method = "L-BFGS-B",
+      lower = lower,
+      upper = upper,
+      control = list(parscale = par)
+      )
+
+    if ((sum(fit$par == lower) + sum(fit$par == upper)) == 0) {
+      par = fit$par
+    } else {
+      par = init_par
+    }
+
+    #filter_output = fn_filter(res$par, y, gamma, build)
+    info_output = dlmInfo(t(adj_y), fit, build)
+    #r = y - filter_output$predicted_observations
+    r = y - info_output$predicted_observations
+    gamma_old = gamma
+    gamma = matrix(0, nrow = dim_obs, ncol = n)
+    gamma[,info_output$mahalanobis_residuals > lambda] = r[,info_output$mahalanobis_residuals > lambda]
+    adj_y = y
+    adj_y[,which(colSums(abs(gamma)) != 0)] = NA
+    gap = max(abs(gamma - gamma_old))
+    gap_theta = max(abs(fit$par - theta_old))
+
+    nz = sum(colSums(abs(gamma_old)) != 0)
+    prop_outlying = nz / n
+
+    if ((gap < 1e-4) && (gap_theta < 1e-4)) {
+      break
+    }
+    # new termination criterion
+    if (prop_outlying >= 0.5) {
+      break
+    }
+  }
+
+  p = length(init_par)
+  RSS = sum((r - gamma_old)^2, na.rm = TRUE)
+  BIC = (n-p)*log(RSS/(n-p)) + (nz+1)*(log(n-p) + 1)
+  #negloglik = n*fn_filter(model$par, gamma = gamma_old, y = y, return_obj = TRUE)
+
+  return(c(
+    list(
+      "lambda" = lambda,
+      "prop_outlying" = prop_outlying,
+      "BIC" = BIC,
+      "RSS" = RSS,
+      "gamma" = gamma_old,
+      "iterations" = j
+      ),
+    fit,
+    info_output
+    ))
+}
+
+
+
+#' A Cat Function
+#'
+#' This function allows you to express your love of cats.
+#'
+#' @importFrom magrittr %>%
+#' @importFrom foreach %dopar%
+#' @param love Do you love cats? Defaults to TRUE.
+#' @details
+#' Additional details...
+#' @returns description
+#' @export
+robularized_SSM_slow = function(
+    y,
+    init_par,
+    build,
+    num_lambdas = 10,
+    lowest_lambda = 2,
+    highest_lambda = NA,
+    num_lambdas_crowding = 0,
+    cores = 1,
+    B = 20,
+    lower = NA,
+    upper = NA,
+    control = list()
+) {
+
+  # Classical fit by using large lambda
+  classical = run_IPOD_slow(y = y,
+                       lambda = 100,
+                       init_par = init_par,
+                       build = build,
+                       B = B,
+                       lower = lower,
+                       upper = upper,
+                       control = control)
+
+  # Highest lambda is the supremum norm of mahalanobis residuals of classical fit
+  if (is.na(highest_lambda)) {
+    highest_lambda = max(fn_filter(classical$par,
+                                   y,
+                                   classical$gamma,
+                                   build)$mahalanobis_residuals
+    )
+  }
+
+  # lambda grid
+  lambdas = seq(lowest_lambda,
+                highest_lambda,
+                length.out = num_lambdas)
+
+  # Fit models across the grid
+  model_list = lambda_grid_slow(y = y,
+                           lambdas = lambdas,
+                           #init_par = classical$par,
+                           init_par = init_par,
+                           build = build,
+                           cores = cores,
+                           lower = lower,
+                           upper = upper,
+                           B = B,
+                           control = control)
+
+  if (num_lambdas_crowding != 0) {
+    BIC = get_attribute(model_list, "BIC")
+    prop_outlying = get_attribute(model_list, "prop_outlying")
+
+    # Take BIC diffs and set any that are left of prop_outlying >= 0.5 to 0
+    bad_up_to_and_including = sum(prop_outlying >= 0.5)
+    diffs = abs(diff(BIC))
+    if (bad_up_to_and_including >= 2) {
+      diffs[1:(bad_up_to_and_including - 1)] = 0
+    }
+
+    # Find largest BIC diff
+    diff_argmax = which.max(diffs)
+
+    # Crowding lambda grid
+    crowding_lambdas = seq(lambdas[diff_argmax],
+                           lambdas[diff_argmax + 1],
+                           length.out = num_lambdas_crowding + 2)[2:(num_lambdas_crowding+1)]
+
+    # Fit models across the crowding grid
+    model_crowding_list = lambda_grid(y = y,
+                                      lambdas = crowding_lambdas,
+                                      #init_par = classical$par,
+                                      init_par = init_par,
+                                      build = build,
+                                      cores = cores,
+                                      lower = lower,
+                                      upper = upper,
+                                      B = B,
+                                      control = control)
+
+    # Append to model_crowding_list to model_list at appropriate location
+    model_list = append(model_list, model_crowding_list, after = diff_argmax)
+
+    # Attach class
+    class(model_list) = "robularized_SSM_list"
+  }
+
+  return(model_list)
+}
+
+lambda_grid_slow = function(
+    y,
+    lambdas,
+    init_par,
+    build,
+    cores,
+    lower,
+    upper,
+    B,
+    control
+) {
+
+  cl = parallel::makeCluster(cores)
+  doParallel::registerDoParallel(cl,
+                                 export = list(fn_filter = fn_filter,
+                                               run_IPOD_slow = run_IPOD_slow))
+  model_list = foreach::foreach(
+    i = 1:length(lambdas)) %dopar% {
+      IPOD_output = run_IPOD_slow(y,
+                             lambdas[i],
+                             init_par,
+                             build,
+                             B,
+                             lower,
+                             upper,
+                             control)
+      filter_output = fn_filter(IPOD_output$par,
+                                y,
+                                IPOD_output$gamma,
+                                build)
+
+      model = c(IPOD_output, filter_output)
+      class(model) = "robularized_SSM"
+      return(model)
+    }
+  parallel::stopCluster(cl)
+
+  class(model_list) = "robularized_SSM_list"
+  return(model_list)
+}
+
+run_IPOD_slow = function(
     y,
     lambda,
     init_par,
@@ -634,6 +855,19 @@ fn_filter = function(
 #   }
 # }
 
+dlmInfo = function(y, fit, build) {
+
+  filter_output = dlmFilter(t(y), mod = build(fit$par))
+  smoother_output = dlmSmooth(filter_output)
+  A = build(fit$par)$FF
+
+  return(list(
+    smoothed_observations = (A %*% t(smoother_output$s))[,2:ncol(y)],
+    predicted_observations = t(filter_output$f),
+    mahalanobis_residuals = sqrt(rowSums(residuals(filter_output)$res^2))
+  ))
+
+}
 
 
 
