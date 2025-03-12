@@ -132,7 +132,17 @@ lambda_grid = function(
   return(model_list)
 }
 
-
+#' A Cat Function
+#'
+#' This function allows you to express your love of cats.
+#'
+#' @importFrom magrittr %>%
+#' @importFrom foreach %dopar%
+#' @param love Do you love cats? Defaults to TRUE.
+#' @details
+#' Additional details...
+#' @returns description
+#' @export
 run_IPOD = function(
     y,
     lambda,
