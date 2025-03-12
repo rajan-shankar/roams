@@ -175,7 +175,7 @@ run_IPOD = function(
     }
 
     #filter_output = fn_filter(res$par, y, gamma, build)
-    info_output = dlmInfo(t(adj_y), fit, build)
+    info_output = dlmInfo(adj_y, fit, build)
     #r = y - filter_output$predicted_observations
     r = y - info_output$predicted_observations
     gamma_old = gamma
