@@ -168,15 +168,27 @@ run_IPOD = function(
   for (j in 1:B) {
     if (j != 1) {theta_old = fit$par}
 
-    fit = dlm::dlmMLE(
-      t(adj_y),
-      parm = par,
-      build = build,
-      method = "L-BFGS-B",
-      lower = lower,
-      upper = upper,
-      control = list(parscale = par)
+    if (length(control) == 0) {
+      fit = dlm::dlmMLE(
+        t(adj_y),
+        parm = par,
+        build = build,
+        method = "L-BFGS-B",
+        lower = lower,
+        upper = upper,
+        control = list(parscale = par)
+        )
+    } else {
+      fit = dlm::dlmMLE(
+        t(adj_y),
+        parm = par,
+        build = build,
+        method = "L-BFGS-B",
+        lower = lower,
+        upper = upper,
+        control = control
       )
+    }
 
     if ((sum(fit$par == lower) + sum(fit$par == upper)) == 0) {
       par = fit$par
