@@ -185,7 +185,7 @@ run_IPOD = function(
     }
 
     #filter_output = fn_filter(res$par, y, gamma, build)
-    info_output = dlmInfo(adj_y, fit, build)
+    info_output = dlmInfo(y, adj_y, fit, build)
     #r = y - filter_output$predicted_observations
     r = y - info_output$predicted_observations
     gamma_old = gamma
@@ -865,16 +865,19 @@ fn_filter = function(
 #   }
 # }
 
-dlmInfo = function(y, fit, build) {
+dlmInfo = function(y, adj_y, fit, build) {
 
-  filter_output = dlm::dlmFilter(t(y), mod = build(fit$par))
+  filter_output = dlm::dlmFilter(t(adj_y), mod = build(fit$par))
   smoother_output = dlm::dlmSmooth(filter_output)
   A = build(fit$par)$FF
+  mahalanobis_residuals = sqrt(rowSums(((t(y) - filter_output$f) / residuals(filter_output)$sd)^2))
+  mahalanobis_residuals = ifelse(is.na(mahalanobis_residuals), 0, mahalanobis_residuals)
 
   return(list(
-    smoothed_observations = (A %*% t(smoother_output$s))[,2:(ncol(y)+1)],
+    smoothed_observations = (A %*% t(smoother_output$s))[,2:(ncol(y) + 1)],
     predicted_observations = t(filter_output$f),
-    mahalanobis_residuals = sqrt(rowSums(residuals(filter_output)$res^2))
+    #mahalanobis_residuals = sqrt(rowSums(residuals(filter_output)$res^2)),
+    mahalanobis_residuals = mahalanobis_residuals
   ))
 
 }
