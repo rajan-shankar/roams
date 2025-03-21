@@ -196,6 +196,50 @@ classical_SSM = function(
 
   n = ncol(y)
   dim_obs = nrow(y)
+
+  res = dlm::dlmMLE(
+    t(y),
+    parm = init_par,
+    build_dlm,
+    method = "L-BFGS-B",
+    lower = lower,
+    upper = upper,
+    control = list(parscale = init_par)
+  )
+
+  optim_output = res
+  filter_output = dlmInfo(y, y, res, build)
+
+  model = c(optim_output, filter_output)
+  class(model) = "classical_SSM"
+  return(model)
+}
+
+#' A Cat Function
+#'
+#' This function allows you to express your love of cats.
+#'
+#' @importFrom magrittr %>%
+#' @importFrom foreach %dopar%
+#' @param love Do you love cats? Defaults to TRUE.
+#' @details
+#' Additional details...
+#' @returns description
+#' @export
+classical_SSM_slow = function(
+    y,
+    init_par,
+    build,
+    lower = NA,
+    upper = NA,
+    control = list()
+) {
+
+  if (is.na(lower)[1]) {lower = rep(-Inf, length(init_par))}
+  if (is.na(upper)[1]) {upper = rep(Inf, length(init_par))}
+
+  n = ncol(y)
+  dim_obs = nrow(y)
   gamma = matrix(0, nrow = dim_obs, ncol = n)
   res = stats::optim(
     par = init_par,
