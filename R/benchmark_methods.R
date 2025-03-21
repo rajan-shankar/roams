@@ -200,7 +200,7 @@ classical_SSM = function(
   res = dlm::dlmMLE(
     t(y),
     parm = init_par,
-    build_dlm,
+    build,
     method = "L-BFGS-B",
     lower = lower,
     upper = upper,
