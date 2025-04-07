@@ -95,21 +95,21 @@ no_gamma_oracle_SSM = function(
   if (is.na(lower)[1]) {lower = rep(-Inf, length(init_par))}
   if (is.na(upper)[1]) {upper = rep(Inf, length(init_par))}
 
-  res = stats::optim(
-    par = init_par,
-    fn = no_gamma_oracle_filter,
-    y = y,
-    outlier_locs = outlier_locs,
-    build = build,
-    return_obj = TRUE,
+  adj_y = y
+  adj_y[,outlier_locs != 0] = NA
+
+  res = dlm::dlmMLE(
+    t(adj_y),
+    parm = init_par,
+    build,
     method = "L-BFGS-B",
     lower = lower,
     upper = upper,
-    control = control
+    control = list(parscale = init_par)
   )
 
-  filter_output = no_gamma_oracle_filter(res$par, y, outlier_locs, build)
   optim_output = res
+  filter_output = dlmInfo(y, adj_y, res, build)
 
   model = c(optim_output, filter_output)
   class(model) = "no_gamma_oracle_SSM"
