@@ -224,6 +224,8 @@ run_IPOD = function(
   RSS = sum((r - gamma_old)^2, na.rm = TRUE)
   BIC = (n-p)*log(RSS/(n-p)) + (nz+1)*(log(n-p) + 1)
   #negloglik = n*fn_filter(model$par, gamma = gamma_old, y = y, return_obj = TRUE)
+  loglik = dlm::dlmLL(t(adj_y), mod = build(fit$par))
+  BIC = nz*log(n) - 2*loglik
 
   return(c(
     list(
