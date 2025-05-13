@@ -901,10 +901,10 @@ dlmInfo = function(y, adj_y, fit, build) {
   smoother_output = dlm::dlmSmooth(filter_output)
   A = filter_output$mod$FF
 
-  S = map(dlm::dlmSvd2var(filter_output$U.R, filter_output$D.R),
+  S = purrr::map(dlm::dlmSvd2var(filter_output$U.R, filter_output$D.R),
           ~ filter_output$mod$FF %*% . %*% t(filter_output$mod$FF) + filter_output$mod$V)
-  inv_S = map(S, ~ solve(.))
-  mahalanobis_residuals = map2_dbl(
+  inv_S = purrr::map(S, ~ solve(.))
+  mahalanobis_residuals = purrr::map2_dbl(
     apply(t(y) - filter_output$f, 1, c, simplify = FALSE),
     inv_S,
     ~ drop(t(.x) %*% .y %*% .x)) %>% sqrt()

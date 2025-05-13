@@ -19,6 +19,7 @@ Imports:
   latex2exp,
   dplyr,
   expm,
-  dlm
+  dlm,
+  purrr
 Depends:
   ggplot2
