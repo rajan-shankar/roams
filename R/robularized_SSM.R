@@ -629,12 +629,12 @@ IPOD_oos_robust_filter = function(y, par, build, lambda) {
 
   SSM_specs = build(par)
 
-  Phi = SSM_specs$GG
-  Sigma_w = SSM_specs$W
-  A = SSM_specs$FF
-  Sigma_v = SSM_specs$V
-  x_tt = SSM_specs$m0
-  P_tt = SSM_specs$C0
+  Phi = SSM_specs$state_transition_matrix
+  Sigma_w = SSM_specs$state_noise_var
+  A = SSM_specs$observation_matrix
+  Sigma_v = SSM_specs$observation_noise_var
+  x_tt = SSM_specs$init_state_mean
+  P_tt = SSM_specs$init_state_var
 
   n = ncol(y)
   dim_obs = nrow(y)
