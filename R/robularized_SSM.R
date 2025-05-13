@@ -614,6 +614,17 @@ fn_filter = function(
   }
 }
 
+#' A Cat Function
+#'
+#' This function allows you to express your love of cats.
+#'
+#' @importFrom magrittr %>%
+#' @importFrom foreach %dopar%
+#' @param love Do you love cats? Defaults to TRUE.
+#' @details
+#' Additional details...
+#' @returns description
+#' @export
 IPOD_oos_robust_filter = function(y, par, build, lambda) {
 
   SSM_specs = build(par)
