@@ -614,6 +614,21 @@ fn_filter = function(
   }
 }
 
+# IPOD_oos_robust_filter = function(par, y_oos, lambda, build) {
+#
+#   filter_output = dlm::dlmFilter(t(y_oos), mod = build(par))
+#   A = build(par)$FF
+#   mahalanobis_residuals = sqrt(rowSums(((t(y_oos) - filter_output$f) / residuals(filter_output)$sd)^2))
+#   mahalanobis_residuals = ifelse(is.na(mahalanobis_residuals), 0, mahalanobis_residuals)
+#
+#   return(list(
+#     filtered_observations = (A %*% t(filter_output$m))[,2:(ncol(y) + 1)],
+#     predicted_observations = t(filter_output$f),
+#     mahalanobis_residuals = mahalanobis_residuals
+#   ))
+#
+# }
+
 
 
 # Missing value handling
@@ -884,19 +899,44 @@ dlmInfo = function(y, adj_y, fit, build) {
 
   filter_output = dlm::dlmFilter(t(adj_y), mod = build(fit$par))
   smoother_output = dlm::dlmSmooth(filter_output)
-  A = build(fit$par)$FF
-  mahalanobis_residuals = sqrt(rowSums(((t(y) - filter_output$f) / residuals(filter_output)$sd)^2))
+  A = filter_output$mod$FF
+
+  S = map(dlm::dlmSvd2var(filter_output$U.R, filter_output$D.R),
+          ~ filter_output$mod$FF %*% . %*% t(filter_output$mod$FF) + filter_output$mod$V)
+  inv_S = map(S, ~ solve(.))
+  mahalanobis_residuals = map2_dbl(
+    apply(t(y) - filter_output$f, 1, c, simplify = FALSE),
+    inv_S,
+    ~ drop(t(.x) %*% .y %*% .x)) %>% sqrt()
+
   mahalanobis_residuals = ifelse(is.na(mahalanobis_residuals), 0, mahalanobis_residuals)
 
   return(list(
     smoothed_observations = (A %*% t(smoother_output$s))[,2:(ncol(y) + 1)],
     filtered_observations = (A %*% t(filter_output$m))[,2:(ncol(y) + 1)],
     predicted_observations = t(filter_output$f),
-    #mahalanobis_residuals = sqrt(rowSums(residuals(filter_output)$res^2)),
     mahalanobis_residuals = mahalanobis_residuals
   ))
 
 }
+
+# dlmInfo = function(y, adj_y, fit, build) {
+#
+#   filter_output = dlm::dlmFilter(t(adj_y), mod = build(fit$par))
+#   smoother_output = dlm::dlmSmooth(filter_output)
+#   A = build(fit$par)$FF
+#   mahalanobis_residuals = sqrt(rowSums(((t(y) - filter_output$f) / residuals(filter_output)$sd)^2))
+#   mahalanobis_residuals = ifelse(is.na(mahalanobis_residuals), 0, mahalanobis_residuals)
+#
+#   return(list(
+#     smoothed_observations = (A %*% t(smoother_output$s))[,2:(ncol(y) + 1)],
+#     filtered_observations = (A %*% t(filter_output$m))[,2:(ncol(y) + 1)],
+#     predicted_observations = t(filter_output$f),
+#     #mahalanobis_residuals = sqrt(rowSums(residuals(filter_output)$res^2)),
+#     mahalanobis_residuals = mahalanobis_residuals
+#   ))
+#
+# }
 
 
 
