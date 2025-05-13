@@ -2,6 +2,7 @@
 
 S3method(print,robularized_SSM)
 S3method(print,robularized_SSM_list)
+export(IPOD_oos_robust_filter)
 export(autoplot)
 export(best_BIC_model)
 export(best_prop_outlying_model)
