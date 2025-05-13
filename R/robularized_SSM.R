@@ -614,20 +614,67 @@ fn_filter = function(
   }
 }
 
-# IPOD_oos_robust_filter = function(par, y_oos, lambda, build) {
-#
-#   filter_output = dlm::dlmFilter(t(y_oos), mod = build(par))
-#   A = build(par)$FF
-#   mahalanobis_residuals = sqrt(rowSums(((t(y_oos) - filter_output$f) / residuals(filter_output)$sd)^2))
-#   mahalanobis_residuals = ifelse(is.na(mahalanobis_residuals), 0, mahalanobis_residuals)
-#
-#   return(list(
-#     filtered_observations = (A %*% t(filter_output$m))[,2:(ncol(y) + 1)],
-#     predicted_observations = t(filter_output$f),
-#     mahalanobis_residuals = mahalanobis_residuals
-#   ))
-#
-# }
+IPOD_oos_robust_filter = function(y, par, build, lambda) {
+
+  SSM_specs = build(par)
+
+  Phi = SSM_specs$GG
+  Sigma_w = SSM_specs$W
+  A = SSM_specs$FF
+  Sigma_v = SSM_specs$V
+  x_tt = SSM_specs$m0
+  P_tt = SSM_specs$C0
+
+  n = ncol(y)
+  dim_obs = nrow(y)
+  dim_state = nrow(Phi)
+
+  x_tt_1 = NA
+  P_tt_1 = NA
+  y_tt_1 = NA
+  S_t = NA
+
+  filtered_states = matrix(0, nrow = dim_state, ncol = n)
+  filtered_observations = matrix(0, nrow = dim_obs, ncol = n)
+  predicted_states = matrix(0, nrow = dim_state, ncol = n)
+  predicted_observations = matrix(0, nrow = dim_obs, ncol = n)
+  predicted_observations_var = list()
+  mahalanobis_residuals = NA
+
+  for (t in 1:n) {
+    x_tt_1 = Phi %*% x_tt
+    P_tt_1 = Phi %*% P_tt %*% t(Phi) + Sigma_w
+    y_tt_1 = A %*% x_tt_1
+    S_t = A %*% P_tt_1 %*% t(A) + Sigma_v
+    inv_S_t = solve(S_t)
+    mahalanobis_residuals[t] = drop(sqrt(t(y[,t] - y_tt_1) %*% inv_S_t %*% (y[,t] - y_tt_1)))
+
+    if (mahalanobis_residuals[t] <= lambda) {
+      K_t = P_tt_1 %*% t(A) %*% inv_S_t
+      x_tt = x_tt_1 + K_t %*% (y[,t] - y_tt_1)
+      P_tt = P_tt_1 - K_t %*% A %*% P_tt_1
+    } else {
+      x_tt = x_tt_1
+      P_tt = P_tt_1
+    }
+
+    filtered_states[,t] = x_tt
+    filtered_observations[,t] = A %*% x_tt
+    predicted_states[,t] = x_tt_1
+    predicted_observations[,t] = y_tt_1
+    predicted_observations_var[[t]] = S_t
+  }
+
+  return(list(
+    "filtered_states" = filtered_states,
+    "filtered_observations" = filtered_observations,
+    "predicted_states" = predicted_states,
+    "predicted_observations" = predicted_observations,
+    "predicted_observations_var" = predicted_observations_var,
+    "mahalanobis_residuals" = mahalanobis_residuals
+  ))
+}
+
 
 
 
