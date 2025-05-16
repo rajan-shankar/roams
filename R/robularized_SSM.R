@@ -158,6 +158,7 @@ run_IPOD = function(
   if (is.na(upper)[1]) {upper = rep(Inf, length(init_par))}
 
   n = ncol(y)
+  n_complete = sum(!is.na(y[1,]))
   dim_obs = nrow(y)
   par = init_par
   gamma = matrix(0, nrow = dim_obs, ncol = n)
@@ -209,7 +210,7 @@ run_IPOD = function(
     gap_theta = max(abs(fit$par - theta_old))
 
     nz = sum(colSums(abs(gamma_old)) != 0)
-    prop_outlying = nz / n
+    prop_outlying = nz / n_complete
 
     if ((gap < 1e-4) && (gap_theta < 1e-4)) {
       break
@@ -222,10 +223,10 @@ run_IPOD = function(
 
   p = length(init_par)
   RSS = sum((r - gamma_old)^2, na.rm = TRUE)
-  BIC = (n-p)*log(RSS/(n-p)) + (nz+1)*(log(n-p) + 1)
-  #negloglik = n*fn_filter(model$par, gamma = gamma_old, y = y, return_obj = TRUE)
+  # BIC = (n-p)*log(RSS/(n-p)) + (nz+1)*(log(n-p) + 1)
+  # negloglik = n*fn_filter(model$par, gamma = gamma_old, y = y, return_obj = TRUE)
   loglik = -dlm::dlmLL(t(adj_y), mod = build(fit$par))
-  BIC = nz*log(n) - 2*loglik
+  BIC = nz*log(n_complete) - 2*loglik
 
   return(c(
     list(
