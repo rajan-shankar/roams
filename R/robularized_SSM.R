@@ -667,7 +667,7 @@ IPOD_oos_robust_filter = function(y, par, build, lambda) {
       P_tt = P_tt_1 - K_t %*% A %*% P_tt_1
     } else {
       x_tt = x_tt_1
-      P_tt = P_tt_1
+      P_tt = 2*P_tt_1
     }
 
     filtered_states[,t] = x_tt
