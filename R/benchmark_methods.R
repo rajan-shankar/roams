@@ -309,6 +309,7 @@ huber_robust_SSM = function(
     y = y,
     build = build,
     return_obj = TRUE,
+    obj_type = "huber",
     method = "L-BFGS-B",
     lower = lower,
     upper = upper,
@@ -323,6 +324,55 @@ huber_robust_SSM = function(
 
   model = c(optim_output, filter_output)
   class(model) = "huber_robust_SSM"
+  return(model)
+}
+
+#' #' A Cat Function
+#'
+#' This function allows you to express your love of cats.
+#'
+#' @importFrom magrittr %>%
+#' @importFrom foreach %dopar%
+#' @param love Do you love cats? Defaults to TRUE.
+#' @details
+#' Additional details...
+#' @returns description
+#' @export
+trimmed_robust_SSM = function(
+    y,
+    init_par,
+    build,
+    alpha,
+    lower = NA,
+    upper = NA,
+    control = list()
+) {
+
+  if (is.na(lower)[1]) {lower = rep(-Inf, length(init_par))}
+  if (is.na(upper)[1]) {upper = rep(Inf, length(init_par))}
+
+  res = stats::optim(
+    par = init_par,
+    fn = ruben_filter,
+    y = y,
+    build = build,
+    return_obj = TRUE,
+    obj_type = "trimmed",
+    alpha = alpha,
+    method = "L-BFGS-B",
+    lower = lower,
+    upper = upper,
+    control = control
+  )
+
+  optim_output = res
+
+  filter_output = ruben_filter(res$par,
+                               y,
+                               build)
+
+  model = c(optim_output, filter_output)
+  class(model) = "trimmed_robust_SSM"
   return(model)
 }
 
@@ -341,7 +391,9 @@ ruben_filter = function(
     par,
     y,
     build,
-    return_obj = FALSE
+    return_obj = FALSE,
+    obj_type = "huber",
+    alpha = 0.1
 ) {
 
   SSM_specs = build(par)
@@ -357,9 +409,18 @@ ruben_filter = function(
   dim_obs = nrow(y)
   dim_state = nrow(Phi)
 
-  d = dim_obs  # dimension of the observation vector
-  k = sqrt(qchisq(0.95, d))
-  c_H = d / (d*pchisq(k^2, df = d+2) + 2*k*sqrt(2)*gamma((d+1)/2)/gamma(d/2)*(1-pchisq(k^2, df = d+1)) - k^2*(1-pchisq(k^2, df = d)))
+
+  if (return_obj) {
+    d = dim_obs  # dimension of the observation vector
+    k = sqrt(qchisq(0.95, d))
+    if (obj_type == "huber") {
+      c_H = d / (d*pchisq(k^2, df = d+2) + 2*k*sqrt(2)*gamma((d+1)/2)/gamma(d/2)*(1-pchisq(k^2, df = d+1)) - k^2*(1-pchisq(k^2, df = d)))
+    } else if (obj_type == "trimmed") {
+      c_T = 1 / (pchisq(qchisq(1 - alpha, df = d), df = d+2))
+      mahalanobis_residuals = NA
+      det_S_t = NA
+    }
+  }
 
   x_tt_1 = NA
   P_tt_1 = NA
@@ -398,7 +459,12 @@ ruben_filter = function(
     }
 
     if (return_obj) {
-      objective = objective + 1/(2*n) * log(det(S_t)) + c_H/n * rho_huber_mv(expm::sqrtm(inv_S_t) %*% (y[,t] - y_tt_1))
+      if (obj_type == "huber") {
+        objective = objective + 1/(2*n) * log(det(S_t)) + c_H/n * rho_huber_mv(expm::sqrtm(inv_S_t) %*% (y[,t] - y_tt_1))
+      } else if (obj_type == "trimmed") {
+        mahalanobis_residuals[t] = drop(sqrt(t(y[,t] - y_tt_1) %*% inv_S_t %*% (y[,t] - y_tt_1)))
+        det_S_t[t] = det(S_t)
+      }
     } else {
       filtered_states[,t] = x_tt
       filtered_observations[,t] = A %*% x_tt
@@ -407,6 +473,12 @@ ruben_filter = function(
       predicted_observations_var[[t]] = S_t
       mahalanobis_residuals[t] = drop(sqrt(t(y[,t] - y_tt_1) %*% inv_S_t %*% (y[,t] - y_tt_1)))
     }
+  }
+
+  # Compute trimmed likelihood
+  if (obj_type == "trimmed" & return_obj) {
+    keep_set = which(rank(mahalanobis_residuals) < (1 - alpha)*n)
+    objective = 1/(2*n*(1-alpha)) * sum(log(det_S_t[keep_set]) + c_T*mahalanobis_residuals[keep_set]^2)
   }
 
   if (return_obj) {
