@@ -650,6 +650,7 @@ IPOD_oos_robust_filter = function(y, par, build, lambda) {
   filtered_observations = matrix(0, nrow = dim_obs, ncol = n)
   predicted_states = matrix(0, nrow = dim_state, ncol = n)
   predicted_observations = matrix(0, nrow = dim_obs, ncol = n)
+  filtered_states_var = list()
   predicted_observations_var = list()
   mahalanobis_residuals = NA
 
@@ -674,6 +675,7 @@ IPOD_oos_robust_filter = function(y, par, build, lambda) {
     filtered_observations[,t] = A %*% x_tt
     predicted_states[,t] = x_tt_1
     predicted_observations[,t] = y_tt_1
+    filtered_states_var[[t]] = P_tt
     predicted_observations_var[[t]] = S_t
   }
 
