@@ -626,7 +626,7 @@ fn_filter = function(
 #' Additional details...
 #' @returns description
 #' @export
-IPOD_oos_robust_filter = function(y, par, build, lambda) {
+IPOD_oos_robust_filter = function(y, par, build, lambda, multiplier = 1) {
 
   SSM_specs = build(par)
 
@@ -668,7 +668,7 @@ IPOD_oos_robust_filter = function(y, par, build, lambda) {
       P_tt = P_tt_1 - K_t %*% A %*% P_tt_1
     } else {
       x_tt = x_tt_1
-      P_tt = P_tt_1
+      P_tt = multiplier*P_tt_1
     }
 
     filtered_states[,t] = x_tt
@@ -684,6 +684,7 @@ IPOD_oos_robust_filter = function(y, par, build, lambda) {
     "filtered_observations" = filtered_observations,
     "predicted_states" = predicted_states,
     "predicted_observations" = predicted_observations,
+    "filtered_states_var" = filtered_states_var,
     "predicted_observations_var" = predicted_observations_var,
     "mahalanobis_residuals" = mahalanobis_residuals
   ))
