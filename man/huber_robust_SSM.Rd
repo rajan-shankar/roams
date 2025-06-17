@@ -2,19 +2,32 @@
 % Please edit documentation in R/benchmark_methods.R
 \name{huber_robust_SSM}
 \alias{huber_robust_SSM}
-\title{#' A Cat Function}
+\title{Huber-Robust State Space Model Fit}
 \usage{
 huber_robust_SSM(y, init_par, build, lower = NA, upper = NA, control = list())
 }
 \arguments{
-\item{love}{Do you love cats? Defaults to TRUE.}
+\item{y}{A numeric matrix of observations (variables in rows, time points in columns).}
+
+\item{init_par}{A numeric vector of initial parameter values.}
+
+\item{build}{A function that returns a `dlm` model given a parameter vector.}
+
+\item{lower}{Optional numeric vector of lower bounds for parameter estimation. Defaults to `-Inf`.}
+
+\item{upper}{Optional numeric vector of upper bounds for parameter estimation. Defaults to `Inf`.}
+
+\item{control}{Optional list of control parameters passed to `optim`.}
 }
 \value{
-description
+An object of class `"huber_robust_SSM"` containing the optimization result and the original data.
 }
 \description{
-This function allows you to express your love of cats.
+Fits a robust state space model by minimizing a Huber loss objective, providing protection against moderate outliers. This model estimates parameters by applying a robust filter to the observation errors.
 }
 \details{
-Additional details...
+This function calls a custom objective function \code{ruben_filter()} using a Huber-type loss, which requires the internal implementation of that function to be compatible.
+}
+\seealso{
+\code{\link{trimmed_robust_SSM}}, \code{\link{robularized_SSM}}, \code{\link[stats]{optim}}
 }

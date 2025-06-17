@@ -2,19 +2,39 @@
 % Please edit documentation in R/benchmark_methods.R
 \name{oracle_SSM}
 \alias{oracle_SSM}
-\title{A Cat Function}
+\title{Oracle State Space Model Fit}
 \usage{
-oracle_SSM(y, init_par, build, outlier_locs, B = 20, lower = NA, upper = NA)
+oracle_SSM(
+  y,
+  init_par,
+  build,
+  outlier_locs,
+  lower = NA,
+  upper = NA,
+  control = list()
+)
 }
 \arguments{
-\item{love}{Do you love cats? Defaults to TRUE.}
+\item{y}{A numeric matrix of observations (variables in rows, time points in columns).}
+
+\item{init_par}{A numeric vector of initial parameter values.}
+
+\item{build}{A function that returns a `dlm` model given a parameter vector.}
+
+\item{outlier_locs}{An integer or logical vector of length equal to the number of time points, indicating locations of known outliers (non-zero entries will be treated as missing).}
+
+\item{lower}{Optional numeric vector of lower bounds for parameter estimation. Defaults to `-Inf`.}
+
+\item{upper}{Optional numeric vector of upper bounds for parameter estimation. Defaults to `Inf`.}
+
+\item{control}{Optional list of control parameters passed to `optim` via `dlm::dlmMLE()`.}
 }
 \value{
-description
+An object of class `"oracle_SSM"` containing the optimization result, the original data, and the provided outlier locations.
 }
 \description{
-This function allows you to express your love of cats.
+Fits a state space model by treating a known set of outliers as missing data. This benchmark model assumes prior knowledge of outlier locations and is intended for comparison with automatic outlier detection procedures.
 }
-\details{
-Additional details...
+\seealso{
+\code{\link[dlm]{dlmMLE}}, \code{\link{robularized_SSM}}
 }

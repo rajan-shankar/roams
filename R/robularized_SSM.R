@@ -1,22 +1,52 @@
-#' A Cat Function
+#' Robust Regularized Fitting of State Space Models
 #'
-#' This function allows you to express your love of cats.
+#' Fits a robust state space model to multivariate time series data using iterative parameter estimation and outlier detection. This procedure applies an Iterative Penalized Outlier Detection (IPOD) algorithm over a grid of regularization parameters (lambdas), identifying outliers via Mahalanobis residuals and re-fitting the model iteratively.
 #'
-#' @importFrom magrittr %>%
-#' @importFrom foreach %dopar%
-#' @param love Do you love cats? Defaults to TRUE.
+#' @param y A numeric matrix of observations, with each row corresponding to a different observed variable and each column to a time point.
+#' @param init_par A numeric vector of initial parameter values for optimization.
+#' @param build A function that accepts a parameter vector and returns a `dlm` model (as used in `dlm::dlmMLE()`).
+#' @param num_lambdas Integer. The number of lambda values to evaluate. Ignored if `custom_lambdas` is specified. Default is 10.
+#' @param custom_lambdas Optional numeric vector. If supplied, these are the exact lambda values used for model fitting. If of length 1, a single model is returned. If not provided or set to `NA`, lambdas are automatically chosen.
+#' @param cores Integer. Number of CPU cores to use for parallel processing. Default is 1 (sequential execution).
+#' @param B Integer. Maximum number of IPOD iterations per lambda. Default is 20.
+#' @param lower Optional numeric vector of lower bounds for optimization. If `NA`, defaults to `-Inf` for all parameters.
+#' @param upper Optional numeric vector of upper bounds for optimization. If `NA`, defaults to `Inf` for all parameters.
+#' @param control A named list of control options to pass to `optim` via `dlm::dlmMLE()`. Default is `list()` (uses `parscale = init_par`).
+#'
+#' @return If `custom_lambdas` is not provided or has length > 1, returns an object of class `"robularized_SSM_list"` — a list of robustly estimated models for each lambda. If `custom_lambdas` is a single value, returns a single `"robularized_SSM"` object.
+#'
+#' Each `"robularized_SSM"` object includes:
+#' \itemize{
+#'   \item \code{lambda} - The lambda value used.
+#'   \item \code{prop_outlying} - Proportion of time points identified as outliers.
+#'   \item \code{BIC} - Bayesian Information Criterion of the final model.
+#'   \item \code{loglik} - Log-likelihood of the fitted model.
+#'   \item \code{RSS} - Residual sum of squares.
+#'   \item \code{gamma} - Matrix of estimated outlier adjustments.
+#'   \item \code{iterations} - Number of IPOD iterations performed.
+#'   \item Optimization output from `dlm::dlmMLE()`.
+#'   \item \code{y} - The original data matrix.
+#' }
+#'
 #' @details
-#' Additional details...
-#' @returns description
+#' The IPOD procedure alternates between estimating model parameters via maximum likelihood and identifying outlying observations based on Mahalanobis residuals. For each iteration:
+#' \enumerate{
+#'   \item A `dlm` model is fit using `dlm::dlmMLE()`.
+#'   \item Mahalanobis residuals are computed.
+#'   \item Observations with residuals above the current lambda threshold are treated as missing in the next iteration.
+#' }
+#'
+#' The algorithm stops when the change in parameters and outlier estimates is sufficiently small or if too many outliers are detected (more than 50% of complete observations).
+#'
+#' @seealso \code{\link[dlm]{dlmMLE}}, \code{\link{lambda_grid}}, \code{\link{run_IPOD}}
+#'
 #' @export
 robularized_SSM = function(
     y,
     init_par,
     build,
     num_lambdas = 10,
-    lowest_lambda = 2,
-    highest_lambda = NA,
-    num_lambdas_crowding = 0,
+    custom_lambdas = NA,
     cores = 1,
     B = 20,
     lower = NA,
@@ -24,9 +54,39 @@ robularized_SSM = function(
     control = list()
     ) {
 
-  # Classical fit by using large lambda
-  classical = run_IPOD(y = y,
-                       lambda = 100,
+
+
+  if (is.na(custom_lambdas)) {
+  # Completely automatic fit
+
+    # Classical fit by using large lambda
+    classical = run_IPOD(y = y,
+                         lambda = 100,
+                         init_par = init_par,
+                         build = build,
+                         B = B,
+                         lower = lower,
+                         upper = upper,
+                         control = control)
+
+    # Highest lambda is the supremum norm of mahalanobis residuals of classical fit
+    highest_lambda = max(dlmInfo(y, y, classical, build)$mahalanobis_residuals)
+    lowest_lambda = 2
+
+    # Lambda grid
+    lambdas = seq(lowest_lambda,
+                  highest_lambda,
+                  length.out = num_lambdas)
+
+  } else {
+  # Lambdas have been manually specified
+
+    if (length(custom_lambdas) != 1) {
+      lambdas = custom_lambdas[order(custom_lambdas)]  # ensure lambdas are in ascending order
+    } else {
+      lambda = custom_lambdas
+      model = run_IPOD(y = y,
+                       lambda = lambda,
                        init_par = init_par,
                        build = build,
                        B = B,
@@ -34,65 +94,21 @@ robularized_SSM = function(
                        upper = upper,
                        control = control)
 
-  # Highest lambda is the supremum norm of mahalanobis residuals of classical fit
-  if (is.na(highest_lambda)) {
-    highest_lambda = max(classical$mahalanobis_residuals)
+      return(model)
+    }
   }
 
-  # lambda grid
-  lambdas = seq(lowest_lambda,
-                highest_lambda,
-                length.out = num_lambdas)
 
   # Fit models across the grid
   model_list = lambda_grid(y = y,
                            lambdas = lambdas,
-                           #init_par = classical$par,
                            init_par = init_par,
                            build = build,
                            cores = cores,
+                           B = B,
                            lower = lower,
                            upper = upper,
-                           B = B,
                            control = control)
-
-  if (num_lambdas_crowding != 0) {
-    BIC = get_attribute(model_list, "BIC")
-    prop_outlying = get_attribute(model_list, "prop_outlying")
-
-    # Take BIC diffs and set any that are left of prop_outlying >= 0.5 to 0
-    bad_up_to_and_including = sum(prop_outlying >= 0.5)
-    diffs = abs(diff(BIC))
-    if (bad_up_to_and_including >= 2) {
-      diffs[1:(bad_up_to_and_including - 1)] = 0
-    }
-
-    # Find largest BIC diff
-    diff_argmax = which.max(diffs)
-
-    # Crowding lambda grid
-    crowding_lambdas = seq(lambdas[diff_argmax],
-                           lambdas[diff_argmax + 1],
-                           length.out = num_lambdas_crowding + 2)[2:(num_lambdas_crowding+1)]
-
-    # Fit models across the crowding grid
-    model_crowding_list = lambda_grid(y = y,
-                                      lambdas = crowding_lambdas,
-                                      #init_par = classical$par,
-                                      init_par = init_par,
-                                      build = build,
-                                      cores = cores,
-                                      lower = lower,
-                                      upper = upper,
-                                      B = B,
-                                      control = control)
-
-    # Append to model_crowding_list to model_list at appropriate location
-    model_list = append(model_list, model_crowding_list, after = diff_argmax)
-
-    # Attach class
-    class(model_list) = "robularized_SSM_list"
-  }
 
   return(model_list)
 }
@@ -103,46 +119,47 @@ lambda_grid = function(
     init_par,
     build,
     cores,
+    B,
     lower,
     upper,
-    B,
     control
     ) {
 
-  cl = parallel::makeCluster(cores)
-  doParallel::registerDoParallel(cl,
-                                 export = list(run_IPOD = run_IPOD))
-  model_list = foreach::foreach(
-    i = 1:length(lambdas)) %dopar% {
-                  IPOD_output = run_IPOD(y,
-                                         lambdas[i],
-                                         init_par,
-                                         build,
-                                         B,
-                                         lower,
-                                         upper,
-                                         control)
-                  model = c(IPOD_output)
-                  class(model) = "robularized_SSM"
-                  return(model)
-                  }
-  parallel::stopCluster(cl)
+  if (cores == 1) {
+    model_list = list()
+    for (i in 1:length(lambdas)) {
+      model_list[[i]] = run_IPOD(y,
+                                 lambdas[i],
+                                 init_par,
+                                 build,
+                                 B,
+                                 lower,
+                                 upper,
+                                 control)
+    }
+  } else {
+    cl = parallel::makeCluster(cores)
+    doParallel::registerDoParallel(cl)
+                                   #export = list(run_IPOD = run_IPOD))
+    model_list = foreach::foreach(
+      i = 1:length(lambdas)) %dopar% {
+                    model = run_IPOD(y,
+                                     lambdas[i],
+                                     init_par,
+                                     build,
+                                     B,
+                                     lower,
+                                     upper,
+                                     control)
+                    return(model)
+                    }
+    parallel::stopCluster(cl)
+  }
 
   class(model_list) = "robularized_SSM_list"
   return(model_list)
 }
 
-#' A Cat Function
-#'
-#' This function allows you to express your love of cats.
-#'
-#' @importFrom magrittr %>%
-#' @importFrom foreach %dopar%
-#' @param love Do you love cats? Defaults to TRUE.
-#' @details
-#' Additional details...
-#' @returns description
-#' @export
 run_IPOD = function(
     y,
     lambda,
@@ -170,6 +187,7 @@ run_IPOD = function(
     if (j != 1) {theta_old = fit$par}
 
     if (length(control) == 0) {
+      # Set parscale to initial parameters by default
       fit = dlm::dlmMLE(
         t(adj_y),
         parm = par,
@@ -191,31 +209,32 @@ run_IPOD = function(
       )
     }
 
+    # If the fit is at edge of parameter space, use the initial parameters for next iteration
     if ((sum(fit$par == lower) + sum(fit$par == upper)) == 0) {
       par = fit$par
     } else {
       par = init_par
     }
 
-    #filter_output = fn_filter(res$par, y, gamma, build)
+    # Update gammas
     info_output = dlmInfo(y, adj_y, fit, build)
-    #r = y - filter_output$predicted_observations
     r = y - info_output$predicted_observations
     gamma_old = gamma
     gamma = matrix(0, nrow = dim_obs, ncol = n)
     gamma[,info_output$mahalanobis_residuals > lambda] = r[,info_output$mahalanobis_residuals > lambda]
     adj_y = y
     adj_y[,which(colSums(abs(gamma)) != 0)] = NA
-    gap = max(abs(gamma - gamma_old))
+    gap_gamma = max(abs(gamma - gamma_old))
     gap_theta = max(abs(fit$par - theta_old))
 
     nz = sum(colSums(abs(gamma_old)) != 0)
     prop_outlying = nz / n_complete
 
-    if ((gap < 1e-4) && (gap_theta < 1e-4)) {
+    if ((gap_gamma < 1e-4) && (gap_theta < 1e-4)) {
       break
     }
-    # new termination criterion
+
+    # Too many outliers detected will cause instability
     if (prop_outlying >= 0.5) {
       break
     }
@@ -223,12 +242,10 @@ run_IPOD = function(
 
   p = length(init_par)
   RSS = sum((r - gamma_old)^2, na.rm = TRUE)
-  # BIC = (n-p)*log(RSS/(n-p)) + (nz+1)*(log(n-p) + 1)
-  # negloglik = n*fn_filter(model$par, gamma = gamma_old, y = y, return_obj = TRUE)
   loglik = -dlm::dlmLL(t(adj_y), mod = build(fit$par))
   BIC = nz*log(n_complete) - 2*loglik
 
-  return(c(
+  model = c(
     list(
       "lambda" = lambda,
       "prop_outlying" = prop_outlying,
@@ -238,404 +255,24 @@ run_IPOD = function(
       "gamma" = gamma_old,
       "iterations" = j
       ),
-    fit,
-    info_output
-    ))
-}
-
-
-
-#' A Cat Function
-#'
-#' This function allows you to express your love of cats.
-#'
-#' @importFrom magrittr %>%
-#' @importFrom foreach %dopar%
-#' @param love Do you love cats? Defaults to TRUE.
-#' @details
-#' Additional details...
-#' @returns description
-#' @export
-robularized_SSM_slow = function(
-    y,
-    init_par,
-    build,
-    num_lambdas = 10,
-    lowest_lambda = 2,
-    highest_lambda = NA,
-    num_lambdas_crowding = 0,
-    cores = 1,
-    B = 20,
-    lower = NA,
-    upper = NA,
-    control = list()
-) {
-
-  # Classical fit by using large lambda
-  classical = run_IPOD_slow(y = y,
-                       lambda = 100,
-                       init_par = init_par,
-                       build = build,
-                       B = B,
-                       lower = lower,
-                       upper = upper,
-                       control = control)
-
-  # Highest lambda is the supremum norm of mahalanobis residuals of classical fit
-  if (is.na(highest_lambda)) {
-    highest_lambda = max(fn_filter(classical$par,
-                                   y,
-                                   classical$gamma,
-                                   build)$mahalanobis_residuals
+    fit,  # output from dlmMLE (which is just output from optim)
+    y = y
     )
-  }
 
-  # lambda grid
-  lambdas = seq(lowest_lambda,
-                highest_lambda,
-                length.out = num_lambdas)
-
-  # Fit models across the grid
-  model_list = lambda_grid_slow(y = y,
-                           lambdas = lambdas,
-                           #init_par = classical$par,
-                           init_par = init_par,
-                           build = build,
-                           cores = cores,
-                           lower = lower,
-                           upper = upper,
-                           B = B,
-                           control = control)
-
-  if (num_lambdas_crowding != 0) {
-    BIC = get_attribute(model_list, "BIC")
-    prop_outlying = get_attribute(model_list, "prop_outlying")
-
-    # Take BIC diffs and set any that are left of prop_outlying >= 0.5 to 0
-    bad_up_to_and_including = sum(prop_outlying >= 0.5)
-    diffs = abs(diff(BIC))
-    if (bad_up_to_and_including >= 2) {
-      diffs[1:(bad_up_to_and_including - 1)] = 0
-    }
-
-    # Find largest BIC diff
-    diff_argmax = which.max(diffs)
-
-    # Crowding lambda grid
-    crowding_lambdas = seq(lambdas[diff_argmax],
-                           lambdas[diff_argmax + 1],
-                           length.out = num_lambdas_crowding + 2)[2:(num_lambdas_crowding+1)]
-
-    # Fit models across the crowding grid
-    model_crowding_list = lambda_grid(y = y,
-                                      lambdas = crowding_lambdas,
-                                      #init_par = classical$par,
-                                      init_par = init_par,
-                                      build = build,
-                                      cores = cores,
-                                      lower = lower,
-                                      upper = upper,
-                                      B = B,
-                                      control = control)
-
-    # Append to model_crowding_list to model_list at appropriate location
-    model_list = append(model_list, model_crowding_list, after = diff_argmax)
-
-    # Attach class
-    class(model_list) = "robularized_SSM_list"
-  }
-
-  return(model_list)
+  class(model) = "robularized_SSM"
+  return(model)
 }
 
-lambda_grid_slow = function(
-    y,
-    lambdas,
-    init_par,
-    build,
-    cores,
-    lower,
-    upper,
-    B,
-    control
-) {
-
-  cl = parallel::makeCluster(cores)
-  doParallel::registerDoParallel(cl,
-                                 export = list(fn_filter = fn_filter,
-                                               run_IPOD_slow = run_IPOD_slow))
-  model_list = foreach::foreach(
-    i = 1:length(lambdas)) %dopar% {
-      IPOD_output = run_IPOD_slow(y,
-                             lambdas[i],
-                             init_par,
-                             build,
-                             B,
-                             lower,
-                             upper,
-                             control)
-      filter_output = fn_filter(IPOD_output$par,
-                                y,
-                                IPOD_output$gamma,
-                                build)
-
-      model = c(IPOD_output, filter_output)
-      class(model) = "robularized_SSM"
-      return(model)
-    }
-  parallel::stopCluster(cl)
-
-  class(model_list) = "robularized_SSM_list"
-  return(model_list)
-}
-
-run_IPOD_slow = function(
-    y,
-    lambda,
-    init_par,
-    build,
-    B,
-    lower,
-    upper,
-    control
-    ) {
-
-  if (is.na(lower)[1]) {lower = rep(-Inf, length(init_par))}
-  if (is.na(upper)[1]) {upper = rep(Inf, length(init_par))}
-
-  n = ncol(y)
-  dim_obs = nrow(y)
-  par = init_par
-  gamma = matrix(0, nrow = dim_obs, ncol = n)
-  r = NA
-  theta_old = par
-
-  for (j in 1:B) {
-    if (j != 1) {theta_old = res$par}
-    res = stats::optim(
-      par = par,
-      fn = fn_filter,
-      y = y,
-      gamma = gamma,
-      build = build,
-      return_obj = TRUE,
-      method = "L-BFGS-B",
-      lower = lower,
-      upper = upper,
-      control = control
-      )
-
-    if ((sum(res$par == lower) + sum(res$par == upper)) == 0) {
-      par = res$par
-    } else {
-      par = init_par
-    }
-
-    filter_output = fn_filter(res$par, y, gamma, build)
-    r = y - filter_output$predicted_observations
-    gamma_old = gamma
-    gamma = matrix(0, nrow = dim_obs, ncol = n)
-    gamma[,filter_output$mahalanobis_residuals > lambda] = r[,filter_output$mahalanobis_residuals > lambda]
-    gap = max(abs(gamma - gamma_old))
-    gap_theta = max(abs(res$par - theta_old))
-
-    nz = sum(colSums(abs(gamma_old)) != 0)
-    prop_outlying = nz / n
-
-    if ((gap < 1e-4) && (gap_theta < 1e-4)) {
-      break
-    }
-    # new termination criterion
-    if (prop_outlying >= 0.5) {
-      break
-    }
-  }
-
-  p = length(init_par)
-  RSS = sum((r - gamma_old)^2, na.rm = TRUE)
-  BIC = (n-p)*log(RSS/(n-p)) + (nz+1)*(log(n-p) + 1)
-  #negloglik = n*fn_filter(model$par, gamma = gamma_old, y = y, return_obj = TRUE)
-
-  return(c(list(
-    "lambda" = lambda,
-    # "par" = res$par,
-    "prop_outlying" = prop_outlying,
-    "BIC" = BIC,
-    "RSS" = RSS,
-    "gamma" = gamma_old,
-    "iterations" = j
-    ), res))
-}
-
-
-# Missing value handling + smoother
-fn_filter = function(
-    par,
-    y,
-    gamma,
-    build,
-    return_obj = FALSE
-) {
+IPOD_oos_robust_filter = function(y, par, build, threshold, multiplier = 1) {
 
   SSM_specs = build(par)
 
-  Phi = SSM_specs$state_transition_matrix
-  Sigma_w = SSM_specs$state_noise_var
-  A = SSM_specs$observation_matrix
-  Sigma_v = SSM_specs$observation_noise_var
-  x_tt = SSM_specs$init_state_mean
-  P_tt = SSM_specs$init_state_var
-
-  n = ncol(y)
-  dim_obs = nrow(y)
-  dim_state = nrow(Phi)
-
-  x_tt_1 = NA
-  P_tt_1 = NA
-  y_tt_1 = NA
-  S_t = NA
-  objective = 0
-
-  filtered_states = matrix(0, nrow = dim_state, ncol = n)
-  filtered_observations = matrix(0, nrow = dim_obs, ncol = n)
-  predicted_states = matrix(0, nrow = dim_state, ncol = n)
-  predicted_observations = matrix(0, nrow = dim_obs, ncol = n)
-  predicted_observations_var = list()
-  filtered_states_var = list()  # V
-  predicted_states_var = list()  # P
-  mahalanobis_residuals = NA
-
-  for (t in 1:n) {
-    x_tt_1 = Phi %*% x_tt
-    P_tt_1 = Phi %*% P_tt %*% t(Phi) + Sigma_w
-    y_tt_1 = A %*% x_tt_1
-    S_t = A %*% P_tt_1 %*% t(A) + Sigma_v
-    inv_S_t = solve(S_t)
-
-    if (is.na(y[1,t])) {
-      x_tt = x_tt_1
-      P_tt = P_tt_1
-
-      filtered_states[,t] = x_tt
-      filtered_observations[,t] = A %*% x_tt
-      predicted_states[,t] = x_tt_1
-      predicted_observations[,t] = y_tt_1
-      predicted_observations_var[[t]] = S_t
-      filtered_states_var[[t]] = P_tt
-      predicted_states_var[[t]] = P_tt_1
-
-    } else {
-
-      if (sum(abs(gamma[,t])) == 0) {
-        K_t = P_tt_1 %*% t(A) %*% inv_S_t
-        x_tt = x_tt_1 + K_t %*% (y[,t] - y_tt_1)
-        P_tt = P_tt_1 - K_t %*% A %*% P_tt_1
-      } else {
-        x_tt = x_tt_1
-        P_tt = P_tt_1
-      }
-
-      filtered_states[,t] = x_tt
-      filtered_observations[,t] = A %*% x_tt
-      predicted_states[,t] = x_tt_1
-      predicted_observations[,t] = y_tt_1
-      predicted_observations_var[[t]] = S_t
-      filtered_states_var[[t]] = P_tt
-      predicted_states_var[[t]] = P_tt_1
-    }
-  }
-
-  smoothed_states = matrix(0, nrow = dim_state, ncol = n)
-  smoothed_states[,n] = filtered_states[,n]
-  smoothed_states_var = list()
-  smoothed_states_var[[n]] = filtered_states_var[[n]]
-  smoothed_observations = matrix(0, nrow = dim_obs, ncol = n)
-  smoothed_observations[,n] = A %*% smoothed_states[,n]
-  for (t in (n-1):1) {
-
-    C_t = filtered_states_var[[t]] %*% t(Phi) %*% solve(predicted_states_var[[t+1]])
-
-    # if ((sum(abs(gamma[,t])) != 0) | is.na(y[1,t])) {
-    #   smoothed_states[,t] = smoothed_states[,t+1]
-    #   smoothed_states_var[[t]] = smoothed_states_var[[t+1]]
-    # } else {
-    smoothed_states[,t] = filtered_states[,t] + C_t %*% (smoothed_states[,t+1] - Phi %*% filtered_states[,t])
-    smoothed_states_var[[t]] = filtered_states_var[[t]] + C_t %*% (smoothed_states_var[[t+1]] - predicted_states_var[[t+1]]) %*% t(C_t)
-    # }
-
-    smoothed_observations[,t] = A %*% smoothed_states[,t]
-  }
-
-  predicted_observations_updated = matrix(0, nrow = dim_obs, ncol = n)
-  predicted_observations_var_updated = list()
-  x_tt = SSM_specs$init_state_mean
-  P_tt = SSM_specs$init_state_var
-  for (t in 1:n) {
-    # x_tt_1 = Phi %*% x_tt
-    # P_tt_1 = Phi %*% P_tt %*% t(Phi) + Sigma_w
-    # y_tt_1 = A %*% x_tt_1
-    # S_t = A %*% P_tt_1 %*% t(A) + Sigma_v
-    # inv_S_t = solve(S_t)
-    #
-    # x_tt = smoothed_states[,t]
-    # P_tt = smoothed_states_var[[t]]
-    #
-    # predicted_observations_updated[,t] = y_tt_1
-    # predicted_observations_var_updated[[t]] = S_t
-
-    inv_S_t = solve(predicted_observations_var[[t]])
-    if (!is.na(y[1,t])) {
-      objective = objective + 1/(2*n) * ((sum(abs(gamma[,t])) == 0) * log(det(predicted_observations_var[[t]])) + t(y[,t] - predicted_observations[,t] - gamma[,t]) %*% inv_S_t %*% (y[,t] - predicted_observations[,t] - gamma[,t]))
-      mahalanobis_residuals[t] = drop(sqrt(t(y[,t] - predicted_observations[,t]) %*% inv_S_t %*% (y[,t] - predicted_observations[,t])))
-    } else {
-      mahalanobis_residuals[t] = 0
-    }
-  }
-
-  squared_errors = (y - predicted_observations_updated)^2
-
-  if (return_obj) {
-    return(objective)
-  } else {
-    return(list(
-      "filtered_states" = filtered_states,
-      "filtered_observations" = filtered_observations,
-      "smoothed_states" = smoothed_states,
-      "smoothed_observations" = smoothed_observations,
-      "predicted_states" = predicted_states,
-      "predicted_observations" = predicted_observations,
-      "predicted_observations_var" = predicted_observations_var,
-      "mahalanobis_residuals" = mahalanobis_residuals
-      # "squared_errors" = squared_errors,
-
-      # "smoothed_states_var" = smoothed_states_var,
-      # "predicted_states_var" = predicted_states_var,
-      # "filtered_states_var" = filtered_states_var
-    ))
-  }
-}
-
-#' A Cat Function
-#'
-#' This function allows you to express your love of cats.
-#'
-#' @importFrom magrittr %>%
-#' @importFrom foreach %dopar%
-#' @param love Do you love cats? Defaults to TRUE.
-#' @details
-#' Additional details...
-#' @returns description
-#' @export
-IPOD_oos_robust_filter = function(y, par, build, lambda, multiplier = 1) {
-
-  SSM_specs = build(par)
-
-  Phi = SSM_specs$state_transition_matrix
-  Sigma_w = SSM_specs$state_noise_var
-  A = SSM_specs$observation_matrix
-  Sigma_v = SSM_specs$observation_noise_var
-  x_tt = SSM_specs$init_state_mean
-  P_tt = SSM_specs$init_state_var
+  Phi = SSM_specs$GG
+  Sigma_w = SSM_specs$W
+  A = SSM_specs$FF
+  Sigma_v = SSM_specs$V
+  x_tt = SSM_specs$m0
+  P_tt = SSM_specs$C0
 
   n = ncol(y)
   dim_obs = nrow(y)
@@ -651,8 +288,10 @@ IPOD_oos_robust_filter = function(y, par, build, lambda, multiplier = 1) {
   predicted_states = matrix(0, nrow = dim_state, ncol = n)
   predicted_observations = matrix(0, nrow = dim_obs, ncol = n)
   filtered_states_var = list()
+  predicted_states_var = list()
   predicted_observations_var = list()
   mahalanobis_residuals = NA
+  outliers_flagged = rep(0, n)
 
   for (t in 1:n) {
     x_tt_1 = Phi %*% x_tt
@@ -660,15 +299,24 @@ IPOD_oos_robust_filter = function(y, par, build, lambda, multiplier = 1) {
     y_tt_1 = A %*% x_tt_1
     S_t = A %*% P_tt_1 %*% t(A) + Sigma_v
     inv_S_t = solve(S_t)
-    mahalanobis_residuals[t] = drop(sqrt(t(y[,t] - y_tt_1) %*% inv_S_t %*% (y[,t] - y_tt_1)))
 
-    if (mahalanobis_residuals[t] <= lambda) {
-      K_t = P_tt_1 %*% t(A) %*% inv_S_t
-      x_tt = x_tt_1 + K_t %*% (y[,t] - y_tt_1)
-      P_tt = P_tt_1 - K_t %*% A %*% P_tt_1
-    } else {
+    if (any(is.na(y[,t]))) {
+      mahalanobis_residuals[t] = 0
       x_tt = x_tt_1
       P_tt = multiplier*P_tt_1
+    } else {
+
+      mahalanobis_residuals[t] = drop(sqrt(t(y[,t] - y_tt_1) %*% inv_S_t %*% (y[,t] - y_tt_1)))
+
+      if (mahalanobis_residuals[t] <= threshold) {
+        K_t = P_tt_1 %*% t(A) %*% inv_S_t
+        x_tt = x_tt_1 + K_t %*% (y[,t] - y_tt_1)
+        P_tt = P_tt_1 - K_t %*% A %*% P_tt_1
+      } else {
+        x_tt = x_tt_1
+        P_tt = multiplier*P_tt_1
+        outliers_flagged[t] = 1
+      }
     }
 
     filtered_states[,t] = x_tt
@@ -676,6 +324,7 @@ IPOD_oos_robust_filter = function(y, par, build, lambda, multiplier = 1) {
     predicted_states[,t] = x_tt_1
     predicted_observations[,t] = y_tt_1
     filtered_states_var[[t]] = P_tt
+    predicted_states_var[[t]] = P_tt_1
     predicted_observations_var[[t]] = S_t
   }
 
@@ -685,286 +334,23 @@ IPOD_oos_robust_filter = function(y, par, build, lambda, multiplier = 1) {
     "predicted_states" = predicted_states,
     "predicted_observations" = predicted_observations,
     "filtered_states_var" = filtered_states_var,
+    "predicted_states_var" = predicted_states_var,
     "predicted_observations_var" = predicted_observations_var,
-    "mahalanobis_residuals" = mahalanobis_residuals
+    "mahalanobis_residuals" = mahalanobis_residuals,
+    "outliers_flagged" = outliers_flagged
   ))
 }
 
+# A simpler version of attach_insample_info for internal use only.
+# Mainly used for getting residuals and predictions from robularized models.
+dlmInfo = function(y, adj_y, model, build) {
 
-
-
-# Missing value handling
-# fn_filter = function(
-#     par,
-#     y,
-#     gamma,
-#     build,
-#     return_obj = FALSE
-# ) {
-#
-#   SSM_specs = build(par)
-#
-#   Phi = SSM_specs$state_transition_matrix
-#   Sigma_w = SSM_specs$state_noise_var
-#   A = SSM_specs$observation_matrix
-#   Sigma_v = SSM_specs$observation_noise_var
-#   x_tt = SSM_specs$init_state_mean
-#   P_tt = SSM_specs$init_state_var
-#
-#   n = ncol(y)
-#   dim_obs = nrow(y)
-#   dim_state = nrow(Phi)
-#
-#   x_tt_1 = NA
-#   P_tt_1 = NA
-#   y_tt_1 = NA
-#   S_t = NA
-#   objective = 0
-#
-#   if (!return_obj) {
-#     filtered_states = matrix(0, nrow = dim_state, ncol = n)
-#     filtered_observations = matrix(0, nrow = dim_obs, ncol = n)
-#     predicted_states = matrix(0, nrow = dim_state, ncol = n)
-#     predicted_observations = matrix(0, nrow = dim_obs, ncol = n)
-#     predicted_observations_var = list()
-#     mahalanobis_residuals = NA
-#   }
-#
-#   for (t in 1:n) {
-#     x_tt_1 = Phi %*% x_tt
-#     P_tt_1 = Phi %*% P_tt %*% t(Phi) + Sigma_w
-#     y_tt_1 = A %*% x_tt_1
-#     S_t = A %*% P_tt_1 %*% t(A) + Sigma_v
-#     inv_S_t = solve(S_t)
-#
-#     if (is.na(y[1,t])) {
-#       x_tt = x_tt_1
-#       P_tt = P_tt_1
-#
-#       if (return_obj) {
-#         objective = objective + 0
-#       } else {
-#         filtered_states[,t] = x_tt
-#         filtered_observations[,t] = A %*% x_tt
-#         predicted_states[,t] = x_tt_1
-#         predicted_observations[,t] = y_tt_1
-#         predicted_observations_var[[t]] = S_t
-#         mahalanobis_residuals[t] = 0
-#       }
-#
-#     } else {
-#
-#       if (sum(abs(gamma[,t])) == 0) {
-#         K_t = P_tt_1 %*% t(A) %*% inv_S_t
-#         x_tt = x_tt_1 + K_t %*% (y[,t] - y_tt_1)
-#         P_tt = P_tt_1 - K_t %*% A %*% P_tt_1
-#       } else {
-#         x_tt = x_tt_1
-#         P_tt = P_tt_1
-#       }
-#       if (return_obj) {
-#         objective = objective + 1/(2*n) * ((sum(abs(gamma[,t])) == 0) * log(det(S_t)) + t(y[,t] - y_tt_1 - gamma[,t]) %*% inv_S_t %*% (y[,t] - y_tt_1 - gamma[,t]))
-#       } else {
-#         filtered_states[,t] = x_tt
-#         filtered_observations[,t] = A %*% x_tt
-#         predicted_states[,t] = x_tt_1
-#         predicted_observations[,t] = y_tt_1
-#         predicted_observations_var[[t]] = S_t
-#         mahalanobis_residuals[t] = drop(sqrt(t(y[,t] - y_tt_1) %*% inv_S_t %*% (y[,t] - y_tt_1)))
-#       }
-#     }
-#
-#   }
-#
-#   if (return_obj) {
-#     return(objective)
-#   } else {
-#     return(list(
-#       "filtered_states" = filtered_states,
-#       "filtered_observations" = filtered_observations,
-#       "predicted_states" = predicted_states,
-#       "predicted_observations" = predicted_observations,
-#       "predicted_observations_var" = predicted_observations_var,
-#       "mahalanobis_residuals" = mahalanobis_residuals
-#     ))
-#   }
-# }
-
-
-# Handles exogenous inputs in A matrix
-# fn_filter = function(
-#     par,
-#     y,
-#     gamma,
-#     build,
-#     return_obj = FALSE
-# ) {
-#
-#   SSM_specs = build(par)
-#
-#   Phi = SSM_specs$state_transition_matrix
-#   Sigma_w = SSM_specs$state_noise_var
-#   A = SSM_specs$observation_matrix
-#   Sigma_v = SSM_specs$observation_noise_var
-#   x_tt = SSM_specs$init_state_mean
-#   P_tt = SSM_specs$init_state_var
-#
-#   n = ncol(y)
-#   dim_obs = nrow(y)
-#   dim_state = nrow(Phi)
-#
-#   if (class(A) != "list") {
-#     A_mat = A
-#     A = list()
-#     for (t in 1:n) {
-#       A[[t]] = A_mat
-#     }
-#   }
-#
-#   x_tt_1 = NA
-#   P_tt_1 = NA
-#   y_tt_1 = NA
-#   S_t = NA
-#   objective = 0
-#
-#   if (!return_obj) {
-#     filtered_states = matrix(0, nrow = dim_state, ncol = n)
-#     filtered_observations = matrix(0, nrow = dim_obs, ncol = n)
-#     predicted_states = matrix(0, nrow = dim_state, ncol = n)
-#     predicted_observations = matrix(0, nrow = dim_obs, ncol = n)
-#     predicted_observations_var = list()
-#     mahalanobis_residuals = NA
-#   }
-#
-#   for (t in 1:n) {
-#     x_tt_1 = Phi %*% x_tt
-#     P_tt_1 = Phi %*% P_tt %*% t(Phi) + Sigma_w
-#     y_tt_1 = A[[t]] %*% x_tt_1
-#     S_t = A[[t]] %*% P_tt_1 %*% t(A[[t]]) + Sigma_v
-#     inv_S_t = solve(S_t)
-#     if (sum(abs(gamma[,t])) == 0) {
-#       K_t = P_tt_1 %*% t(A[[t]]) %*% inv_S_t
-#       x_tt = x_tt_1 + K_t %*% (y[,t] - y_tt_1)
-#       P_tt = P_tt_1 - K_t %*% A[[t]] %*% P_tt_1
-#     } else {
-#       x_tt = x_tt_1
-#       P_tt = P_tt_1
-#     }
-#     if (return_obj) {
-#       objective = objective + 1/(2*n) * ((sum(abs(gamma[,t])) == 0) * log(det(S_t)) + t(y[,t] - y_tt_1 - gamma[,t]) %*% inv_S_t %*% (y[,t] - y_tt_1 - gamma[,t]))
-#     } else {
-#       filtered_states[,t] = x_tt
-#       filtered_observations[,t] = A[[t]] %*% x_tt
-#       predicted_states[,t] = x_tt_1
-#       predicted_observations[,t] = y_tt_1
-#       predicted_observations_var[[t]] = S_t
-#       mahalanobis_residuals[t] = drop(sqrt(t(y[,t] - y_tt_1) %*% inv_S_t %*% (y[,t] - y_tt_1)))
-#     }
-#   }
-#
-#   if (return_obj) {
-#     return(objective)
-#   } else {
-#     return(list(
-#       "filtered_states" = filtered_states,
-#       "filtered_observations" = filtered_observations,
-#       "predicted_states" = predicted_states,
-#       "predicted_observations" = predicted_observations,
-#       "predicted_observations_var" = predicted_observations_var,
-#       "mahalanobis_residuals" = mahalanobis_residuals
-#     ))
-#   }
-# }
-
-
-
-
-
-# Original used in simulations
-# fn_filter = function(
-#     par,
-#     y,
-#     gamma,
-#     build,
-#     return_obj = FALSE
-#     ) {
-#
-#   SSM_specs = build(par)
-#
-#   Phi = SSM_specs$state_transition_matrix
-#   Sigma_w = SSM_specs$state_noise_var
-#   A = SSM_specs$observation_matrix
-#   Sigma_v = SSM_specs$observation_noise_var
-#   x_tt = SSM_specs$init_state_mean
-#   P_tt = SSM_specs$init_state_var
-#
-#   n = ncol(y)
-#   dim_obs = nrow(y)
-#   dim_state = nrow(Phi)
-#
-#   x_tt_1 = NA
-#   P_tt_1 = NA
-#   y_tt_1 = NA
-#   S_t = NA
-#   objective = 0
-#
-#   if (!return_obj) {
-#     filtered_states = matrix(0, nrow = dim_state, ncol = n)
-#     filtered_observations = matrix(0, nrow = dim_obs, ncol = n)
-#     predicted_states = matrix(0, nrow = dim_state, ncol = n)
-#     predicted_observations = matrix(0, nrow = dim_obs, ncol = n)
-#     predicted_observations_var = list()
-#     mahalanobis_residuals = NA
-#   }
-#
-#   for (t in 1:n) {
-#     x_tt_1 = Phi %*% x_tt
-#     P_tt_1 = Phi %*% P_tt %*% t(Phi) + Sigma_w
-#     y_tt_1 = A %*% x_tt_1
-#     S_t = A %*% P_tt_1 %*% t(A) + Sigma_v
-#     inv_S_t = solve(S_t)
-#     if (sum(abs(gamma[,t])) == 0) {
-#       K_t = P_tt_1 %*% t(A) %*% inv_S_t
-#       x_tt = x_tt_1 + K_t %*% (y[,t] - y_tt_1)
-#       P_tt = P_tt_1 - K_t %*% A %*% P_tt_1
-#     } else {
-#       x_tt = x_tt_1
-#       P_tt = P_tt_1
-#     }
-#     if (return_obj) {
-#       objective = objective + 1/(2*n) * ((sum(abs(gamma[,t])) == 0) * log(det(S_t)) + t(y[,t] - y_tt_1 - gamma[,t]) %*% inv_S_t %*% (y[,t] - y_tt_1 - gamma[,t]))
-#     } else {
-#       filtered_states[,t] = x_tt
-#       filtered_observations[,t] = A %*% x_tt
-#       predicted_states[,t] = x_tt_1
-#       predicted_observations[,t] = y_tt_1
-#       predicted_observations_var[[t]] = S_t
-#       mahalanobis_residuals[t] = drop(sqrt(t(y[,t] - y_tt_1) %*% inv_S_t %*% (y[,t] - y_tt_1)))
-#     }
-#   }
-#
-#   if (return_obj) {
-#     return(objective)
-#   } else {
-#     return(list(
-#       "filtered_states" = filtered_states,
-#       "filtered_observations" = filtered_observations,
-#       "predicted_states" = predicted_states,
-#       "predicted_observations" = predicted_observations,
-#       "predicted_observations_var" = predicted_observations_var,
-#       "mahalanobis_residuals" = mahalanobis_residuals
-#     ))
-#   }
-# }
-
-dlmInfo = function(y, adj_y, fit, build) {
-
-  filter_output = dlm::dlmFilter(t(adj_y), mod = build(fit$par))
+  filter_output = dlm::dlmFilter(t(adj_y), mod = build(model$par))
   smoother_output = dlm::dlmSmooth(filter_output)
   A = filter_output$mod$FF
 
   S = purrr::map(dlm::dlmSvd2var(filter_output$U.R, filter_output$D.R),
-          ~ filter_output$mod$FF %*% . %*% t(filter_output$mod$FF) + filter_output$mod$V)
+          ~ A %*% . %*% t(A) + filter_output$mod$V)
   inv_S = purrr::map(S, ~ solve(.))
   mahalanobis_residuals = purrr::map2_dbl(
     apply(t(y) - filter_output$f, 1, c, simplify = FALSE),
@@ -982,23 +368,214 @@ dlmInfo = function(y, adj_y, fit, build) {
 
 }
 
-# dlmInfo = function(y, adj_y, fit, build) {
-#
-#   filter_output = dlm::dlmFilter(t(adj_y), mod = build(fit$par))
-#   smoother_output = dlm::dlmSmooth(filter_output)
-#   A = build(fit$par)$FF
-#   mahalanobis_residuals = sqrt(rowSums(((t(y) - filter_output$f) / residuals(filter_output)$sd)^2))
-#   mahalanobis_residuals = ifelse(is.na(mahalanobis_residuals), 0, mahalanobis_residuals)
-#
-#   return(list(
-#     smoothed_observations = (A %*% t(smoother_output$s))[,2:(ncol(y) + 1)],
-#     filtered_observations = (A %*% t(filter_output$m))[,2:(ncol(y) + 1)],
-#     predicted_observations = t(filter_output$f),
-#     #mahalanobis_residuals = sqrt(rowSums(residuals(filter_output)$res^2)),
-#     mahalanobis_residuals = mahalanobis_residuals
-#   ))
-#
-# }
+#' Attach In-Sample Information to Fitted State Space Model
+#'
+#' Attaches detailed in-sample outputs—such as predicted, filtered, and smoothed states and observations—to a model object fitted using any of the package’s supported estimation methods.
+#' These quantities are not stored by default in model objects due to their potentially large memory footprint.
+#'
+#' @param model A fitted model object of class `"robularized_SSM"`, `"classical_SSM"`, `"oracle_SSM"`, `"huber_robust_SSM"`, or `"trimmed_robust_SSM"`, as returned by functions such as [robularized_SSM()], [classical_SSM()], [oracle_SSM()], [huber_robust_SSM()], or [trimmed_robust_SSM()].
+#' @param build A function that takes a numeric parameter vector and returns a `dlm` model object, as used during model fitting.
+#'
+#' @return A modified version of the input model object, with an additional class `"insample_info"`, and the following in-sample elements appended:
+#' \describe{
+#'   \item{`filtered_states`}{Filtered state estimates using data up to each time point.}
+#'   \item{`predicted_states`}{One-step-ahead state predictions.}
+#'   \item{`filtered_observations`}{Expected observations given data up to each time point.}
+#'   \item{`predicted_observations`}{One-step-ahead forecasts of observations.}
+#'   \item{`filtered_states_var`}{List of filtered state variance matrices.}
+#'   \item{`predicted_states_var`}{List of one-step-ahead state prediction variances.}
+#'   \item{`predicted_observations_var`}{List of one-step-ahead observation forecast variances.}
+#'   \item{`mahalanobis_residuals`}{Vector of Mahalanobis distances of residuals from predicted observations.}
+#' }
+#'
+#' For models of class `"robularized_SSM"`, `"classical_SSM"`, or `"oracle_SSM"`, the following additional elements are also attached:
+#' \describe{
+#'   \item{`smoothed_states`}{Posterior means of hidden states using all data.}
+#'   \item{`smoothed_observations`}{Posterior mean of the observed series based on smoothed states.}
+#'   \item{`smoothed_states_var`}{List of smoothed state variance matrices.}
+#' }
+#'
+#' @details
+#' The attached outputs enable richer diagnostics, outlier inspection, and plotting.
+#' For `"huber_robust_SSM"` and `"trimmed_robust_SSM"` models, in-sample information is computed using a custom robust filtering function, and smoothed quantities (`smoothed_states`, `smoothed_observations`, and `smoothed_states_var`) are **not available**.
+#' This function should only be applied once to a model object.
+attach_insample_info = function(model, build) {
+
+  if (inherits(model, "insample_info")) {
+    stop("Model already has in-sample information attached.")
+  }
+
+  y = model$y
+
+  if (inherits(model, "huber_robust_SSM")) {
+    insample_info = ruben_filter(model$par, y, build, obj_type = "huber")
+    output = c(model, insample_info)
+    class(output) == c("huber_robust_SSM", "insample_info")
+    return(output)
+  } else if (inherits(model, "trimmed_robust_SSM")) {
+    insample_info = ruben_filter(model$par, y, build, obj_type = "trimmed", alpha = model$alpha)
+    output = c(model, insample_info)
+    class(output) == c("trimmed_robust_SSM", "insample_info")
+    return(output)
+
+  } else if (inherits(model, "robularized_SSM")){
+    adj_y = y
+    adj_y[,which(colSums(abs(model$gamma)) != 0)] = NA
+  } else if (inherits(model, "classical_SSM")) {
+    adj_y = y
+  } else if (inherits(model, "oracle_SSM")) {
+    adj_y = y
+    adj_y[,model$outlier_locs != 0] = NA
+  } else {
+    stop("Invalid model class. Expected 'robularized_SSM' or 'classical_SSM' or 'oracle_SSM' or 'huber_robust_SSM' or 'trimmed_robust_SSM'.")
+  }
+
+  filter_output = dlm::dlmFilter(t(adj_y), mod = build(model$par))
+  smoother_output = dlm::dlmSmooth(filter_output)
+  A = filter_output$mod$FF
+
+  P_tt_1 = dlm::dlmSvd2var(filter_output$U.R, filter_output$D.R)
+  S = purrr::map(P_tt_1, ~ A %*% . %*% t(A) + filter_output$mod$V)
+  P_tt = dlm::dlmSvd2var(filter_output$U.C, filter_output$D.C)
+  P_tt_smooth = dlm::dlmSvd2var(smoother_output$U.S, smoother_output$D.S)
+
+  inv_S = purrr::map(S, ~ solve(.))
+  mahalanobis_residuals = purrr::map2_dbl(
+    apply(t(y) - filter_output$f, 1, c, simplify = FALSE),
+    inv_S,
+    ~ drop(t(.x) %*% .y %*% .x)) %>% sqrt()
+
+  mahalanobis_residuals = ifelse(is.na(mahalanobis_residuals), 0, mahalanobis_residuals)
+
+  output = c(model,
+    list(
+    smoothed_states  = t(smoother_output$s)[,2:(ncol(y) + 1)],
+    filtered_states  = t(filter_output$m)[,2:(ncol(y) + 1)],
+    predicted_states = t(filter_output$a),
+    smoothed_observations  = (A %*% t(smoother_output$s))[,2:(ncol(y) + 1)],
+    filtered_observations  = (A %*% t(filter_output$m))[,2:(ncol(y) + 1)],
+    predicted_observations = t(filter_output$f),
+    smoothed_states_var = P_tt_smooth,
+    filtered_states_var = P_tt,
+    predicted_states_var = P_tt_1,
+    predicted_observations_var = S,
+    mahalanobis_residuals = mahalanobis_residuals
+  ))
+
+  if (inherits(model, "robularized_SSM")) {
+    class(output) = c("robularized_SSM", "insample_info")
+  } else if (inherits(model, "classical_SSM")) {
+    class(output) = c("classical_SSM", "insample_info")
+  } else if (inherits(model, "oracle_SSM")) {
+    class(output) = c("oracle_SSM", "insample_info")
+  }
+
+  return(output)
+}
+
+#' Compute Out-of-Sample Inference for Fitted State Space Model
+#'
+#' Applies the fitted model parameters to a user-supplied out-of-sample dataset to compute predicted and filtered states and observations. Robust and classical inference procedures are supported depending on the class of the input model.
+#'
+#' @param y A numeric matrix containing out-of-sample observations. Each column corresponds to a time point; each row corresponds to an observed series.
+#' @param model A fitted model object of class `"robularized_SSM"`, `"classical_SSM"`, `"oracle_SSM"`, `"huber_robust_SSM"`, or `"trimmed_robust_SSM"`.
+#' @param build A function that maps a numeric parameter vector to a corresponding `dlm` model object, as used during fitting.
+#' @param alpha Trimming proportion for `"trimmed_robust_SSM"` models. If `NA` (default), uses `model$alpha`.
+#' @param outlier_locs A logical or binary vector of the same length as `ncol(y)`, indicating time points to be treated as missing (i.e., likely outliers). Used only with `"oracle_SSM"` models.
+#' @param threshold Mahalanobis distance threshold for identifying outliers in `"robularized_SSM"` models. Default is `sqrt(qchisq(0.99, 2))`.
+#' @param multiplier Multiplier for the thresholding step in `"robularized_SSM"` models. Default is `2`.
+#'
+#' @return A list containing out-of-sample inference results. Always includes:
+#' \describe{
+#'   \item{`filtered_states`}{Filtered state estimates using out-of-sample data.}
+#'   \item{`predicted_states`}{One-step-ahead state predictions.}
+#'   \item{`filtered_observations`}{Expected observations given past out-of-sample data.}
+#'   \item{`predicted_observations`}{One-step-ahead forecasts of observations.}
+#'   \item{`filtered_states_var`}{List of filtered state variance matrices.}
+#'   \item{`predicted_states_var`}{List of one-step-ahead state prediction variances.}
+#'   \item{`predicted_observations_var`}{List of one-step-ahead observation forecast variances.}
+#'   \item{`mahalanobis_residuals`}{Vector of Mahalanobis distances of residuals from predicted observations.}
+#' }
+#'
+#' For robust models (`"huber_robust_SSM"`, `"trimmed_robust_SSM"`, `"robularized_SSM"`), the output is computed via custom robust filtering procedures and may include additional internal elements from [ruben_filter()] or [IPOD_oos_robust_filter()].
+#'
+#' @details
+#' The function reuses the model's fitted parameters and `build` function to generate inference on new data `y`. Robust variants rely on the same loss functions used during fitting, while classical models use standard Kalman filtering. For `"oracle_SSM"` models, observations flagged in `outlier_locs` are treated as missing during filtering.
+#'
+#' @seealso [attach_insample_info()], [ruben_filter()], [IPOD_oos_robust_filter()]
+#'
+#' @examples
+#' \dontrun{
+#' model <- robularized_SSM(y_train, init_par, build)
+#' best_model <- model[[which.min(get_attribute(model, "BIC"))]]
+#' out_of_sample_info <- oos_filter(y_test, best_model, build)
+#' plot(out_of_sample_info$mahalanobis_residuals, type = "l")
+#' }
+#'
+#' @export
+oos_filter = function(y, model, build,
+                      alpha = NA,
+                      outlier_locs = rep(0, ncol(y)),
+                      threshold = sqrt(qchisq(0.99, 2)),
+                      multiplier = 2) {
+
+  if (inherits(model, "huber_robust_SSM")) {
+    oos_output = ruben_filter(model$par, y, build, obj_type = "huber")
+    return(oos_output)
+  } else if (inherits(model, "trimmed_robust_SSM")) {
+    oos_output = ruben_filter(model$par, y, build, obj_type = "trimmed",
+                              alpha = ifelse(is.na(alpha), model$alpha, alpha))
+    return(oos_output)
+
+  } else if (inherits(model, "robularized_SSM")){
+
+    # Robust threshold filter
+    oos_output = IPOD_oos_robust_filter(
+      y = y,
+      par = model$par,
+      build = build,
+      threshold = threshold,
+      multiplier = multiplier
+    )
+
+    return(oos_output)
+
+  } else if (inherits(model, "classical_SSM")) {
+    adj_y = y
+  } else if (inherits(model, "oracle_SSM")) {
+    adj_y = y
+    adj_y[,outlier_locs != 0] = NA
+  } else {
+    stop("Invalid model class. Expected 'robularized_SSM' or 'classical_SSM' or 'oracle_SSM' or 'huber_robust_SSM' or 'trimmed_robust_SSM'.")
+  }
+
+  filter_output = dlm::dlmFilter(t(adj_y), mod = build(model$par))
+  A = filter_output$mod$FF
+
+  P_tt_1 = dlm::dlmSvd2var(filter_output$U.R, filter_output$D.R)
+  S = purrr::map(P_tt_1, ~ A %*% . %*% t(A) + filter_output$mod$V)
+  P_tt = dlm::dlmSvd2var(filter_output$U.C, filter_output$D.C)
+
+  inv_S = purrr::map(S, ~ solve(.))
+  mahalanobis_residuals = purrr::map2_dbl(
+    apply(t(y) - filter_output$f, 1, c, simplify = FALSE),
+    inv_S,
+    ~ drop(t(.x) %*% .y %*% .x)) %>% sqrt()
+
+  mahalanobis_residuals = ifelse(is.na(mahalanobis_residuals), 0, mahalanobis_residuals)
+
+  return(list(
+             filtered_states  = t(filter_output$m)[,2:(ncol(y) + 1)],
+             predicted_states = t(filter_output$a),
+             filtered_observations  = (A %*% t(filter_output$m))[,2:(ncol(y) + 1)],
+             predicted_observations = t(filter_output$f),
+             filtered_states_var = P_tt,
+             predicted_states_var = P_tt_1,
+             predicted_observations_var = S,
+             mahalanobis_residuals = mahalanobis_residuals
+           ))
+
+}
 
 
 

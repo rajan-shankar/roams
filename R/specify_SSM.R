@@ -17,11 +17,11 @@ specify_SSM = function(
 ) {
 
   return(list(
-    "state_transition_matrix" = state_transition_matrix,
-    "state_noise_var" = state_noise_var,
-    "observation_matrix" = observation_matrix,
-    "observation_noise_var" = observation_noise_var,
-    "init_state_mean" = init_state_mean,
-    "init_state_var" = init_state_var
+    "GG" = state_transition_matrix,
+    "W" = state_noise_var,
+    "FF" = observation_matrix,
+    "V" = observation_noise_var,
+    "m0" = init_state_mean,
+    "C0" = init_state_var
   ))
 }

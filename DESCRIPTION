@@ -20,6 +20,7 @@ Imports:
   dplyr,
   expm,
   dlm,
-  purrr
+  purrr,
+  MASS
 Depends:
-  ggplot2
+  tidyverse

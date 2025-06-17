@@ -2,7 +2,7 @@
 % Please edit documentation in R/benchmark_methods.R
 \name{trimmed_robust_SSM}
 \alias{trimmed_robust_SSM}
-\title{#' A Cat Function}
+\title{Trimmed-Robust State Space Model Fit}
 \usage{
 trimmed_robust_SSM(
   y,
@@ -15,14 +15,29 @@ trimmed_robust_SSM(
 )
 }
 \arguments{
-\item{love}{Do you love cats? Defaults to TRUE.}
+\item{y}{A numeric matrix of observations (variables in rows, time points in columns).}
+
+\item{init_par}{A numeric vector of initial parameter values.}
+
+\item{build}{A function that returns a `dlm` model given a parameter vector.}
+
+\item{alpha}{Numeric value in (0, 1) indicating the trimming proportion (i.e., the proportion of data to exclude as outliers).}
+
+\item{lower}{Optional numeric vector of lower bounds for parameter estimation. Defaults to `-Inf`.}
+
+\item{upper}{Optional numeric vector of upper bounds for parameter estimation. Defaults to `Inf`.}
+
+\item{control}{Optional list of control parameters passed to `optim`.}
 }
 \value{
-description
+An object of class `"trimmed_robust_SSM"` containing the optimization result, trimming level, and the original data.
 }
 \description{
-This function allows you to express your love of cats.
+Fits a robust state space model by minimizing a trimmed loss function. A fixed proportion of the largest residuals are excluded from the objective, providing robustness against extreme outliers.
 }
 \details{
-Additional details...
+This function calls a custom objective function \code{ruben_filter()} using a trimmed loss, which requires the internal implementation of that function to be compatible.
+}
+\seealso{
+\code{\link{huber_robust_SSM}}, \code{\link{robularized_SSM}}, \code{\link[stats]{optim}}
 }

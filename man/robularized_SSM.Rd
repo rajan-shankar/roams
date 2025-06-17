@@ -2,16 +2,14 @@
 % Please edit documentation in R/robularized_SSM.R
 \name{robularized_SSM}
 \alias{robularized_SSM}
-\title{A Cat Function}
+\title{Robust Regularized Fitting of State Space Models}
 \usage{
 robularized_SSM(
   y,
   init_par,
   build,
   num_lambdas = 10,
-  lowest_lambda = 2,
-  highest_lambda = NA,
-  num_lambdas_crowding = 0,
+  custom_lambdas = NA,
   cores = 1,
   B = 20,
   lower = NA,
@@ -20,14 +18,55 @@ robularized_SSM(
 )
 }
 \arguments{
-\item{love}{Do you love cats? Defaults to TRUE.}
+\item{y}{A numeric matrix of observations, with each row corresponding to a different observed variable and each column to a time point.}
+
+\item{init_par}{A numeric vector of initial parameter values for optimization.}
+
+\item{build}{A function that accepts a parameter vector and returns a `dlm` model (as used in `dlm::dlmMLE()`).}
+
+\item{num_lambdas}{Integer. The number of lambda values to evaluate. Ignored if `custom_lambdas` is specified. Default is 10.}
+
+\item{custom_lambdas}{Optional numeric vector. If supplied, these are the exact lambda values used for model fitting. If of length 1, a single model is returned. If not provided or set to `NA`, lambdas are automatically chosen.}
+
+\item{cores}{Integer. Number of CPU cores to use for parallel processing. Default is 1 (sequential execution).}
+
+\item{B}{Integer. Maximum number of IPOD iterations per lambda. Default is 20.}
+
+\item{lower}{Optional numeric vector of lower bounds for optimization. If `NA`, defaults to `-Inf` for all parameters.}
+
+\item{upper}{Optional numeric vector of upper bounds for optimization. If `NA`, defaults to `Inf` for all parameters.}
+
+\item{control}{A named list of control options to pass to `optim` via `dlm::dlmMLE()`. Default is `list()` (uses `parscale = init_par`).}
 }
 \value{
-description
+If `custom_lambdas` is not provided or has length > 1, returns an object of class `"robularized_SSM_list"` — a list of robustly estimated models for each lambda. If `custom_lambdas` is a single value, returns a single `"robularized_SSM"` object.
+
+Each `"robularized_SSM"` object includes:
+\itemize{
+  \item \code{lambda} - The lambda value used.
+  \item \code{prop_outlying} - Proportion of time points identified as outliers.
+  \item \code{BIC} - Bayesian Information Criterion of the final model.
+  \item \code{loglik} - Log-likelihood of the fitted model.
+  \item \code{RSS} - Residual sum of squares.
+  \item \code{gamma} - Matrix of estimated outlier adjustments.
+  \item \code{iterations} - Number of IPOD iterations performed.
+  \item Optimization output from `dlm::dlmMLE()`.
+  \item \code{y} - The original data matrix.
+}
 }
 \description{
-This function allows you to express your love of cats.
+Fits a robust state space model to multivariate time series data using iterative parameter estimation and outlier detection. This procedure applies an Iterative Penalized Outlier Detection (IPOD) algorithm over a grid of regularization parameters (lambdas), identifying outliers via Mahalanobis residuals and re-fitting the model iteratively.
 }
 \details{
-Additional details...
+The IPOD procedure alternates between estimating model parameters via maximum likelihood and identifying outlying observations based on Mahalanobis residuals. For each iteration:
+\enumerate{
+  \item A `dlm` model is fit using `dlm::dlmMLE()`.
+  \item Mahalanobis residuals are computed.
+  \item Observations with residuals above the current lambda threshold are treated as missing in the next iteration.
+}
+
+The algorithm stops when the change in parameters and outlier estimates is sufficiently small or if too many outliers are detected (more than 50% of complete observations).
+}
+\seealso{
+\code{\link[dlm]{dlmMLE}}, \code{\link{lambda_grid}}, \code{\link{run_IPOD}}
 }
