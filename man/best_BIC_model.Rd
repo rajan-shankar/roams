@@ -18,7 +18,10 @@ Extracts the best-fitting model from a \code{robularized_SSM_list} object accord
 the Bayesian Information Criterion (BIC), while excluding models with more than 50\% outlying observations.
 }
 \examples{
+\dontrun{
 # Assuming `models` is a robularized_SSM_list:
 best_model <- best_BIC_model(models)
+}
+
 
 }

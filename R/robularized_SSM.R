@@ -39,7 +39,7 @@
 #'
 #' The algorithm stops when the change in parameters and outlier estimates is sufficiently small or if too many outliers are detected (more than 50\% of complete observations).
 #'
-#' @seealso \code{\link[dlm]{dlmMLE}}, \code{\link{best_BIC_model}}, \code{\link{outlier_target_model}}, \code{\link{get_attributes}}, \code{\link{autoplot.robularized_SSM_list}}, \code{\link{attach_insample_info}}, \code{\link{oos_filter}}, \code{\link{specify_SSM}}
+#' @seealso \code{\link[dlm]{dlmMLE}}, \code{\link{best_BIC_model}}, \code{\link{outlier_target_model}}, \code{\link{get_attribute}}, \code{\link{autoplot.robularized_SSM_list}}, \code{\link{attach_insample_info}}, \code{\link{oos_filter}}, \code{\link{specify_SSM}}
 #'
 #' @references She, Y., & Owen, A. B. (2011). Outlier Detection Using Nonconvex Penalized Regression. *Journal of the American Statistical Association, 106*(494), 626–639. https://doi.org/10.1198/jasa.2011.tm10390
 #'
@@ -56,6 +56,10 @@ robularized_SSM = function(
     upper = NA,
     control = list(parscale = init_par)
     ) {
+
+  if (nrow(y) > ncol(y)) {
+    warning("Input data has more rows than columns. Did you forget to transpose your data? This function expects each column to represent a time point (i.e., observations in columns).")
+  }
 
   if (is.na(custom_lambdas)) {
   # Completely automatic fit
@@ -390,6 +394,8 @@ dlmInfo = function(y, adj_y, model, build) {
 #'
 #' @seealso \code{\link{oos_filter}}
 #'
+#' @import tidyverse
+#'
 #' @export
 attach_insample_info = function(model) {
 
@@ -400,12 +406,12 @@ attach_insample_info = function(model) {
   y = model$y
 
   if (inherits(model, "huber_robust_SSM")) {
-    insample_info = ruben_filter(model$par, y, build, obj_type = "huber")
+    insample_info = ruben_filter(model$par, y, model$build, obj_type = "huber")
     output = c(model, insample_info)
     class(output) == c("huber_robust_SSM", "insample_info")
     return(output)
   } else if (inherits(model, "trimmed_robust_SSM")) {
-    insample_info = ruben_filter(model$par, y, build, obj_type = "trimmed", alpha = model$alpha)
+    insample_info = ruben_filter(model$par, y, model$build, obj_type = "trimmed", alpha = model$alpha)
     output = c(model, insample_info)
     class(output) == c("trimmed_robust_SSM", "insample_info")
     return(output)
@@ -422,7 +428,7 @@ attach_insample_info = function(model) {
     stop("Invalid model class. Expected 'robularized_SSM' or 'classical_SSM' or 'oracle_SSM' or 'huber_robust_SSM' or 'trimmed_robust_SSM'.")
   }
 
-  filter_output = dlm::dlmFilter(t(adj_y), mod = build(model$par))
+  filter_output = dlm::dlmFilter(t(adj_y), mod = model$build(model$par))
   smoother_output = dlm::dlmSmooth(filter_output)
   A = filter_output$mod$FF
 
@@ -469,7 +475,7 @@ attach_insample_info = function(model) {
 #'
 #' Applies the fitted model parameters to a user-supplied out-of-sample dataset to compute predicted and filtered states and observations. Robust and classical inference procedures are supported depending on the class of the input model.
 #'
-#' @param y A numeric matrix containing out-of-sample observations. Each column corresponds to a time point.
+#' @param y_oos A numeric matrix containing out-of-sample observations. Each column corresponds to a time point.
 #' @param model A fitted model object of class `robularized_SSM`, `classical_SSM`, `oracle_SSM`, `huber_robust_SSM`, or `trimmed_robust_SSM`.
 #' @param build A function that maps a numeric parameter vector to a corresponding `dlm` model object. The `specify_SSM` function can be used to create this `build` function.
 #' @param outlier_locs A logical or binary vector of the same length as `ncol(y)`, indicating time points to be treated as missing (i.e., time points that are known to be outliers). Used only with `oracle_SSM` models.
@@ -489,9 +495,11 @@ attach_insample_info = function(model) {
 #' }
 #'
 #' @details
-#' The function reuses the model's fitted parameters to generate inference on new data `y`. Robust variants use appropriate robust filters, while the classical and oracle models use standard Kalman filtering. For `oracle_SSM` models, observations flagged in `outlier_locs` are treated as missing during filtering.
+#' The function reuses the model's fitted parameters to generate inference on new data `y_oos`. Robust variants use appropriate robust filters, while the classical and oracle models use standard Kalman filtering. For `oracle_SSM` models, observations flagged in `outlier_locs` are treated as missing during filtering.
 #'
 #' @seealso \code{\link{attach_insample_info}}, \code{\link{specify_SSM}}
+#'
+#' @import tidyverse
 #'
 #' @export
 oos_filter = function(y_oos, model, build,

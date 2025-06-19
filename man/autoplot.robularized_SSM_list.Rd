@@ -4,12 +4,14 @@
 \alias{autoplot.robularized_SSM_list}
 \title{Autoplot for Robularized State Space Model List}
 \usage{
-\method{autoplot}{robularized_SSM_list}(model_list, attribute = "BIC")
+\method{autoplot}{robularized_SSM_list}(object, attribute = "BIC", ...)
 }
 \arguments{
-\item{model_list}{An object of class `robularized_SSM_list` as returned by \code{\link{robularized_SSM}} when multiple \eqn{\lambda} values are used.}
+\item{object}{An object of class `robularized_SSM_list` as returned by \code{\link{robularized_SSM}} when multiple \eqn{\lambda} values are used.}
 
 \item{attribute}{A character string indicating which model attribute to plot. Options include `lambda`, `prop_outlying`, `BIC`, `loglik`, `RSS`, `iterations`, `value`, and `counts`. Defaults to `BIC`.}
+
+\item{...}{Other arguments passed to specific methods. Not used in this method.}
 }
 \value{
 A `ggplot` object showing the trajectory of the specified attribute across \eqn{\lambda}.

@@ -9,8 +9,11 @@
 #' among those with fewer than 50\% outlying observations.
 #'
 #' @examples
+#' \dontrun{
 #' # Assuming `models` is a robularized_SSM_list:
 #' best_model <- best_BIC_model(models)
+#' }
+#'
 #'
 #' @export
 best_BIC_model = function(model_list) {
@@ -33,8 +36,10 @@ best_BIC_model = function(model_list) {
 #' @return A single \code{robularized_SSM} object whose estimated outlier proportion is closest to \code{target}.
 #'
 #' @examples
+#' \dontrun{
 #' # Select the model with an outlier proportion closest to 10%
 #' target_model <- outlier_target_model(models, target = 0.1)
+#' }
 #'
 #' @export
 outlier_target_model = function(model_list, target) {

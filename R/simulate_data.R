@@ -24,6 +24,8 @@
 #' @examples
 #' data_study1 = simulate_data_study1(samples = 5, seed = 123)
 #'
+#' @import tidyverse
+#'
 #' @export
 simulate_data_study1 = function(
   sample_sizes = c(100, 200, 500),
@@ -233,6 +235,8 @@ simulate_data_study1 = function(
 #'
 #' @examples
 #' data_study2 = simulate_data_study2(samples = 5, seed = 456)
+#'
+#' @import tidyverse
 #'
 #' @export
 simulate_data_study2 = function(

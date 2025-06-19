@@ -14,6 +14,8 @@ oos_filter(
 )
 }
 \arguments{
+\item{y_oos}{A numeric matrix containing out-of-sample observations. Each column corresponds to a time point.}
+
 \item{model}{A fitted model object of class `robularized_SSM`, `classical_SSM`, `oracle_SSM`, `huber_robust_SSM`, or `trimmed_robust_SSM`.}
 
 \item{build}{A function that maps a numeric parameter vector to a corresponding `dlm` model object. The `specify_SSM` function can be used to create this `build` function.}
@@ -23,8 +25,6 @@ oos_filter(
 \item{threshold}{Mahalanobis distance threshold for identifying outliers in `robularized_SSM` models. Default is \code{sqrt(qchisq(0.99, nrow(y)))}.}
 
 \item{multiplier}{Multiplier for how quickly the filter grows its filtered state variance (uncertainty) after detecting an outlier in `robularized_SSM` models. Default is `1`.}
-
-\item{y}{A numeric matrix containing out-of-sample observations. Each column corresponds to a time point.}
 }
 \value{
 A named list containing out-of-sample inference results:
@@ -43,7 +43,7 @@ A named list containing out-of-sample inference results:
 Applies the fitted model parameters to a user-supplied out-of-sample dataset to compute predicted and filtered states and observations. Robust and classical inference procedures are supported depending on the class of the input model.
 }
 \details{
-The function reuses the model's fitted parameters to generate inference on new data `y`. Robust variants use appropriate robust filters, while the classical and oracle models use standard Kalman filtering. For `oracle_SSM` models, observations flagged in `outlier_locs` are treated as missing during filtering.
+The function reuses the model's fitted parameters to generate inference on new data `y_oos`. Robust variants use appropriate robust filters, while the classical and oracle models use standard Kalman filtering. For `oracle_SSM` models, observations flagged in `outlier_locs` are treated as missing during filtering.
 }
 \seealso{
 \code{\link{attach_insample_info}}, \code{\link{specify_SSM}}

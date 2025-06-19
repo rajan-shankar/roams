@@ -72,5 +72,5 @@ The algorithm stops when the change in parameters and outlier estimates is suffi
 She, Y., & Owen, A. B. (2011). Outlier Detection Using Nonconvex Penalized Regression. *Journal of the American Statistical Association, 106*(494), 626–639. https://doi.org/10.1198/jasa.2011.tm10390
 }
 \seealso{
-\code{\link[dlm]{dlmMLE}}, \code{\link{best_BIC_model}}, \code{\link{outlier_target_model}}, \code{\link{get_attributes}}, \code{\link{autoplot.robularized_SSM_list}}, \code{\link{attach_insample_info}}, \code{\link{oos_filter}}, \code{\link{specify_SSM}}
+\code{\link[dlm]{dlmMLE}}, \code{\link{best_BIC_model}}, \code{\link{outlier_target_model}}, \code{\link{get_attribute}}, \code{\link{autoplot.robularized_SSM_list}}, \code{\link{attach_insample_info}}, \code{\link{oos_filter}}, \code{\link{specify_SSM}}
 }

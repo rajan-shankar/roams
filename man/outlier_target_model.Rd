@@ -19,7 +19,9 @@ Extracts the model from a \code{robularized_SSM_list} object whose estimated out
 is closest to a user-specified target.
 }
 \examples{
+\dontrun{
 # Select the model with an outlier proportion closest to 10\%
 target_model <- outlier_target_model(models, target = 0.1)
+}
 
 }

@@ -1,12 +1,18 @@
 Package: robularizedSSM
 Type: Package
-Title: What the Package Does (Title Case)
+Title: Robust Regularized State-Space Modeling
 Version: 0.1.0
-Author: Who wrote it
-Maintainer: The package maintainer <yourself@somewhere.net>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
-License: What license is it under?
+Author: Rajan Shankar [aut, cre]
+Maintainer: Rajan Shankar <rajan.shankar@sydney.edu.au>
+Description: Provides methods for robust estimation and outlier detection in 
+    state-space models. 
+    Includes functionality for fitting benchmark models, visualizing model 
+    selection criteria, and evaluating in-sample and out-of-sample performance. 
+    Simulation tools for generating synthetic data under a first-difference 
+    correlated random walk (DCRW) model are also included. 
+    Designed with flexibility for user-defined model structures via the 
+    'specify_SSM()' interface.
+License: GPL-3
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.3.2
@@ -23,4 +29,5 @@ Imports:
   purrr,
   MASS
 Depends:
-  tidyverse
+  tidyverse,
+  ggplot2

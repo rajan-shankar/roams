@@ -44,6 +44,8 @@
 #'
 #' @seealso \code{\link{attach_insample_info}}, \code{\link{robularized_SSM}}
 #'
+#' @import tidyverse
+#'
 #' @export
 get_attribute = function(model_list, attribute) {
 

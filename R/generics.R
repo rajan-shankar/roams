@@ -1,5 +1,6 @@
 #' @export
-print.robularized_SSM_list = function(model_list) {
+print.robularized_SSM_list = function(x, ...) {
+  model_list = x
   cat("Robularized SSM List with ", length(model_list), "models\n",
       "Use best_BIC_model() or outlier_target_model() to extract a single model.\n",
       "Use autoplot() to visualize the models.\n",
@@ -7,7 +8,8 @@ print.robularized_SSM_list = function(model_list) {
 }
 
 #' @export
-print.robularized_SSM = function(model) {
+print.robularized_SSM = function(x, ...) {
+  model = x
   cat("Robularized SSM Model\n",
       "Lambda: ", model$lambda, "\n",
       "Outliers Detected: ", round(model$prop_outlying*100, 2), "%\n",
@@ -19,7 +21,8 @@ print.robularized_SSM = function(model) {
 }
 
 #' @export
-print.classical_SSM = function(model) {
+print.classical_SSM = function(x, ...) {
+  model = x
   cat("Classical SSM Model\n",
       "Log-Likelihood: ", round(model$value, 3), "\n",
       "optim() Iterations: ", model$iterations, "\n",
@@ -27,7 +30,8 @@ print.classical_SSM = function(model) {
 }
 
 #' @export
-print.oracle_SSM = function(model) {
+print.oracle_SSM = function(x, ...) {
+  model = x
   cat("Oracle SSM Model\n",
       "Log-Likelihood: ", round(model$value, 3), "\n",
       "optim() Iterations: ", model$iterations, "\n",
@@ -36,7 +40,8 @@ print.oracle_SSM = function(model) {
 }
 
 #' @export
-print.huber_robust_SSM = function(model) {
+print.huber_robust_SSM = function(x, ...) {
+  model = x
   cat("Huber SSM Model\n",
       "Log-Likelihood: ", round(model$value, 3), "\n",
       "optim() Iterations: ", model$iterations, "\n",
@@ -44,7 +49,8 @@ print.huber_robust_SSM = function(model) {
 }
 
 #' @export
-print.trimmed_robust_SSM = function(model) {
+print.trimmed_robust_SSM = function(x, ...) {
+  model = x
   cat("Trimmed SSM Model\n",
       "Log-Likelihood: ", round(model$value, 3), "\n",
       "optim() Iterations: ", model$iterations, "\n",
@@ -56,8 +62,9 @@ print.trimmed_robust_SSM = function(model) {
 #'
 #' Generates a diagnostic plot for a list of robust state space models fit across a sequence of \eqn{\lambda} values. The plot displays the specified model attribute (e.g., BIC, proportion outlying, log-likelihood) against \eqn{\lambda}, with a vertical dashed line indicating the model with the lowest BIC among those with fewer than 50\% outliers.
 #'
-#' @param model_list An object of class `robularized_SSM_list` as returned by \code{\link{robularized_SSM}} when multiple \eqn{\lambda} values are used.
+#' @param object An object of class `robularized_SSM_list` as returned by \code{\link{robularized_SSM}} when multiple \eqn{\lambda} values are used.
 #' @param attribute A character string indicating which model attribute to plot. Options include `lambda`, `prop_outlying`, `BIC`, `loglik`, `RSS`, `iterations`, `value`, and `counts`. Defaults to `BIC`.
+#' @param ... Other arguments passed to specific methods. Not used in this method.
 #'
 #' @return A `ggplot` object showing the trajectory of the specified attribute across \eqn{\lambda}.
 #'
@@ -66,12 +73,16 @@ print.trimmed_robust_SSM = function(model) {
 #'
 #' @seealso \code{\link{robularized_SSM}}, \code{\link{get_attribute}}
 #'
-#' @import ggplot2
+#' @importFrom ggplot2 ggplot aes geom_line geom_vline labs theme_bw autoplot
 #' @importFrom dplyr filter slice
+#' @importFrom magrittr %>%
 #' @importFrom latex2exp TeX
+#'
 #' @export
 #' @method autoplot robularized_SSM_list
-autoplot.robularized_SSM_list = function(model_list, attribute = "BIC") {
+autoplot.robularized_SSM_list = function(object, attribute = "BIC", ...) {
+
+  model_list = object
 
   vector_attributes = c(
     "lambda",
