@@ -11,7 +11,7 @@ trimmed_robust_SSM(
   alpha,
   lower = NA,
   upper = NA,
-  control = list()
+  control = list(parscale = init_par)
 )
 }
 \arguments{
@@ -19,25 +19,27 @@ trimmed_robust_SSM(
 
 \item{init_par}{A numeric vector of initial parameter values.}
 
-\item{build}{A function that returns a `dlm` model given a parameter vector.}
+\item{build}{A function that returns a `dlm` model given a parameter vector. The `specify_SSM` function can be used to create this `build` function.}
 
 \item{alpha}{Numeric value in (0, 1) indicating the trimming proportion (i.e., the proportion of data to exclude as outliers).}
 
-\item{lower}{Optional numeric vector of lower bounds for parameter estimation. Defaults to `-Inf`.}
+\item{lower}{Optional numeric vector of lower bounds for parameter estimation. Defaults to `-Inf`. Must be of same length as `init_par`.}
 
-\item{upper}{Optional numeric vector of upper bounds for parameter estimation. Defaults to `Inf`.}
+\item{upper}{Optional numeric vector of upper bounds for parameter estimation. Defaults to `Inf`. Must be of same length as `init_par`.}
 
-\item{control}{Optional list of control parameters passed to `optim`.}
+\item{control}{Optional list of control parameters passed to `optim`. Default is `list(parscale = init_par)`, which can help the optimizer if parameters are on vastly different scales.}
 }
 \value{
-An object of class `"trimmed_robust_SSM"` containing the optimization result, trimming level, and the original data.
+An object of class `trimmed_robust_SSM` containing the optimization result, trimming level \eqn{\alpha}, the original data, and the original build function.
 }
 \description{
-Fits a robust state space model by minimizing a trimmed loss function. A fixed proportion of the largest residuals are excluded from the objective, providing robustness against extreme outliers.
+Fits a robust state space model by minimizing a trimmed loss function as per Crevits and Croux (2018). A fixed proportion of the largest residuals are excluded from the objective, providing robustness against extreme outliers. The predicted observations used in the trimmed loss are computed using the Huber robust filter from Cipra and Romera (1997).
 }
-\details{
-This function calls a custom objective function \code{ruben_filter()} using a trimmed loss, which requires the internal implementation of that function to be compatible.
+\references{
+Crevits R. and Croux C. (2018). Robust Estimation of Linear State Space Models. *Communications in Statistics: Simulation and Computation*
+
+Cipra, T., Romera, R. (1997). Kalman filter with outliers and missing observations. *Test* 6, 379–395. https://doi.org/10.1007/BF02564705
 }
 \seealso{
-\code{\link{huber_robust_SSM}}, \code{\link{robularized_SSM}}, \code{\link[stats]{optim}}
+\code{\link{huber_robust_SSM}}, \code{\link{robularized_SSM}}, \code{\link[stats]{optim}}, \code{\link{attach_insample_info}}, \code{\link{oos_filter}}, \code{\link{specify_SSM}}
 }

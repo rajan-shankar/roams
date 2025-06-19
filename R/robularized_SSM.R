@@ -1,31 +1,32 @@
 #' Robust Regularized Fitting of State Space Models
 #'
-#' Fits a robust state space model to multivariate time series data using iterative parameter estimation and outlier detection. This procedure applies an Iterative Penalized Outlier Detection (IPOD) algorithm over a grid of regularization parameters (lambdas), identifying outliers via Mahalanobis residuals and re-fitting the model iteratively.
+#' Fits a robust state space model to multivariate time series data using iterative parameter estimation and outlier detection. This procedure applies the Iterative Penalized Outlier Detection (IPOD) algorithm of She and Owen (2011) over a sequence of regularization parameters (\eqn{\lambda}'s), identifying outliers via Mahalanobis residuals and re-fitting the model iteratively.
 #'
-#' @param y A numeric matrix of observations, with each row corresponding to a different observed variable and each column to a time point.
+#' @param y A numeric matrix of observations, with each column corresponding to a time point.
 #' @param init_par A numeric vector of initial parameter values for optimization.
-#' @param build A function that accepts a parameter vector and returns a `dlm` model (as used in `dlm::dlmMLE()`).
-#' @param num_lambdas Integer. The number of lambda values to evaluate. Ignored if `custom_lambdas` is specified. Default is 10.
-#' @param custom_lambdas Optional numeric vector. If supplied, these are the exact lambda values used for model fitting. If of length 1, a single model is returned. If not provided or set to `NA`, lambdas are automatically chosen.
+#' @param build A function that accepts a parameter vector and returns a `dlm` model (as used in `dlm::dlmMLE()`). The `specify_SSM` function can be used to create this `build` function.
+#' @param num_lambdas Integer. The number of \eqn{\lambda} values to evaluate. Ignored if `custom_lambdas` is specified. Default is 10.
+#' @param custom_lambdas Optional numeric vector. If supplied, these are the exact \eqn{\lambda} values used for model fitting. If not provided or set to `NA`, then `num_lambdas` \eqn{\lambda}'s are automatically chosen.
 #' @param cores Integer. Number of CPU cores to use for parallel processing. Default is 1 (sequential execution).
-#' @param B Integer. Maximum number of IPOD iterations per lambda. Default is 20.
-#' @param lower Optional numeric vector of lower bounds for optimization. If `NA`, defaults to `-Inf` for all parameters.
-#' @param upper Optional numeric vector of upper bounds for optimization. If `NA`, defaults to `Inf` for all parameters.
-#' @param control A named list of control options to pass to `optim` via `dlm::dlmMLE()`. Default is `list()` (uses `parscale = init_par`).
+#' @param B Integer. Maximum number of IPOD iterations per \eqn{\lambda}. Default is 20.
+#' @param lower Optional numeric vector of lower bounds for optimization. If `NA`, defaults to `-Inf` for all parameters. Must be of same length as `init_par`.
+#' @param upper Optional numeric vector of upper bounds for optimization. If `NA`, defaults to `Inf` for all parameters. Must be of same length as `init_par`.
+#' @param control A named list of control options to pass to `optim` via `dlm::dlmMLE()`. Default is `list(parscale = init_par)`, which can help the optimizer if parameters are on vastly different scales.
 #'
-#' @return If `custom_lambdas` is not provided or has length > 1, returns an object of class `"robularized_SSM_list"` — a list of robustly estimated models for each lambda. If `custom_lambdas` is a single value, returns a single `"robularized_SSM"` object.
+#' @return If more than 1 \eqn{\lambda} values are used, returns an object of class `robularized_SSM_list` — a list containing a `robularized_SSM` model for each \eqn{\lambda}. If only 1 \eqn{\lambda} value is used (i.e. `custom_lambdas` is manually specified as a single value), returns a single `robularized_SSM` object.
 #'
-#' Each `"robularized_SSM"` object includes:
+#' Each `robularized_SSM` object includes:
 #' \itemize{
-#'   \item \code{lambda} - The lambda value used.
-#'   \item \code{prop_outlying} - Proportion of time points identified as outliers.
+#'   \item \code{lambda} - The \eqn{\lambda} value used.
+#'   \item \code{prop_outlying} - Proportion of non-missing time points identified as outliers.
 #'   \item \code{BIC} - Bayesian Information Criterion of the final model.
 #'   \item \code{loglik} - Log-likelihood of the fitted model.
 #'   \item \code{RSS} - Residual sum of squares.
 #'   \item \code{gamma} - Matrix of estimated outlier adjustments.
 #'   \item \code{iterations} - Number of IPOD iterations performed.
-#'   \item Optimization output from `dlm::dlmMLE()`.
+#'   \item Optimization output from `dlm::dlmMLE()` from the final IPOD iteration.
 #'   \item \code{y} - The original data matrix.
+#'   \item \code{build} - The original build function used to specify the model.
 #' }
 #'
 #' @details
@@ -33,12 +34,14 @@
 #' \enumerate{
 #'   \item A `dlm` model is fit using `dlm::dlmMLE()`.
 #'   \item Mahalanobis residuals are computed.
-#'   \item Observations with residuals above the current lambda threshold are treated as missing in the next iteration.
+#'   \item Observations with residuals above the current \eqn{\lambda} threshold are treated as missing in the next iteration.
 #' }
 #'
-#' The algorithm stops when the change in parameters and outlier estimates is sufficiently small or if too many outliers are detected (more than 50% of complete observations).
+#' The algorithm stops when the change in parameters and outlier estimates is sufficiently small or if too many outliers are detected (more than 50\% of complete observations).
 #'
-#' @seealso \code{\link[dlm]{dlmMLE}}, \code{\link{lambda_grid}}, \code{\link{run_IPOD}}
+#' @seealso \code{\link[dlm]{dlmMLE}}, \code{\link{best_BIC_model}}, \code{\link{outlier_target_model}}, \code{\link{get_attributes}}, \code{\link{autoplot.robularized_SSM_list}}, \code{\link{attach_insample_info}}, \code{\link{oos_filter}}, \code{\link{specify_SSM}}
+#'
+#' @references She, Y., & Owen, A. B. (2011). Outlier Detection Using Nonconvex Penalized Regression. *Journal of the American Statistical Association, 106*(494), 626–639. https://doi.org/10.1198/jasa.2011.tm10390
 #'
 #' @export
 robularized_SSM = function(
@@ -51,10 +54,8 @@ robularized_SSM = function(
     B = 20,
     lower = NA,
     upper = NA,
-    control = list()
+    control = list(parscale = init_par)
     ) {
-
-
 
   if (is.na(custom_lambdas)) {
   # Completely automatic fit
@@ -186,28 +187,15 @@ run_IPOD = function(
   for (j in 1:B) {
     if (j != 1) {theta_old = fit$par}
 
-    if (length(control) == 0) {
-      # Set parscale to initial parameters by default
-      fit = dlm::dlmMLE(
-        t(adj_y),
-        parm = par,
-        build = build,
-        method = "L-BFGS-B",
-        lower = lower,
-        upper = upper,
-        control = list(parscale = par)
-        )
-    } else {
-      fit = dlm::dlmMLE(
-        t(adj_y),
-        parm = par,
-        build = build,
-        method = "L-BFGS-B",
-        lower = lower,
-        upper = upper,
-        control = control
+    fit = dlm::dlmMLE(
+      t(adj_y),
+      parm = par,
+      build = build,
+      method = "L-BFGS-B",
+      lower = lower,
+      upper = upper,
+      control = control
       )
-    }
 
     # If the fit is at edge of parameter space, use the initial parameters for next iteration
     if ((sum(fit$par == lower) + sum(fit$par == upper)) == 0) {
@@ -256,7 +244,8 @@ run_IPOD = function(
       "iterations" = j
       ),
     fit,  # output from dlmMLE (which is just output from optim)
-    y = y
+    list(y = y),
+    list(build = build)
     )
 
   class(model) = "robularized_SSM"
@@ -370,36 +359,39 @@ dlmInfo = function(y, adj_y, model, build) {
 
 #' Attach In-Sample Information to Fitted State Space Model
 #'
-#' Attaches detailed in-sample outputs—such as predicted, filtered, and smoothed states and observations—to a model object fitted using any of the package’s supported estimation methods.
+#' Attaches detailed in-sample information—such as predicted, filtered, and smoothed states and observations—to a model object fitted using any of the package’s supported SSM estimation methods.
 #' These quantities are not stored by default in model objects due to their potentially large memory footprint.
 #'
-#' @param model A fitted model object of class `"robularized_SSM"`, `"classical_SSM"`, `"oracle_SSM"`, `"huber_robust_SSM"`, or `"trimmed_robust_SSM"`, as returned by functions such as [robularized_SSM()], [classical_SSM()], [oracle_SSM()], [huber_robust_SSM()], or [trimmed_robust_SSM()].
-#' @param build A function that takes a numeric parameter vector and returns a `dlm` model object, as used during model fitting.
+#' @param model A fitted model object of class `robularized_SSM`, `classical_SSM`, `oracle_SSM`, `huber_robust_SSM`, or `trimmed_robust_SSM`.
 #'
-#' @return A modified version of the input model object, with an additional class `"insample_info"`, and the following in-sample elements appended:
+#' @return A modified version of the input model object, with an additional class `insample_info`, and the following in-sample elements appended:
 #' \describe{
-#'   \item{`filtered_states`}{Filtered state estimates using data up to each time point.}
-#'   \item{`predicted_states`}{One-step-ahead state predictions.}
-#'   \item{`filtered_observations`}{Expected observations given data up to each time point.}
-#'   \item{`predicted_observations`}{One-step-ahead forecasts of observations.}
-#'   \item{`filtered_states_var`}{List of filtered state variance matrices.}
-#'   \item{`predicted_states_var`}{List of one-step-ahead state prediction variances.}
-#'   \item{`predicted_observations_var`}{List of one-step-ahead observation forecast variances.}
-#'   \item{`mahalanobis_residuals`}{Vector of Mahalanobis distances of residuals from predicted observations.}
+#'   \item{\code{filtered_states}}{Filtered state estimates using data up to each time point.}
+#'   \item{\code{predicted_states}}{One-step-ahead state predictions.}
+#'   \item{\code{filtered_observations}}{Expected observations given data up to each time point.}
+#'   \item{\code{predicted_observations}}{One-step-ahead forecasts of observations.}
+#'   \item{\code{filtered_states_var}}{List of filtered state variance matrices.}
+#'   \item{\code{predicted_states_var}}{List of one-step-ahead state prediction variances.}
+#'   \item{\code{predicted_observations_var}}{List of one-step-ahead observation forecast variances.}
+#'   \item{\code{mahalanobis_residuals}}{Vector of Mahalanobis distances of residuals from predicted observations.}
 #' }
 #'
-#' For models of class `"robularized_SSM"`, `"classical_SSM"`, or `"oracle_SSM"`, the following additional elements are also attached:
+#' For models of class `robularized_SSM`, `classical_SSM`, or `oracle_SSM`, the following additional elements are also attached:
 #' \describe{
-#'   \item{`smoothed_states`}{Posterior means of hidden states using all data.}
-#'   \item{`smoothed_observations`}{Posterior mean of the observed series based on smoothed states.}
-#'   \item{`smoothed_states_var`}{List of smoothed state variance matrices.}
+#'   \item{\code{smoothed_states}}{Posterior means of hidden states using all data.}
+#'   \item{\code{smoothed_observations}}{Posterior mean of the observed series based on smoothed states.}
+#'   \item{\code{smoothed_states_var}}{List of smoothed state variance matrices.}
 #' }
 #'
 #' @details
 #' The attached outputs enable richer diagnostics, outlier inspection, and plotting.
-#' For `"huber_robust_SSM"` and `"trimmed_robust_SSM"` models, in-sample information is computed using a custom robust filtering function, and smoothed quantities (`smoothed_states`, `smoothed_observations`, and `smoothed_states_var`) are **not available**.
+#' For `huber_robust_SSM` and `trimmed_robust_SSM` models, in-sample information is computed using a custom robust filtering function, and smoothed quantities (`smoothed_states`, `smoothed_observations`, and `smoothed_states_var`) are **not available**.
 #' This function should only be applied once to a model object.
-attach_insample_info = function(model, build) {
+#'
+#' @seealso \code{\link{oos_filter}}
+#'
+#' @export
+attach_insample_info = function(model) {
 
   if (inherits(model, "insample_info")) {
     stop("Model already has in-sample information attached.")
@@ -477,54 +469,43 @@ attach_insample_info = function(model, build) {
 #'
 #' Applies the fitted model parameters to a user-supplied out-of-sample dataset to compute predicted and filtered states and observations. Robust and classical inference procedures are supported depending on the class of the input model.
 #'
-#' @param y A numeric matrix containing out-of-sample observations. Each column corresponds to a time point; each row corresponds to an observed series.
-#' @param model A fitted model object of class `"robularized_SSM"`, `"classical_SSM"`, `"oracle_SSM"`, `"huber_robust_SSM"`, or `"trimmed_robust_SSM"`.
-#' @param build A function that maps a numeric parameter vector to a corresponding `dlm` model object, as used during fitting.
-#' @param alpha Trimming proportion for `"trimmed_robust_SSM"` models. If `NA` (default), uses `model$alpha`.
-#' @param outlier_locs A logical or binary vector of the same length as `ncol(y)`, indicating time points to be treated as missing (i.e., likely outliers). Used only with `"oracle_SSM"` models.
-#' @param threshold Mahalanobis distance threshold for identifying outliers in `"robularized_SSM"` models. Default is `sqrt(qchisq(0.99, 2))`.
-#' @param multiplier Multiplier for the thresholding step in `"robularized_SSM"` models. Default is `2`.
+#' @param y A numeric matrix containing out-of-sample observations. Each column corresponds to a time point.
+#' @param model A fitted model object of class `robularized_SSM`, `classical_SSM`, `oracle_SSM`, `huber_robust_SSM`, or `trimmed_robust_SSM`.
+#' @param build A function that maps a numeric parameter vector to a corresponding `dlm` model object. The `specify_SSM` function can be used to create this `build` function.
+#' @param outlier_locs A logical or binary vector of the same length as `ncol(y)`, indicating time points to be treated as missing (i.e., time points that are known to be outliers). Used only with `oracle_SSM` models.
+#' @param threshold Mahalanobis distance threshold for identifying outliers in `robularized_SSM` models. Default is \code{sqrt(qchisq(0.99, nrow(y)))}.
+#' @param multiplier Multiplier for how quickly the filter grows its filtered state variance (uncertainty) after detecting an outlier in `robularized_SSM` models. Default is `1`.
 #'
-#' @return A list containing out-of-sample inference results. Always includes:
+#' @return A named list containing out-of-sample inference results:
 #' \describe{
-#'   \item{`filtered_states`}{Filtered state estimates using out-of-sample data.}
-#'   \item{`predicted_states`}{One-step-ahead state predictions.}
-#'   \item{`filtered_observations`}{Expected observations given past out-of-sample data.}
-#'   \item{`predicted_observations`}{One-step-ahead forecasts of observations.}
-#'   \item{`filtered_states_var`}{List of filtered state variance matrices.}
-#'   \item{`predicted_states_var`}{List of one-step-ahead state prediction variances.}
-#'   \item{`predicted_observations_var`}{List of one-step-ahead observation forecast variances.}
-#'   \item{`mahalanobis_residuals`}{Vector of Mahalanobis distances of residuals from predicted observations.}
+#'   \item{\code{filtered_states}}{Filtered state estimates using out-of-sample data.}
+#'   \item{\code{predicted_states}}{One-step-ahead state predictions.}
+#'   \item{\code{filtered_observations}}{Expected observations given past out-of-sample data.}
+#'   \item{\code{predicted_observations}}{One-step-ahead forecasts of observations.}
+#'   \item{\code{filtered_states_var}}{List of filtered state variance matrices.}
+#'   \item{\code{predicted_states_var}}{List of one-step-ahead state prediction variances.}
+#'   \item{\code{predicted_observations_var}}{List of one-step-ahead observation forecast variances.}
+#'   \item{\code{mahalanobis_residuals}}{Vector of Mahalanobis distances of residuals from predicted observations.}
 #' }
-#'
-#' For robust models (`"huber_robust_SSM"`, `"trimmed_robust_SSM"`, `"robularized_SSM"`), the output is computed via custom robust filtering procedures and may include additional internal elements from [ruben_filter()] or [IPOD_oos_robust_filter()].
 #'
 #' @details
-#' The function reuses the model's fitted parameters and `build` function to generate inference on new data `y`. Robust variants rely on the same loss functions used during fitting, while classical models use standard Kalman filtering. For `"oracle_SSM"` models, observations flagged in `outlier_locs` are treated as missing during filtering.
+#' The function reuses the model's fitted parameters to generate inference on new data `y`. Robust variants use appropriate robust filters, while the classical and oracle models use standard Kalman filtering. For `oracle_SSM` models, observations flagged in `outlier_locs` are treated as missing during filtering.
 #'
-#' @seealso [attach_insample_info()], [ruben_filter()], [IPOD_oos_robust_filter()]
-#'
-#' @examples
-#' \dontrun{
-#' model <- robularized_SSM(y_train, init_par, build)
-#' best_model <- model[[which.min(get_attribute(model, "BIC"))]]
-#' out_of_sample_info <- oos_filter(y_test, best_model, build)
-#' plot(out_of_sample_info$mahalanobis_residuals, type = "l")
-#' }
+#' @seealso \code{\link{attach_insample_info}}, \code{\link{specify_SSM}}
 #'
 #' @export
-oos_filter = function(y, model, build,
-                      alpha = NA,
+oos_filter = function(y_oos, model, build,
                       outlier_locs = rep(0, ncol(y)),
-                      threshold = sqrt(qchisq(0.99, 2)),
-                      multiplier = 2) {
+                      threshold = sqrt(qchisq(0.99, nrow(y))),
+                      multiplier = 1) {
+
+  y = y_oos
 
   if (inherits(model, "huber_robust_SSM")) {
     oos_output = ruben_filter(model$par, y, build, obj_type = "huber")
     return(oos_output)
   } else if (inherits(model, "trimmed_robust_SSM")) {
-    oos_output = ruben_filter(model$par, y, build, obj_type = "trimmed",
-                              alpha = ifelse(is.na(alpha), model$alpha, alpha))
+    oos_output = ruben_filter(model$par, y, build, obj_type = "trimmed")
     return(oos_output)
 
   } else if (inherits(model, "robularized_SSM")){

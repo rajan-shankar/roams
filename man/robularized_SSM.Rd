@@ -14,59 +14,63 @@ robularized_SSM(
   B = 20,
   lower = NA,
   upper = NA,
-  control = list()
+  control = list(parscale = init_par)
 )
 }
 \arguments{
-\item{y}{A numeric matrix of observations, with each row corresponding to a different observed variable and each column to a time point.}
+\item{y}{A numeric matrix of observations, with each column corresponding to a time point.}
 
 \item{init_par}{A numeric vector of initial parameter values for optimization.}
 
-\item{build}{A function that accepts a parameter vector and returns a `dlm` model (as used in `dlm::dlmMLE()`).}
+\item{build}{A function that accepts a parameter vector and returns a `dlm` model (as used in `dlm::dlmMLE()`). The `specify_SSM` function can be used to create this `build` function.}
 
-\item{num_lambdas}{Integer. The number of lambda values to evaluate. Ignored if `custom_lambdas` is specified. Default is 10.}
+\item{num_lambdas}{Integer. The number of \eqn{\lambda} values to evaluate. Ignored if `custom_lambdas` is specified. Default is 10.}
 
-\item{custom_lambdas}{Optional numeric vector. If supplied, these are the exact lambda values used for model fitting. If of length 1, a single model is returned. If not provided or set to `NA`, lambdas are automatically chosen.}
+\item{custom_lambdas}{Optional numeric vector. If supplied, these are the exact \eqn{\lambda} values used for model fitting. If not provided or set to `NA`, then `num_lambdas` \eqn{\lambda}'s are automatically chosen.}
 
 \item{cores}{Integer. Number of CPU cores to use for parallel processing. Default is 1 (sequential execution).}
 
-\item{B}{Integer. Maximum number of IPOD iterations per lambda. Default is 20.}
+\item{B}{Integer. Maximum number of IPOD iterations per \eqn{\lambda}. Default is 20.}
 
-\item{lower}{Optional numeric vector of lower bounds for optimization. If `NA`, defaults to `-Inf` for all parameters.}
+\item{lower}{Optional numeric vector of lower bounds for optimization. If `NA`, defaults to `-Inf` for all parameters. Must be of same length as `init_par`.}
 
-\item{upper}{Optional numeric vector of upper bounds for optimization. If `NA`, defaults to `Inf` for all parameters.}
+\item{upper}{Optional numeric vector of upper bounds for optimization. If `NA`, defaults to `Inf` for all parameters. Must be of same length as `init_par`.}
 
-\item{control}{A named list of control options to pass to `optim` via `dlm::dlmMLE()`. Default is `list()` (uses `parscale = init_par`).}
+\item{control}{A named list of control options to pass to `optim` via `dlm::dlmMLE()`. Default is `list(parscale = init_par)`, which can help the optimizer if parameters are on vastly different scales.}
 }
 \value{
-If `custom_lambdas` is not provided or has length > 1, returns an object of class `"robularized_SSM_list"` — a list of robustly estimated models for each lambda. If `custom_lambdas` is a single value, returns a single `"robularized_SSM"` object.
+If more than 1 \eqn{\lambda} values are used, returns an object of class `robularized_SSM_list` — a list containing a `robularized_SSM` model for each \eqn{\lambda}. If only 1 \eqn{\lambda} value is used (i.e. `custom_lambdas` is manually specified as a single value), returns a single `robularized_SSM` object.
 
-Each `"robularized_SSM"` object includes:
+Each `robularized_SSM` object includes:
 \itemize{
-  \item \code{lambda} - The lambda value used.
-  \item \code{prop_outlying} - Proportion of time points identified as outliers.
+  \item \code{lambda} - The \eqn{\lambda} value used.
+  \item \code{prop_outlying} - Proportion of non-missing time points identified as outliers.
   \item \code{BIC} - Bayesian Information Criterion of the final model.
   \item \code{loglik} - Log-likelihood of the fitted model.
   \item \code{RSS} - Residual sum of squares.
   \item \code{gamma} - Matrix of estimated outlier adjustments.
   \item \code{iterations} - Number of IPOD iterations performed.
-  \item Optimization output from `dlm::dlmMLE()`.
+  \item Optimization output from `dlm::dlmMLE()` from the final IPOD iteration.
   \item \code{y} - The original data matrix.
+  \item \code{build} - The original build function used to specify the model.
 }
 }
 \description{
-Fits a robust state space model to multivariate time series data using iterative parameter estimation and outlier detection. This procedure applies an Iterative Penalized Outlier Detection (IPOD) algorithm over a grid of regularization parameters (lambdas), identifying outliers via Mahalanobis residuals and re-fitting the model iteratively.
+Fits a robust state space model to multivariate time series data using iterative parameter estimation and outlier detection. This procedure applies the Iterative Penalized Outlier Detection (IPOD) algorithm of She and Owen (2011) over a sequence of regularization parameters (\eqn{\lambda}'s), identifying outliers via Mahalanobis residuals and re-fitting the model iteratively.
 }
 \details{
 The IPOD procedure alternates between estimating model parameters via maximum likelihood and identifying outlying observations based on Mahalanobis residuals. For each iteration:
 \enumerate{
   \item A `dlm` model is fit using `dlm::dlmMLE()`.
   \item Mahalanobis residuals are computed.
-  \item Observations with residuals above the current lambda threshold are treated as missing in the next iteration.
+  \item Observations with residuals above the current \eqn{\lambda} threshold are treated as missing in the next iteration.
 }
 
-The algorithm stops when the change in parameters and outlier estimates is sufficiently small or if too many outliers are detected (more than 50% of complete observations).
+The algorithm stops when the change in parameters and outlier estimates is sufficiently small or if too many outliers are detected (more than 50\% of complete observations).
+}
+\references{
+She, Y., & Owen, A. B. (2011). Outlier Detection Using Nonconvex Penalized Regression. *Journal of the American Statistical Association, 106*(494), 626–639. https://doi.org/10.1198/jasa.2011.tm10390
 }
 \seealso{
-\code{\link[dlm]{dlmMLE}}, \code{\link{lambda_grid}}, \code{\link{run_IPOD}}
+\code{\link[dlm]{dlmMLE}}, \code{\link{best_BIC_model}}, \code{\link{outlier_target_model}}, \code{\link{get_attributes}}, \code{\link{autoplot.robularized_SSM_list}}, \code{\link{attach_insample_info}}, \code{\link{oos_filter}}, \code{\link{specify_SSM}}
 }

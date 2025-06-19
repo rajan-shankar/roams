@@ -5,60 +5,46 @@
 \title{Compute Out-of-Sample Inference for Fitted State Space Model}
 \usage{
 oos_filter(
-  y,
+  y_oos,
   model,
   build,
-  alpha = NA,
   outlier_locs = rep(0, ncol(y)),
-  threshold = sqrt(qchisq(0.99, 2)),
-  multiplier = 2
+  threshold = sqrt(qchisq(0.99, nrow(y))),
+  multiplier = 1
 )
 }
 \arguments{
-\item{y}{A numeric matrix containing out-of-sample observations. Each column corresponds to a time point; each row corresponds to an observed series.}
+\item{model}{A fitted model object of class `robularized_SSM`, `classical_SSM`, `oracle_SSM`, `huber_robust_SSM`, or `trimmed_robust_SSM`.}
 
-\item{model}{A fitted model object of class `"robularized_SSM"`, `"classical_SSM"`, `"oracle_SSM"`, `"huber_robust_SSM"`, or `"trimmed_robust_SSM"`.}
+\item{build}{A function that maps a numeric parameter vector to a corresponding `dlm` model object. The `specify_SSM` function can be used to create this `build` function.}
 
-\item{build}{A function that maps a numeric parameter vector to a corresponding `dlm` model object, as used during fitting.}
+\item{outlier_locs}{A logical or binary vector of the same length as `ncol(y)`, indicating time points to be treated as missing (i.e., time points that are known to be outliers). Used only with `oracle_SSM` models.}
 
-\item{alpha}{Trimming proportion for `"trimmed_robust_SSM"` models. If `NA` (default), uses `model$alpha`.}
+\item{threshold}{Mahalanobis distance threshold for identifying outliers in `robularized_SSM` models. Default is \code{sqrt(qchisq(0.99, nrow(y)))}.}
 
-\item{outlier_locs}{A logical or binary vector of the same length as `ncol(y)`, indicating time points to be treated as missing (i.e., likely outliers). Used only with `"oracle_SSM"` models.}
+\item{multiplier}{Multiplier for how quickly the filter grows its filtered state variance (uncertainty) after detecting an outlier in `robularized_SSM` models. Default is `1`.}
 
-\item{threshold}{Mahalanobis distance threshold for identifying outliers in `"robularized_SSM"` models. Default is `sqrt(qchisq(0.99, 2))`.}
-
-\item{multiplier}{Multiplier for the thresholding step in `"robularized_SSM"` models. Default is `2`.}
+\item{y}{A numeric matrix containing out-of-sample observations. Each column corresponds to a time point.}
 }
 \value{
-A list containing out-of-sample inference results. Always includes:
+A named list containing out-of-sample inference results:
 \describe{
-  \item{`filtered_states`}{Filtered state estimates using out-of-sample data.}
-  \item{`predicted_states`}{One-step-ahead state predictions.}
-  \item{`filtered_observations`}{Expected observations given past out-of-sample data.}
-  \item{`predicted_observations`}{One-step-ahead forecasts of observations.}
-  \item{`filtered_states_var`}{List of filtered state variance matrices.}
-  \item{`predicted_states_var`}{List of one-step-ahead state prediction variances.}
-  \item{`predicted_observations_var`}{List of one-step-ahead observation forecast variances.}
-  \item{`mahalanobis_residuals`}{Vector of Mahalanobis distances of residuals from predicted observations.}
+  \item{\code{filtered_states}}{Filtered state estimates using out-of-sample data.}
+  \item{\code{predicted_states}}{One-step-ahead state predictions.}
+  \item{\code{filtered_observations}}{Expected observations given past out-of-sample data.}
+  \item{\code{predicted_observations}}{One-step-ahead forecasts of observations.}
+  \item{\code{filtered_states_var}}{List of filtered state variance matrices.}
+  \item{\code{predicted_states_var}}{List of one-step-ahead state prediction variances.}
+  \item{\code{predicted_observations_var}}{List of one-step-ahead observation forecast variances.}
+  \item{\code{mahalanobis_residuals}}{Vector of Mahalanobis distances of residuals from predicted observations.}
 }
-
-For robust models (`"huber_robust_SSM"`, `"trimmed_robust_SSM"`, `"robularized_SSM"`), the output is computed via custom robust filtering procedures and may include additional internal elements from [ruben_filter()] or [IPOD_oos_robust_filter()].
 }
 \description{
 Applies the fitted model parameters to a user-supplied out-of-sample dataset to compute predicted and filtered states and observations. Robust and classical inference procedures are supported depending on the class of the input model.
 }
 \details{
-The function reuses the model's fitted parameters and `build` function to generate inference on new data `y`. Robust variants rely on the same loss functions used during fitting, while classical models use standard Kalman filtering. For `"oracle_SSM"` models, observations flagged in `outlier_locs` are treated as missing during filtering.
-}
-\examples{
-\dontrun{
-model <- robularized_SSM(y_train, init_par, build)
-best_model <- model[[which.min(get_attribute(model, "BIC"))]]
-out_of_sample_info <- oos_filter(y_test, best_model, build)
-plot(out_of_sample_info$mahalanobis_residuals, type = "l")
-}
-
+The function reuses the model's fitted parameters to generate inference on new data `y`. Robust variants use appropriate robust filters, while the classical and oracle models use standard Kalman filtering. For `oracle_SSM` models, observations flagged in `outlier_locs` are treated as missing during filtering.
 }
 \seealso{
-[attach_insample_info()], [ruben_filter()], [IPOD_oos_robust_filter()]
+\code{\link{attach_insample_info}}, \code{\link{specify_SSM}}
 }

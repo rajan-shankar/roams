@@ -52,19 +52,19 @@ print.trimmed_robust_SSM = function(model) {
       "Use $ to see more attributes.\n",)
 }
 
-#' Autoplot for Robularized State Space Model Grid
+#' Autoplot for Robularized State Space Model List
 #'
-#' Generates a diagnostic plot for a list of robust state space models fit across a grid of \eqn{\lambda} values. The plot displays the specified model attribute (e.g., BIC, log-likelihood, proportion of outliers) against \eqn{\lambda}, with an optional vertical dashed line indicating the model with the lowest BIC among those with fewer than 45% outliers.
+#' Generates a diagnostic plot for a list of robust state space models fit across a sequence of \eqn{\lambda} values. The plot displays the specified model attribute (e.g., BIC, proportion outlying, log-likelihood) against \eqn{\lambda}, with a vertical dashed line indicating the model with the lowest BIC among those with fewer than 50\% outliers.
 #'
-#' @param model_list An object of class `"robularized_SSM_list"` as returned by [robularized_SSM()] when multiple \eqn{\lambda} values are used.
-#' @param attribute A character string indicating which model attribute to plot. Options include `"lambda"`, `"prop_outlying"`, `"BIC"`, `"loglik"`, `"RSS"`, `"iterations"`, `"value"`, and `"counts"`. Defaults to `"BIC"`.
+#' @param model_list An object of class `robularized_SSM_list` as returned by \code{\link{robularized_SSM}} when multiple \eqn{\lambda} values are used.
+#' @param attribute A character string indicating which model attribute to plot. Options include `lambda`, `prop_outlying`, `BIC`, `loglik`, `RSS`, `iterations`, `value`, and `counts`. Defaults to `BIC`.
 #'
 #' @return A `ggplot` object showing the trajectory of the specified attribute across \eqn{\lambda}.
 #'
 #' @details
-#' The red dashed vertical line indicates the model with the lowest BIC among models with less than 45% outlying time points, as a heuristic for robust model selection.
+#' The red dashed vertical line indicates the model with the lowest BIC among models with less than 50\% outlying time points, as a heuristic for robust model selection.
 #'
-#' @seealso [robularized_SSM()], [get_attribute()]
+#' @seealso \code{\link{robularized_SSM}}, \code{\link{get_attribute}}
 #'
 #' @import ggplot2
 #' @importFrom dplyr filter slice
@@ -99,7 +99,7 @@ autoplot.robularized_SSM_list = function(model_list, attribute = "BIC") {
     aes(x = lambda, y = attribute) +
     geom_line(linewidth = 1) +
     geom_vline(data = . %>%
-                 dplyr::filter(prop_outlying < 0.45) %>%
+                 dplyr::filter(prop_outlying < 0.5) %>%
                  dplyr::slice(which.min(BIC)),
                aes(xintercept = lambda),
                colour = "red", linetype = "dashed") +

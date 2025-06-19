@@ -2,67 +2,55 @@
 % Please edit documentation in R/get_attribute.R
 \name{get_attribute}
 \alias{get_attribute}
-\title{Extract Attributes from a `robularized_SSM_list` or Single Model}
+\title{Extract Attributes from a Robularized SSM List}
 \usage{
 get_attribute(model_list, attribute)
 }
 \arguments{
-\item{model_list}{An object of class `robularized_SSM_list` or a single `robularized_SSM` model. May optionally include in-sample information added via [attach_insample_info()].}
+\item{model_list}{An object of class `robularized_SSM_list` or a single `robularized_SSM` model. May optionally include in-sample information added via `attach_insample_info`.}
 
-\item{attribute}{A character string specifying the name of the attribute to extract. Must be one of the available scalar attributes (e.g. `"BIC"`, `"lambda"`) or list/matrix attributes (e.g. `"filtered_states"`, `"smoothed_states"`).}
+\item{attribute}{A character string specifying the name of the attribute to extract. Must be one of the available scalar attributes (e.g. `BIC`, `lambda`) or list/vector attributes (e.g. `filtered_states`, `smoothed_states`).}
 }
 \value{
-If `attribute` is a scalar attribute (e.g., `"BIC"` or `"lambda"`), returns a numeric or character vector containing that attribute across all models.
+If `attribute` is a scalar attribute (e.g., `BIC` or `lambda`), returns a numeric or character vector containing that attribute across all models.
 
-If `attribute` is a list-like attribute (e.g., `"filtered_states"` or `"gamma"`), returns a list of those values, one per model.
+If `attribute` is a list-like attribute (e.g., `par` or `gamma`), returns a list of those values, across all models.
 }
 \description{
-Retrieves a specified attribute from each model within a `robularized_SSM_list` object. If a single model of class `robularized_SSM` is provided, it is automatically wrapped into a list for extraction.
+Retrieves a specified attribute from each model within a `robularized_SSM_list` object. Also works if a single model of class `robularized_SSM` is provided.
 }
 \details{
-Available attributes depend on whether in-sample information has been attached using [attach_insample_info()]. If not, only core model components (e.g. `par`, `gamma`, `y`) and scalar fitting metrics (e.g. `BIC`, `loglik`) are available.
+Available attributes depend on whether in-sample information has been attached using `attach_insample_info`. If not, only core model components (e.g. `par`, `gamma`, `y`) and scalar metrics (e.g. `BIC`, `loglik`) are available.
 
-\strong{Vector Attributes (always available):}
+\strong{Scalar Attributes (always available):}
 \itemize{
-  \item `"lambda"`: Regularization penalty value.
-  \item `"prop_outlying"`: Proportion of outlying time points identified.
-  \item `"BIC"`: Bayesian Information Criterion.
-  \item `"loglik"`: Log-likelihood.
-  \item `"RSS"`: Residual sum of squares.
-  \item `"iterations"`: Number of optimization iterations.
-  \item `"value"`: Final objective function value.
-  \item `"counts"`: Optimization evaluation counts.
-  \item `"convergence"`: Convergence status of optimizer.
-  \item `"message"`: Optimizer termination message.
+  \item \code{lambda}: Regularization penalty value.
+  \item \code{prop_outlying}: Proportion of outlying time points identified.
+  \item \code{BIC}: Bayesian Information Criterion.
+  \item \code{loglik}: Log-likelihood.
+  \item \code{RSS}: Residual sum of squares.
+  \item \code{iterations}: Number of IPOD iterations.
+  \item \code{value}: Final objective function value.
+  \item \code{counts}: Optimization evaluation counts.
+  \item \code{convergence}: Convergence status of optimizer.
+  \item \code{message}: Optimizer termination message.
 }
 
-\strong{List Attributes that are always available:}
+\strong{List/Vector Attributes that are always available:}
 \itemize{
-  \item `"par"`, `"gamma"`, `"y"`
+  \item \code{par}, \code{gamma}, \code{y}
 }
 
-\strong{List Attributes that are only available if in-sample info is attached:}
+\strong{List/Vector Attributes that are only available if in-sample info is attached:}
 \itemize{
-  \item `"smoothed_states"`, `"filtered_states"`, `"predicted_states"`
-  \item `"smoothed_observations"`, `"filtered_observations"`, `"predicted_observations"`
-  \item `"smoothed_states_var"`, `"filtered_states_var"`, `"predicted_states_var"`, `"predicted_observations_var"`
-  \item `"mahalanobis_residuals"`
+  \item \code{smoothed_states}, \code{filtered_states}, \code{predicted_states}
+  \item \code{smoothed_observations}, \code{filtered_observations}, \code{predicted_observations}
+  \item \code{smoothed_states_var}, \code{filtered_states_var}, \code{predicted_states_var}, \code{predicted_observations_var}
+  \item \code{mahalanobis_residuals}
 }
 
-If an invalid attribute is supplied, the function will list available attributes and suggest whether in-sample information might be missing.
-}
-\examples{
-\dontrun{
-models <- robularized_SSM(y, init_par, build)
-lambdas <- get_attribute(models, "lambda")
-BICs <- get_attribute(models, "BIC")
-
-# With in-sample info
-models[[1]] <- attach_insample_info(models[[1]], build)
-residuals <- get_attribute(models[[1]], "mahalanobis_residuals")
-}
-
+Note that these 'in-sample info' attributes are typically only available if `model_list` is a single `robularized_SSM` with in-sample information already attached using `attach_insample_info`. If `model_list` is a `robularized_SSM_list`, these attributes will not be available unless all models in the list have in-sample information attached.
 }
 \seealso{
-[attach_insample_info()], [robularized_SSM()]
+\code{\link{attach_insample_info}}, \code{\link{robularized_SSM}}
 }

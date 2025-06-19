@@ -2,19 +2,23 @@
 % Please edit documentation in R/best_model.R
 \name{best_BIC_model}
 \alias{best_BIC_model}
-\title{A Cat Function}
+\title{Select Best Model Based on BIC}
 \usage{
 best_BIC_model(model_list)
 }
 \arguments{
-\item{love}{Do you love cats? Defaults to TRUE.}
+\item{model_list}{An object of class \code{robularized_SSM_list}}
 }
 \value{
-description
+A single \code{robularized_SSM} object corresponding to the model with the smallest BIC
+among those with fewer than 50\% outlying observations.
 }
 \description{
-This function allows you to express your love of cats.
+Extracts the best-fitting model from a \code{robularized_SSM_list} object according to
+the Bayesian Information Criterion (BIC), while excluding models with more than 50\% outlying observations.
 }
-\details{
-Additional details...
+\examples{
+# Assuming `models` is a robularized_SSM_list:
+best_model <- best_BIC_model(models)
+
 }

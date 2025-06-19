@@ -2,17 +2,17 @@
 #'
 #' Fits a state space model by treating a known set of outliers as missing data. This benchmark model assumes prior knowledge of outlier locations and is intended for comparison with automatic outlier detection procedures.
 #'
-#' @param y A numeric matrix of observations (variables in rows, time points in columns).
+#' @param y A numeric matrix of observations (time points in columns).
 #' @param init_par A numeric vector of initial parameter values.
-#' @param build A function that returns a `dlm` model given a parameter vector.
-#' @param outlier_locs An integer or logical vector of length equal to the number of time points, indicating locations of known outliers (non-zero entries will be treated as missing).
-#' @param lower Optional numeric vector of lower bounds for parameter estimation. Defaults to `-Inf`.
-#' @param upper Optional numeric vector of upper bounds for parameter estimation. Defaults to `Inf`.
-#' @param control Optional list of control parameters passed to `optim` via `dlm::dlmMLE()`.
+#' @param build A function that returns a `dlm` model given a parameter vector. The `specify_SSM` function can be used to create this `build` function.
+#' @param outlier_locs An integer or logical vector of length equal to the number of time points, indicating locations of known outliers.
+#' @param lower Optional numeric vector of lower bounds for parameter estimation. Defaults to `-Inf`. Must be of same length as `init_par`.
+#' @param upper Optional numeric vector of upper bounds for parameter estimation. Defaults to `Inf`. Must be of same length as `init_par`.
+#' @param control Optional list of control parameters passed to `optim` via `dlm::dlmMLE()`. Default is `list(parscale = init_par)`, which can help the optimizer if parameters are on vastly different scales.
 #'
-#' @return An object of class `"oracle_SSM"` containing the optimization result, the original data, and the provided outlier locations.
+#' @return An object of class `oracle_SSM` containing the optimization result, the provided outlier locations, the original data, and the original build function.
 #'
-#' @seealso \code{\link[dlm]{dlmMLE}}, \code{\link{robularized_SSM}}
+#' @seealso \code{\link[dlm]{dlmMLE}}, \code{\link{robularized_SSM}}, \code{\link{attach_insample_info}}, \code{\link{oos_filter}}, \code{\link{specify_SSM}}
 #'
 #' @export
 oracle_SSM = function(
@@ -22,7 +22,7 @@ oracle_SSM = function(
     outlier_locs,
     lower = NA,
     upper = NA,
-    control = list()
+    control = list(parscale = init_par)
 ) {
 
   if (is.na(lower)[1]) {lower = rep(-Inf, length(init_par))}
@@ -38,10 +38,10 @@ oracle_SSM = function(
     method = "L-BFGS-B",
     lower = lower,
     upper = upper,
-    control = list(parscale = init_par)
+    control = control
   )
 
-  model = c(optim_output, outlier_locs = outlier_locs, y = y)
+  model = c(optim_output, outlier_locs = outlier_locs, list(y = y), list(build = build))
   class(model) = "oracle_SSM"
   return(model)
 }
@@ -50,16 +50,16 @@ oracle_SSM = function(
 #'
 #' Fits a state space model using classical maximum likelihood estimation with no attempt to detect or account for outliers. This serves as a baseline model for comparison.
 #'
-#' @param y A numeric matrix of observations (variables in rows, time points in columns).
+#' @param y A numeric matrix of observations (time points in columns).
 #' @param init_par A numeric vector of initial parameter values.
-#' @param build A function that returns a `dlm` model given a parameter vector.
-#' @param lower Optional numeric vector of lower bounds for parameter estimation. Defaults to `-Inf`.
-#' @param upper Optional numeric vector of upper bounds for parameter estimation. Defaults to `Inf`.
-#' @param control Optional list of control parameters passed to `optim` via `dlm::dlmMLE()`.
+#' @param build A function that returns a `dlm` model given a parameter vector. The `specify_SSM` function can be used to create this `build` function.
+#' @param lower Optional numeric vector of lower bounds for parameter estimation. Defaults to `-Inf`. Must be of same length as `init_par`.
+#' @param upper Optional numeric vector of upper bounds for parameter estimation. Defaults to `Inf`. Must be of same length as `init_par`.
+#' @param control Optional list of control parameters passed to `optim` via `dlm::dlmMLE()`. Default is `list(parscale = init_par)`, which can help the optimizer if parameters are on vastly different scales.
 #'
-#' @return An object of class `"classical_SSM"` containing the optimization result and the original data.
+#' @return An object of class `classical_SSM` containing the optimization result, the original data, and the original build function.
 #'
-#' @seealso \code{\link[dlm]{dlmMLE}}, \code{\link{robularized_SSM}}
+#' @seealso \code{\link[dlm]{dlmMLE}}, \code{\link{robularized_SSM}}, \code{\link{attach_insample_info}}, \code{\link{oos_filter}}, \code{\link{specify_SSM}}
 #'
 #' @export
 classical_SSM = function(
@@ -68,7 +68,7 @@ classical_SSM = function(
     build,
     lower = NA,
     upper = NA,
-    control = list()
+    control = list(parscale = init_par)
 ) {
 
   if (is.na(lower)[1]) {lower = rep(-Inf, length(init_par))}
@@ -84,31 +84,31 @@ classical_SSM = function(
     method = "L-BFGS-B",
     lower = lower,
     upper = upper,
-    control = list(parscale = init_par)
+    control = control
   )
 
-  model = c(optim_output, y = y)
+  model = c(optim_output, list(y = y), list(build = build))
   class(model) = "classical_SSM"
   return(model)
 }
 
 #' Huber-Robust State Space Model Fit
 #'
-#' Fits a robust state space model by minimizing a Huber loss objective, providing protection against moderate outliers. This model estimates parameters by applying a robust filter to the observation errors.
+#' Fits a robust state space model by minimizing a Huber loss objective as per Crevits and Croux (2018), providing protection against moderate outliers. The predicted observations used in the Huber loss are computed using the Huber robust filter from Cipra and Romera (1997).
 #'
-#' @param y A numeric matrix of observations (variables in rows, time points in columns).
+#' @param y A numeric matrix of observations (time points in columns).
 #' @param init_par A numeric vector of initial parameter values.
-#' @param build A function that returns a `dlm` model given a parameter vector.
-#' @param lower Optional numeric vector of lower bounds for parameter estimation. Defaults to `-Inf`.
-#' @param upper Optional numeric vector of upper bounds for parameter estimation. Defaults to `Inf`.
-#' @param control Optional list of control parameters passed to `optim`.
+#' @param build A function that returns a `dlm` model given a parameter vector. The `specify_SSM` function can be used to create this `build` function.
+#' @param lower Optional numeric vector of lower bounds for parameter estimation. Defaults to `-Inf`. Must be of same length as `init_par`.
+#' @param upper Optional numeric vector of upper bounds for parameter estimation. Defaults to `Inf`. Must be of same length as `init_par`.
+#' @param control Optional list of control parameters passed to `optim`. Default is `list(parscale = init_par)`, which can help the optimizer if parameters are on vastly different scales.
 #'
-#' @return An object of class `"huber_robust_SSM"` containing the optimization result and the original data.
+#' @return An object of class `huber_robust_SSM` containing the optimization result, the original data, and the original build function.
 #'
-#' @details
-#' This function calls a custom objective function \code{ruben_filter()} using a Huber-type loss, which requires the internal implementation of that function to be compatible.
+#' @seealso \code{\link{trimmed_robust_SSM}}, \code{\link{robularized_SSM}}, \code{\link[stats]{optim}}, \code{\link{attach_insample_info}}, \code{\link{oos_filter}}, \code{\link{specify_SSM}}
 #'
-#' @seealso \code{\link{trimmed_robust_SSM}}, \code{\link{robularized_SSM}}, \code{\link[stats]{optim}}
+#' @references Crevits R. and Croux C. (2018). Robust Estimation of Linear State Space Models. *Communications in Statistics: Simulation and Computation*
+#' @references Cipra, T., Romera, R. (1997). Kalman filter with outliers and missing observations. *Test* 6, 379–395. https://doi.org/10.1007/BF02564705
 #'
 #' @export
 huber_robust_SSM = function(
@@ -117,7 +117,7 @@ huber_robust_SSM = function(
     build,
     lower = NA,
     upper = NA,
-    control = list()
+    control = list(parscale = init_par)
     ) {
 
   if (is.na(lower)[1]) {lower = rep(-Inf, length(init_par))}
@@ -136,29 +136,29 @@ huber_robust_SSM = function(
     control = control
   )
 
-  model = c(optim_output, y = y)
+  model = c(optim_output, list(y = y), list(build = build))
   class(model) = "huber_robust_SSM"
   return(model)
 }
 
 #' Trimmed-Robust State Space Model Fit
 #'
-#' Fits a robust state space model by minimizing a trimmed loss function. A fixed proportion of the largest residuals are excluded from the objective, providing robustness against extreme outliers.
+#' Fits a robust state space model by minimizing a trimmed loss function as per Crevits and Croux (2018). A fixed proportion of the largest residuals are excluded from the objective, providing robustness against extreme outliers. The predicted observations used in the trimmed loss are computed using the Huber robust filter from Cipra and Romera (1997).
 #'
 #' @param y A numeric matrix of observations (variables in rows, time points in columns).
 #' @param init_par A numeric vector of initial parameter values.
-#' @param build A function that returns a `dlm` model given a parameter vector.
+#' @param build A function that returns a `dlm` model given a parameter vector. The `specify_SSM` function can be used to create this `build` function.
 #' @param alpha Numeric value in (0, 1) indicating the trimming proportion (i.e., the proportion of data to exclude as outliers).
-#' @param lower Optional numeric vector of lower bounds for parameter estimation. Defaults to `-Inf`.
-#' @param upper Optional numeric vector of upper bounds for parameter estimation. Defaults to `Inf`.
-#' @param control Optional list of control parameters passed to `optim`.
+#' @param lower Optional numeric vector of lower bounds for parameter estimation. Defaults to `-Inf`. Must be of same length as `init_par`.
+#' @param upper Optional numeric vector of upper bounds for parameter estimation. Defaults to `Inf`. Must be of same length as `init_par`.
+#' @param control Optional list of control parameters passed to `optim`. Default is `list(parscale = init_par)`, which can help the optimizer if parameters are on vastly different scales.
 #'
-#' @return An object of class `"trimmed_robust_SSM"` containing the optimization result, trimming level, and the original data.
+#' @return An object of class `trimmed_robust_SSM` containing the optimization result, trimming level \eqn{\alpha}, the original data, and the original build function.
 #'
-#' @details
-#' This function calls a custom objective function \code{ruben_filter()} using a trimmed loss, which requires the internal implementation of that function to be compatible.
+#' @seealso \code{\link{huber_robust_SSM}}, \code{\link{robularized_SSM}}, \code{\link[stats]{optim}}, \code{\link{attach_insample_info}}, \code{\link{oos_filter}}, \code{\link{specify_SSM}}
 #'
-#' @seealso \code{\link{huber_robust_SSM}}, \code{\link{robularized_SSM}}, \code{\link[stats]{optim}}
+#' @references Crevits R. and Croux C. (2018). Robust Estimation of Linear State Space Models. *Communications in Statistics: Simulation and Computation*
+#' @references Cipra, T., Romera, R. (1997). Kalman filter with outliers and missing observations. *Test* 6, 379–395. https://doi.org/10.1007/BF02564705
 #'
 #' @export
 trimmed_robust_SSM = function(
@@ -168,7 +168,7 @@ trimmed_robust_SSM = function(
     alpha,
     lower = NA,
     upper = NA,
-    control = list()
+    control = list(parscale = init_par)
 ) {
 
   if (is.na(lower)[1]) {lower = rep(-Inf, length(init_par))}
@@ -188,7 +188,7 @@ trimmed_robust_SSM = function(
     control = control
   )
 
-  model = c(optim_output, alpha = alpha, y = y)
+  model = c(optim_output, alpha = alpha, list(y = y), list(build = build))
   class(model) = "trimmed_robust_SSM"
   return(model)
 }

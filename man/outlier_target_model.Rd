@@ -2,19 +2,24 @@
 % Please edit documentation in R/best_model.R
 \name{outlier_target_model}
 \alias{outlier_target_model}
-\title{A Cat Function}
+\title{Select Model Based on Target Outlier Proportion}
 \usage{
 outlier_target_model(model_list, target)
 }
 \arguments{
-\item{love}{Do you love cats? Defaults to TRUE.}
+\item{model_list}{An object of class \code{robularized_SSM_list}.}
+
+\item{target}{A numeric value between 0 and 1 indicating the desired proportion of outlying observations.}
 }
 \value{
-description
+A single \code{robularized_SSM} object whose estimated outlier proportion is closest to \code{target}.
 }
 \description{
-This function allows you to express your love of cats.
+Extracts the model from a \code{robularized_SSM_list} object whose estimated outlier proportion
+is closest to a user-specified target.
 }
-\details{
-Additional details...
+\examples{
+# Select the model with an outlier proportion closest to 10\%
+target_model <- outlier_target_model(models, target = 0.1)
+
 }

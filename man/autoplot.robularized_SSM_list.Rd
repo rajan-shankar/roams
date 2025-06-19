@@ -2,24 +2,24 @@
 % Please edit documentation in R/generics.R
 \name{autoplot.robularized_SSM_list}
 \alias{autoplot.robularized_SSM_list}
-\title{Autoplot for Robularized State Space Model Grid}
+\title{Autoplot for Robularized State Space Model List}
 \usage{
 \method{autoplot}{robularized_SSM_list}(model_list, attribute = "BIC")
 }
 \arguments{
-\item{model_list}{An object of class `"robularized_SSM_list"` as returned by [robularized_SSM()] when multiple \eqn{\lambda} values are used.}
+\item{model_list}{An object of class `robularized_SSM_list` as returned by \code{\link{robularized_SSM}} when multiple \eqn{\lambda} values are used.}
 
-\item{attribute}{A character string indicating which model attribute to plot. Options include `"lambda"`, `"prop_outlying"`, `"BIC"`, `"loglik"`, `"RSS"`, `"iterations"`, `"value"`, and `"counts"`. Defaults to `"BIC"`.}
+\item{attribute}{A character string indicating which model attribute to plot. Options include `lambda`, `prop_outlying`, `BIC`, `loglik`, `RSS`, `iterations`, `value`, and `counts`. Defaults to `BIC`.}
 }
 \value{
 A `ggplot` object showing the trajectory of the specified attribute across \eqn{\lambda}.
 }
 \description{
-Generates a diagnostic plot for a list of robust state space models fit across a grid of \eqn{\lambda} values. The plot displays the specified model attribute (e.g., BIC, log-likelihood, proportion of outliers) against \eqn{\lambda}, with an optional vertical dashed line indicating the model with the lowest BIC among those with fewer than 45% outliers.
+Generates a diagnostic plot for a list of robust state space models fit across a sequence of \eqn{\lambda} values. The plot displays the specified model attribute (e.g., BIC, proportion outlying, log-likelihood) against \eqn{\lambda}, with a vertical dashed line indicating the model with the lowest BIC among those with fewer than 50\% outliers.
 }
 \details{
-The red dashed vertical line indicates the model with the lowest BIC among models with less than 45% outlying time points, as a heuristic for robust model selection.
+The red dashed vertical line indicates the model with the lowest BIC among models with less than 50\% outlying time points, as a heuristic for robust model selection.
 }
 \seealso{
-[robularized_SSM()], [get_attribute()]
+\code{\link{robularized_SSM}}, \code{\link{get_attribute}}
 }

@@ -4,30 +4,39 @@
 \alias{huber_robust_SSM}
 \title{Huber-Robust State Space Model Fit}
 \usage{
-huber_robust_SSM(y, init_par, build, lower = NA, upper = NA, control = list())
+huber_robust_SSM(
+  y,
+  init_par,
+  build,
+  lower = NA,
+  upper = NA,
+  control = list(parscale = init_par)
+)
 }
 \arguments{
-\item{y}{A numeric matrix of observations (variables in rows, time points in columns).}
+\item{y}{A numeric matrix of observations (time points in columns).}
 
 \item{init_par}{A numeric vector of initial parameter values.}
 
-\item{build}{A function that returns a `dlm` model given a parameter vector.}
+\item{build}{A function that returns a `dlm` model given a parameter vector. The `specify_SSM` function can be used to create this `build` function.}
 
-\item{lower}{Optional numeric vector of lower bounds for parameter estimation. Defaults to `-Inf`.}
+\item{lower}{Optional numeric vector of lower bounds for parameter estimation. Defaults to `-Inf`. Must be of same length as `init_par`.}
 
-\item{upper}{Optional numeric vector of upper bounds for parameter estimation. Defaults to `Inf`.}
+\item{upper}{Optional numeric vector of upper bounds for parameter estimation. Defaults to `Inf`. Must be of same length as `init_par`.}
 
-\item{control}{Optional list of control parameters passed to `optim`.}
+\item{control}{Optional list of control parameters passed to `optim`. Default is `list(parscale = init_par)`, which can help the optimizer if parameters are on vastly different scales.}
 }
 \value{
-An object of class `"huber_robust_SSM"` containing the optimization result and the original data.
+An object of class `huber_robust_SSM` containing the optimization result, the original data, and the original build function.
 }
 \description{
-Fits a robust state space model by minimizing a Huber loss objective, providing protection against moderate outliers. This model estimates parameters by applying a robust filter to the observation errors.
+Fits a robust state space model by minimizing a Huber loss objective as per Crevits and Croux (2018), providing protection against moderate outliers. The predicted observations used in the Huber loss are computed using the Huber robust filter from Cipra and Romera (1997).
 }
-\details{
-This function calls a custom objective function \code{ruben_filter()} using a Huber-type loss, which requires the internal implementation of that function to be compatible.
+\references{
+Crevits R. and Croux C. (2018). Robust Estimation of Linear State Space Models. *Communications in Statistics: Simulation and Computation*
+
+Cipra, T., Romera, R. (1997). Kalman filter with outliers and missing observations. *Test* 6, 379–395. https://doi.org/10.1007/BF02564705
 }
 \seealso{
-\code{\link{trimmed_robust_SSM}}, \code{\link{robularized_SSM}}, \code{\link[stats]{optim}}
+\code{\link{trimmed_robust_SSM}}, \code{\link{robularized_SSM}}, \code{\link[stats]{optim}}, \code{\link{attach_insample_info}}, \code{\link{oos_filter}}, \code{\link{specify_SSM}}
 }

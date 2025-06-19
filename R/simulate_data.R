@@ -1,34 +1,34 @@
 #' Simulate DCRW Data for Study 1: Different Outlier Configurations
 #'
-#' Simulates datasets under a first-difference correlated random walk (DCRW) state-space model
-#' for Study 1 in the paper. This study evaluates performance under different types of outlier contamination.
+#' Simulates data sets under a first-difference correlated random walk (DCRW) state-space model
+#' for Study 1 in the paper. This study evaluates performance under different types of outlier configurations.
 #' All arguments have default values matching the simulation setup used in the paper.
 #'
-#' @param sample_sizes Vector of sample sizes for each simulated dataset. Default is \code{c(100, 200, 500)}.
-#' @param samples Number of Monte Carlo replicates per scenario. Default is 100.
-#' @param n_oos Number of out-of-sample (future) timesteps. Default is 100.
+#' @param sample_sizes Vector of sample sizes \eqn{n} for each simulated dataset. Default is \code{c(100, 200, 500)}.
+#' @param samples Number of simulated data sets per \eqn{n} and per outlier configuration. Default is 100.
+#' @param n_oos Number of out-of-sample (future) timesteps. Default is 20.
 #' @param contamination Proportion of contaminated (outlying) observations. Default is 0.1.
 #' @param distance Distance used for fixed-distance outliers. Default is 5.
-#' @param sd_cluster Standard deviation of cluster-based outliers. Default is 2.
-#' @param mean_cluster Mean vector for cluster-based outliers. Default is \code{c(20, 20)}.
+#' @param sd_cluster Standard deviation of cluster for cluster-based outliers. Default is 2.
+#' @param mean_cluster Mean vector of cluster for cluster-based outliers. Default is \code{c(20, 20)}.
 #' @param multi_level_distances Vector of distances for multi-level outliers. Must be of length 3. Default is \code{c(3, 5, 7)}.
-#' @param phi_coef AR(1) parameter in the DCRW transition matrix. Default is 0.8.
-#' @param sigma2_w_lon, sigma2_w_lat Process noise variances (longitude and latitude). Default is 0.1 each.
-#' @param sigma2_v_lon, sigma2_v_lat Observation noise variances (longitude and latitude). Default is 0.4 each.
+#' @param phi_coef Autocorrelation parameter in the DCRW transition matrix. Ranges between 0 and 1. Default is 0.8.
+#' @param sigma2_w_lon,sigma2_w_lat State noise variances (longitude and latitude). Default is 0.1 each.
+#' @param sigma2_v_lon,sigma2_v_lat Observation noise variances (longitude and latitude). Default is 0.4 each.
 #' @param initial_state Initial state vector of length 4. Default is \code{c(0, 0, 0, 0)}.
-#' @param seed Optional random seed for reproducibility. Default is \code{NA}.
+#' @param seed Optional random seed for reproducibility. Default is \code{NA}. Use \code{seed = 1302} to reproduce the same data as in the paper.
 #'
-#' @return A tibble containing the simulated datasets. Each row corresponds to a simulation replicate and includes
-#' fields for sample size, contamination type, outliers, clean data, noisy observations, and out-of-sample values.
+#' @return A tibble containing the simulated data sets. Each row corresponds to a simulated data set and includes
+#' fields for sample size, outlier configuration (setting), outliers, clean data, noisy observations, and out-of-sample values.
 #'
 #' @examples
-#' data_study1 <- simulate_data_study1(samples = 10, seed = 123)
+#' data_study1 = simulate_data_study1(samples = 5, seed = 123)
 #'
 #' @export
 simulate_data_study1 = function(
   sample_sizes = c(100, 200, 500),
   samples = 100,
-  n_oos = 100,
+  n_oos = 20,
   contamination = 0.1,
   distance = 5,
   sd_cluster = 2,
@@ -210,22 +210,29 @@ simulate_data_study1 = function(
 #' and varying outlier distances on model performance. All arguments have default values matching
 #' the simulation setup used in the paper.
 #'
-#' @param samples Number of Monte Carlo replicates per scenario. Default is 100.
+#' @param samples Number of simulated data sets per contamination rate and outlier distance. Default is 100.
 #' @param n Number of in-sample timesteps. Default is 200.
 #' @param max_contamination Maximum proportion of contaminated (outlying) observations. Default is 0.2.
 #' @param distances Vector of five distances for additive outliers. Must be of length 5. Default is \code{c(1, 3, 5, 7, 9)}.
-#' @param n_oos Number of out-of-sample (future) timesteps. Default is 100.
-#' @param phi_coef AR(1) parameter in the DCRW transition matrix. Default is 0.8.
-#' @param sigma2_w_lon, sigma2_w_lat Process noise variances (longitude and latitude). Default is 0.1 each.
-#' @param sigma2_v_lon, sigma2_v_lat Observation noise variances (longitude and latitude). Default is 0.4 each.
+#' @param n_oos Number of out-of-sample (future) timesteps. Default is 20.
+#' @param phi_coef Autocorrelation parameter in the DCRW transition matrix. Default is 0.8.
+#' @param sigma2_w_lon,sigma2_w_lat State noise variances (longitude and latitude). Default is 0.1 each.
+#' @param sigma2_v_lon,sigma2_v_lat Observation noise variances (longitude and latitude). Default is 0.4 each.
 #' @param initial_state Initial state vector of length 4. Default is \code{c(0, 0, 0, 0)}.
-#' @param seed Optional random seed for reproducibility. Default is \code{NA}.
+#' @param seed Optional random seed for reproducibility. Default is \code{NA}. Use \code{seed = 205} to reproduce the same data as in the paper.
 #'
-#' @return A tibble containing the simulated datasets. Each row corresponds to a simulation replicate and includes
-#' fields for contamination level, distance, outliers, clean data, noisy observations, and out-of-sample values.
+#' @return A tibble containing the simulated data sets. Each row corresponds to a simulated data set and includes
+#' fields for contamination rate, distance, outliers, clean data, noisy observations, and out-of-sample values.
+#'
+#' @details
+#' An equally-spaced sequence of five increasing contamination rates from 0 up to \code{max_contamination} will be constructed internally.
+#' For example, if \code{max_contamination = 0.2}, the contamination rates will be \code{c(0, 0.05, 0.1, 0.15, 0.2)}.
+#' The returned tibble will have \eqn{9\times} \code{samples} rows, with each row corresponding to a unique combination of contamination rate and distance.
+#' The levels of contamination rate and distance are not 'crossed'; rather, the middle contamination rate (e.g. 0.1) will be crossed with all distances, and the middle distance (e.g. 5) will be crossed with all contamination rates.
+#' This will result in \eqn{5\times 1 + 5\times 1 = 10} data sets. However, the middle contamination rate and middle distance will be double-counted, so the total number of unique data sets per sample will be \eqn{10 - 1 = 9}.
 #'
 #' @examples
-#' data_study2 <- simulate_data_study2(samples = 10, seed = 456)
+#' data_study2 = simulate_data_study2(samples = 5, seed = 456)
 #'
 #' @export
 simulate_data_study2 = function(
@@ -233,7 +240,7 @@ simulate_data_study2 = function(
   n = 200,
   max_contamination = 0.2,
   distances = c(1, 3, 5, 7, 9),
-  n_oos = 100,
+  n_oos = 20,
   phi_coef = 0.8,
   sigma2_w_lon = 0.1,
   sigma2_w_lat = 0.1,
@@ -370,4 +377,3 @@ simulate_data_study2 = function(
   return(data_sets)
 
 }
-
