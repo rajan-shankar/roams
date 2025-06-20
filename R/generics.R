@@ -62,11 +62,11 @@ print.trimmed_robust_SSM = function(x, ...) {
 #'
 #' Generates a diagnostic plot for a list of robust state space models fit across a sequence of \eqn{\lambda} values. The plot displays the specified model attribute (e.g., BIC, proportion outlying, log-likelihood) against \eqn{\lambda}, with a vertical dashed line indicating the model with the lowest BIC among those with fewer than 50\% outliers.
 #'
-#' @param object An object of class `robularized_SSM_list` as returned by \code{\link{robularized_SSM}} when multiple \eqn{\lambda} values are used.
-#' @param attribute A character string indicating which model attribute to plot. Options include `lambda`, `prop_outlying`, `BIC`, `loglik`, `RSS`, `iterations`, `value`, and `counts`. Defaults to `BIC`.
+#' @param object An object of class \code{robularized_SSM_list} as returned by \code{\link{robularized_SSM}} when multiple \eqn{\lambda} values are used.
+#' @param attribute A character string indicating which model attribute to plot. Options include \code{lambda}, \code{prop_outlying}, \code{BIC}, \code{loglik}, \code{RSS}, \code{iterations}, \code{value}, and \code{counts}. Defaults to \code{BIC}.
 #' @param ... Other arguments passed to specific methods. Not used in this method.
 #'
-#' @return A `ggplot` object showing the trajectory of the specified attribute across \eqn{\lambda}.
+#' @return A \code{ggplot} object showing the trajectory of the specified attribute across \eqn{\lambda}.
 #'
 #' @details
 #' The red dashed vertical line indicates the model with the lowest BIC among models with less than 50\% outlying time points, as a heuristic for robust model selection.

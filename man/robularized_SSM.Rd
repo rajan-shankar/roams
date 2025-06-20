@@ -22,26 +22,26 @@ robularized_SSM(
 
 \item{init_par}{A numeric vector of initial parameter values for optimization.}
 
-\item{build}{A function that accepts a parameter vector and returns a `dlm` model (as used in `dlm::dlmMLE()`). The `specify_SSM` function can be used to create this `build` function.}
+\item{build}{A function that accepts a parameter vector and returns a \code{dlm} model (as used in \code{dlm::dlmMLE()}). The \code{specify_SSM} function can be used to create this \code{build} function.}
 
-\item{num_lambdas}{Integer. The number of \eqn{\lambda} values to evaluate. Ignored if `custom_lambdas` is specified. Default is 10.}
+\item{num_lambdas}{Integer. The number of \eqn{\lambda} values to evaluate. Ignored if \code{custom_lambdas} is specified. Default is 10.}
 
-\item{custom_lambdas}{Optional numeric vector. If supplied, these are the exact \eqn{\lambda} values used for model fitting. If not provided or set to `NA`, then `num_lambdas` \eqn{\lambda}'s are automatically chosen.}
+\item{custom_lambdas}{Optional numeric vector. If supplied, these are the exact \eqn{\lambda} values used for model fitting. If not provided or set to \code{NA}, then \code{num_lambdas} \eqn{\lambda}'s are automatically chosen.}
 
 \item{cores}{Integer. Number of CPU cores to use for parallel processing. Default is 1 (sequential execution).}
 
 \item{B}{Integer. Maximum number of IPOD iterations per \eqn{\lambda}. Default is 20.}
 
-\item{lower}{Optional numeric vector of lower bounds for optimization. If `NA`, defaults to `-Inf` for all parameters. Must be of same length as `init_par`.}
+\item{lower}{Optional numeric vector of lower bounds for optimization. If \code{NA}, defaults to \code{-Inf} for all parameters. Must be of same length as \code{init_par}.}
 
-\item{upper}{Optional numeric vector of upper bounds for optimization. If `NA`, defaults to `Inf` for all parameters. Must be of same length as `init_par`.}
+\item{upper}{Optional numeric vector of upper bounds for optimization. If \code{NA}, defaults to \code{Inf} for all parameters. Must be of same length as \code{init_par}.}
 
-\item{control}{A named list of control options to pass to `optim` via `dlm::dlmMLE()`. Default is `list(parscale = init_par)`, which can help the optimizer if parameters are on vastly different scales.}
+\item{control}{A named list of control options to pass to \code{optim} via \code{dlm::dlmMLE()}. Default is \code{list(parscale = init_par)}, which can help the optimizer if parameters are on vastly different scales.}
 }
 \value{
-If more than 1 \eqn{\lambda} values are used, returns an object of class `robularized_SSM_list` — a list containing a `robularized_SSM` model for each \eqn{\lambda}. If only 1 \eqn{\lambda} value is used (i.e. `custom_lambdas` is manually specified as a single value), returns a single `robularized_SSM` object.
+If more than 1 \eqn{\lambda} values are used, returns an object of class \code{robularized_SSM_list} — a list containing a \code{robularized_SSM} model for each \eqn{\lambda}. If only 1 \eqn{\lambda} value is used (i.e. \code{custom_lambdas} is manually specified as a single value), returns a single \code{robularized_SSM} object.
 
-Each `robularized_SSM` object includes:
+Each \code{robularized_SSM} object includes:
 \itemize{
   \item \code{lambda} - The \eqn{\lambda} value used.
   \item \code{prop_outlying} - Proportion of non-missing time points identified as outliers.
@@ -50,7 +50,7 @@ Each `robularized_SSM` object includes:
   \item \code{RSS} - Residual sum of squares.
   \item \code{gamma} - Matrix of estimated outlier adjustments.
   \item \code{iterations} - Number of IPOD iterations performed.
-  \item Optimization output from `dlm::dlmMLE()` from the final IPOD iteration.
+  \item Optimization output from \code{dlm::dlmMLE()} from the final IPOD iteration.
   \item \code{y} - The original data matrix.
   \item \code{build} - The original build function used to specify the model.
 }
@@ -61,7 +61,7 @@ Fits a robust state space model to multivariate time series data using iterative
 \details{
 The IPOD procedure alternates between estimating model parameters via maximum likelihood and identifying outlying observations based on Mahalanobis residuals. For each iteration:
 \enumerate{
-  \item A `dlm` model is fit using `dlm::dlmMLE()`.
+  \item A \code{dlm} model is fit using \code{dlm::dlmMLE()}.
   \item Mahalanobis residuals are computed.
   \item Observations with residuals above the current \eqn{\lambda} threshold are treated as missing in the next iteration.
 }

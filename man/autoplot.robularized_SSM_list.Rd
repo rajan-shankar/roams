@@ -7,14 +7,14 @@
 \method{autoplot}{robularized_SSM_list}(object, attribute = "BIC", ...)
 }
 \arguments{
-\item{object}{An object of class `robularized_SSM_list` as returned by \code{\link{robularized_SSM}} when multiple \eqn{\lambda} values are used.}
+\item{object}{An object of class \code{robularized_SSM_list} as returned by \code{\link{robularized_SSM}} when multiple \eqn{\lambda} values are used.}
 
-\item{attribute}{A character string indicating which model attribute to plot. Options include `lambda`, `prop_outlying`, `BIC`, `loglik`, `RSS`, `iterations`, `value`, and `counts`. Defaults to `BIC`.}
+\item{attribute}{A character string indicating which model attribute to plot. Options include \code{lambda}, \code{prop_outlying}, \code{BIC}, \code{loglik}, \code{RSS}, \code{iterations}, \code{value}, and \code{counts}. Defaults to \code{BIC}.}
 
 \item{...}{Other arguments passed to specific methods. Not used in this method.}
 }
 \value{
-A `ggplot` object showing the trajectory of the specified attribute across \eqn{\lambda}.
+A \code{ggplot} object showing the trajectory of the specified attribute across \eqn{\lambda}.
 }
 \description{
 Generates a diagnostic plot for a list of robust state space models fit across a sequence of \eqn{\lambda} values. The plot displays the specified model attribute (e.g., BIC, proportion outlying, log-likelihood) against \eqn{\lambda}, with a vertical dashed line indicating the model with the lowest BIC among those with fewer than 50\% outliers.

@@ -1,17 +1,17 @@
 #' Extract Attributes from a Robularized SSM List
 #'
-#' Retrieves a specified attribute from each model within a `robularized_SSM_list` object. Also works if a single model of class `robularized_SSM` is provided.
+#' Retrieves a specified attribute from each model within a \code{robularized_SSM_list} object. Also works if a single model of class \code{robularized_SSM} is provided.
 #'
-#' @param model_list An object of class `robularized_SSM_list` or a single `robularized_SSM` model. May optionally include in-sample information added via `attach_insample_info`.
-#' @param attribute A character string specifying the name of the attribute to extract. Must be one of the available scalar attributes (e.g. `BIC`, `lambda`) or list/vector attributes (e.g. `filtered_states`, `smoothed_states`).
+#' @param model_list An object of class \code{robularized_SSM_list} or a single \code{robularized_SSM} model. May optionally include in-sample information added via \code{attach_insample_info}.
+#' @param attribute A character string specifying the name of the attribute to extract. Must be one of the available scalar attributes (e.g. \code{BIC}, \code{lambda}) or list/vector attributes (e.g. \code{filtered_states}, \code{smoothed_states}).
 #'
 #' @return
-#' If `attribute` is a scalar attribute (e.g., `BIC` or `lambda`), returns a numeric or character vector containing that attribute across all models.
+#' If \code{attribute} is a scalar attribute (e.g., \code{BIC} or \code{lambda}), returns a numeric or character vector containing that attribute across all models.
 #'
-#' If `attribute` is a list-like attribute (e.g., `par` or `gamma`), returns a list of those values, across all models.
+#' If \code{attribute} is a list-like attribute (e.g., \code{par} or \code{gamma}), returns a list of those values, across all models.
 #'
 #' @details
-#' Available attributes depend on whether in-sample information has been attached using `attach_insample_info`. If not, only core model components (e.g. `par`, `gamma`, `y`) and scalar metrics (e.g. `BIC`, `loglik`) are available.
+#' Available attributes depend on whether in-sample information has been attached using \code{attach_insample_info()}. If not, only core model components (e.g. \code{par}, \code{gamma}, \code{y}) and scalar metrics (e.g. \code{BIC}, \code{loglik}) are available.
 #'
 #' \strong{Scalar Attributes (always available):}
 #' \itemize{
@@ -40,7 +40,7 @@
 #'   \item \code{mahalanobis_residuals}
 #' }
 #'
-#' Note that these 'in-sample info' attributes are typically only available if `model_list` is a single `robularized_SSM` with in-sample information already attached using `attach_insample_info`. If `model_list` is a `robularized_SSM_list`, these attributes will not be available unless all models in the list have in-sample information attached.
+#' Note that these 'in-sample info' attributes are typically only available if \code{model_list} is a single \code{robularized_SSM} with in-sample information already attached using \code{attach_insample_info()}. If \code{model_list} is a \code{robularized_SSM_list}, these attributes will not be available unless all models in the list have in-sample information attached.
 #'
 #' @seealso \code{\link{attach_insample_info}}, \code{\link{robularized_SSM}}
 #'

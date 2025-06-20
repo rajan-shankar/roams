@@ -7,10 +7,10 @@
 attach_insample_info(model)
 }
 \arguments{
-\item{model}{A fitted model object of class `robularized_SSM`, `classical_SSM`, `oracle_SSM`, `huber_robust_SSM`, or `trimmed_robust_SSM`.}
+\item{model}{A fitted model object of class \code{robularized_SSM}, \code{classical_SSM}, \code{oracle_SSM}, \code{huber_robust_SSM}, or \code{trimmed_robust_SSM}.}
 }
 \value{
-A modified version of the input model object, with an additional class `insample_info`, and the following in-sample elements appended:
+A modified version of the input model object, with an additional class \code{insample_info}, and the following in-sample elements appended:
 \describe{
   \item{\code{filtered_states}}{Filtered state estimates using data up to each time point.}
   \item{\code{predicted_states}}{One-step-ahead state predictions.}
@@ -22,7 +22,7 @@ A modified version of the input model object, with an additional class `insample
   \item{\code{mahalanobis_residuals}}{Vector of Mahalanobis distances of residuals from predicted observations.}
 }
 
-For models of class `robularized_SSM`, `classical_SSM`, or `oracle_SSM`, the following additional elements are also attached:
+For models of class \code{robularized_SSM}, \code{classical_SSM}, or \code{oracle_SSM}, the following additional elements are also attached:
 \describe{
   \item{\code{smoothed_states}}{Posterior means of hidden states using all data.}
   \item{\code{smoothed_observations}}{Posterior mean of the observed series based on smoothed states.}
@@ -35,7 +35,7 @@ These quantities are not stored by default in model objects due to their potenti
 }
 \details{
 The attached outputs enable richer diagnostics, outlier inspection, and plotting.
-For `huber_robust_SSM` and `trimmed_robust_SSM` models, in-sample information is computed using a custom robust filtering function, and smoothed quantities (`smoothed_states`, `smoothed_observations`, and `smoothed_states_var`) are **not available**.
+For \code{huber_robust_SSM} and \code{trimmed_robust_SSM} models, in-sample information is computed using a custom robust filtering function, and smoothed quantities (\code{smoothed_states}, \code{smoothed_observations}, and \code{smoothed_states_var}) are \strong{not available}.
 This function should only be applied once to a model object.
 }
 \seealso{

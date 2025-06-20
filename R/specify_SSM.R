@@ -14,7 +14,6 @@
 #' @details
 #' The letters in the parentheses in the Arguments section correspond to the naming convention used in the \code{dlm} package.
 #'
-#'
 #' @return A named list with elements \code{GG}, \code{W}, \code{FF}, \code{V}, \code{m0}, and \code{C0},
 #' suitable for use in a custom \code{build} function for modeling or for online filtering (e.g., using \code{\link{oos_filter}}).
 #'

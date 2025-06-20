@@ -4,13 +4,13 @@
 #'
 #' @param y A numeric matrix of observations (time points in columns).
 #' @param init_par A numeric vector of initial parameter values.
-#' @param build A function that returns a `dlm` model given a parameter vector. The `specify_SSM` function can be used to create this `build` function.
+#' @param build A function that returns a \code{dlm} model given a parameter vector. The \code{specify_SSM()} function can be used to create this \code{build} function.
 #' @param outlier_locs An integer or logical vector of length equal to the number of time points, indicating locations of known outliers.
-#' @param lower Optional numeric vector of lower bounds for parameter estimation. Defaults to `-Inf`. Must be of same length as `init_par`.
-#' @param upper Optional numeric vector of upper bounds for parameter estimation. Defaults to `Inf`. Must be of same length as `init_par`.
-#' @param control Optional list of control parameters passed to `optim` via `dlm::dlmMLE()`. Default is `list(parscale = init_par)`, which can help the optimizer if parameters are on vastly different scales.
+#' @param lower Optional numeric vector of lower bounds for parameter estimation. Defaults to \code{-Inf}. Must be of same length as \code{init_par}.
+#' @param upper Optional numeric vector of upper bounds for parameter estimation. Defaults to \code{Inf}. Must be of same length as \code{init_par}.
+#' @param control Optional list of control parameters passed to \code{optim} via \code{dlm::dlmMLE()}. Default is \code{list(parscale = init_par)}, which can help the optimizer if parameters are on vastly different scales.
 #'
-#' @return An object of class `oracle_SSM` containing the optimization result, the provided outlier locations, the original data, and the original build function.
+#' @return An object of class \code{oracle_SSM} containing the optimization result, the provided outlier locations, the original data, and the original build function.
 #'
 #' @seealso \code{\link[dlm]{dlmMLE}}, \code{\link{robularized_SSM}}, \code{\link{attach_insample_info}}, \code{\link{oos_filter}}, \code{\link{specify_SSM}}
 #'
@@ -52,12 +52,12 @@ oracle_SSM = function(
 #'
 #' @param y A numeric matrix of observations (time points in columns).
 #' @param init_par A numeric vector of initial parameter values.
-#' @param build A function that returns a `dlm` model given a parameter vector. The `specify_SSM` function can be used to create this `build` function.
-#' @param lower Optional numeric vector of lower bounds for parameter estimation. Defaults to `-Inf`. Must be of same length as `init_par`.
-#' @param upper Optional numeric vector of upper bounds for parameter estimation. Defaults to `Inf`. Must be of same length as `init_par`.
-#' @param control Optional list of control parameters passed to `optim` via `dlm::dlmMLE()`. Default is `list(parscale = init_par)`, which can help the optimizer if parameters are on vastly different scales.
+#' @param build A function that returns a \code{dlm} model given a parameter vector. The \code{specify_SSM()} function can be used to create this \code{build} function.
+#' @param lower Optional numeric vector of lower bounds for parameter estimation. Defaults to \code{-Inf}. Must be of same length as \code{init_par}.
+#' @param upper Optional numeric vector of upper bounds for parameter estimation. Defaults to \code{Inf}. Must be of same length as \code{init_par}.
+#' @param control Optional list of control parameters passed to \code{optim} via \code{dlm::dlmMLE()}. Default is \code{list(parscale = init_par)}, which can help the optimizer if parameters are on vastly different scales.
 #'
-#' @return An object of class `classical_SSM` containing the optimization result, the original data, and the original build function.
+#' @return An object of class \code{classical_SSM} containing the optimization result, the original data, and the original build function.
 #'
 #' @seealso \code{\link[dlm]{dlmMLE}}, \code{\link{robularized_SSM}}, \code{\link{attach_insample_info}}, \code{\link{oos_filter}}, \code{\link{specify_SSM}}
 #'
@@ -98,12 +98,12 @@ classical_SSM = function(
 #'
 #' @param y A numeric matrix of observations (time points in columns).
 #' @param init_par A numeric vector of initial parameter values.
-#' @param build A function that returns a `dlm` model given a parameter vector. The `specify_SSM` function can be used to create this `build` function.
-#' @param lower Optional numeric vector of lower bounds for parameter estimation. Defaults to `-Inf`. Must be of same length as `init_par`.
-#' @param upper Optional numeric vector of upper bounds for parameter estimation. Defaults to `Inf`. Must be of same length as `init_par`.
-#' @param control Optional list of control parameters passed to `optim`. Default is `list(parscale = init_par)`, which can help the optimizer if parameters are on vastly different scales.
+#' @param build A function that returns a \code{dlm} model given a parameter vector. The \code{specify_SSM()} function can be used to create this \code{build} function.
+#' @param lower Optional numeric vector of lower bounds for parameter estimation. Defaults to \code{-Inf}. Must be of same length as \code{init_par}.
+#' @param upper Optional numeric vector of upper bounds for parameter estimation. Defaults to \code{Inf}. Must be of same length as \code{init_par}.
+#' @param control Optional list of control parameters passed to \code{optim}. Default is \code{list(parscale = init_par)}, which can help the optimizer if parameters are on vastly different scales.
 #'
-#' @return An object of class `huber_robust_SSM` containing the optimization result, the original data, and the original build function.
+#' @return An object of class \code{huber_robust_SSM} containing the optimization result, the original data, and the original build function.
 #'
 #' @seealso \code{\link{trimmed_robust_SSM}}, \code{\link{robularized_SSM}}, \code{\link[stats]{optim}}, \code{\link{attach_insample_info}}, \code{\link{oos_filter}}, \code{\link{specify_SSM}}
 #'
@@ -147,13 +147,13 @@ huber_robust_SSM = function(
 #'
 #' @param y A numeric matrix of observations (variables in rows, time points in columns).
 #' @param init_par A numeric vector of initial parameter values.
-#' @param build A function that returns a `dlm` model given a parameter vector. The `specify_SSM` function can be used to create this `build` function.
+#' @param build A function that returns a \code{dlm} model given a parameter vector. The \code{specify_SSM()} function can be used to create this \code{build} function.
 #' @param alpha Numeric value in (0, 1) indicating the trimming proportion (i.e., the proportion of data to exclude as outliers).
-#' @param lower Optional numeric vector of lower bounds for parameter estimation. Defaults to `-Inf`. Must be of same length as `init_par`.
-#' @param upper Optional numeric vector of upper bounds for parameter estimation. Defaults to `Inf`. Must be of same length as `init_par`.
-#' @param control Optional list of control parameters passed to `optim`. Default is `list(parscale = init_par)`, which can help the optimizer if parameters are on vastly different scales.
+#' @param lower Optional numeric vector of lower bounds for parameter estimation. Defaults to \code{-Inf}. Must be of same length as \code{init_par}.
+#' @param upper Optional numeric vector of upper bounds for parameter estimation. Defaults to \code{Inf}. Must be of same length as \code{init_par}.
+#' @param control Optional list of control parameters passed to \code{optim}. Default is \code{list(parscale = init_par)}, which can help the optimizer if parameters are on vastly different scales.
 #'
-#' @return An object of class `trimmed_robust_SSM` containing the optimization result, trimming level \eqn{\alpha}, the original data, and the original build function.
+#' @return An object of class \code{trimmed_robust_SSM} containing the optimization result, trimming level \eqn{\alpha}, the original data, and the original build function.
 #'
 #' @seealso \code{\link{huber_robust_SSM}}, \code{\link{robularized_SSM}}, \code{\link[stats]{optim}}, \code{\link{attach_insample_info}}, \code{\link{oos_filter}}, \code{\link{specify_SSM}}
 #'

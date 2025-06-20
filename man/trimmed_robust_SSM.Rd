@@ -19,18 +19,18 @@ trimmed_robust_SSM(
 
 \item{init_par}{A numeric vector of initial parameter values.}
 
-\item{build}{A function that returns a `dlm` model given a parameter vector. The `specify_SSM` function can be used to create this `build` function.}
+\item{build}{A function that returns a \code{dlm} model given a parameter vector. The \code{specify_SSM()} function can be used to create this \code{build} function.}
 
 \item{alpha}{Numeric value in (0, 1) indicating the trimming proportion (i.e., the proportion of data to exclude as outliers).}
 
-\item{lower}{Optional numeric vector of lower bounds for parameter estimation. Defaults to `-Inf`. Must be of same length as `init_par`.}
+\item{lower}{Optional numeric vector of lower bounds for parameter estimation. Defaults to \code{-Inf}. Must be of same length as \code{init_par}.}
 
-\item{upper}{Optional numeric vector of upper bounds for parameter estimation. Defaults to `Inf`. Must be of same length as `init_par`.}
+\item{upper}{Optional numeric vector of upper bounds for parameter estimation. Defaults to \code{Inf}. Must be of same length as \code{init_par}.}
 
-\item{control}{Optional list of control parameters passed to `optim`. Default is `list(parscale = init_par)`, which can help the optimizer if parameters are on vastly different scales.}
+\item{control}{Optional list of control parameters passed to \code{optim}. Default is \code{list(parscale = init_par)}, which can help the optimizer if parameters are on vastly different scales.}
 }
 \value{
-An object of class `trimmed_robust_SSM` containing the optimization result, trimming level \eqn{\alpha}, the original data, and the original build function.
+An object of class \code{trimmed_robust_SSM} containing the optimization result, trimming level \eqn{\alpha}, the original data, and the original build function.
 }
 \description{
 Fits a robust state space model by minimizing a trimmed loss function as per Crevits and Croux (2018). A fixed proportion of the largest residuals are excluded from the objective, providing robustness against extreme outliers. The predicted observations used in the trimmed loss are computed using the Huber robust filter from Cipra and Romera (1997).

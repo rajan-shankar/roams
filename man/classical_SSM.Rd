@@ -18,16 +18,16 @@ classical_SSM(
 
 \item{init_par}{A numeric vector of initial parameter values.}
 
-\item{build}{A function that returns a `dlm` model given a parameter vector. The `specify_SSM` function can be used to create this `build` function.}
+\item{build}{A function that returns a \code{dlm} model given a parameter vector. The \code{specify_SSM()} function can be used to create this \code{build} function.}
 
-\item{lower}{Optional numeric vector of lower bounds for parameter estimation. Defaults to `-Inf`. Must be of same length as `init_par`.}
+\item{lower}{Optional numeric vector of lower bounds for parameter estimation. Defaults to \code{-Inf}. Must be of same length as \code{init_par}.}
 
-\item{upper}{Optional numeric vector of upper bounds for parameter estimation. Defaults to `Inf`. Must be of same length as `init_par`.}
+\item{upper}{Optional numeric vector of upper bounds for parameter estimation. Defaults to \code{Inf}. Must be of same length as \code{init_par}.}
 
-\item{control}{Optional list of control parameters passed to `optim` via `dlm::dlmMLE()`. Default is `list(parscale = init_par)`, which can help the optimizer if parameters are on vastly different scales.}
+\item{control}{Optional list of control parameters passed to \code{optim} via \code{dlm::dlmMLE()}. Default is \code{list(parscale = init_par)}, which can help the optimizer if parameters are on vastly different scales.}
 }
 \value{
-An object of class `classical_SSM` containing the optimization result, the original data, and the original build function.
+An object of class \code{classical_SSM} containing the optimization result, the original data, and the original build function.
 }
 \description{
 Fits a state space model using classical maximum likelihood estimation with no attempt to detect or account for outliers. This serves as a baseline model for comparison.

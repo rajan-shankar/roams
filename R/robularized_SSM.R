@@ -4,18 +4,18 @@
 #'
 #' @param y A numeric matrix of observations, with each column corresponding to a time point.
 #' @param init_par A numeric vector of initial parameter values for optimization.
-#' @param build A function that accepts a parameter vector and returns a `dlm` model (as used in `dlm::dlmMLE()`). The `specify_SSM` function can be used to create this `build` function.
-#' @param num_lambdas Integer. The number of \eqn{\lambda} values to evaluate. Ignored if `custom_lambdas` is specified. Default is 10.
-#' @param custom_lambdas Optional numeric vector. If supplied, these are the exact \eqn{\lambda} values used for model fitting. If not provided or set to `NA`, then `num_lambdas` \eqn{\lambda}'s are automatically chosen.
+#' @param build A function that accepts a parameter vector and returns a \code{dlm} model (as used in \code{dlm::dlmMLE()}). The \code{specify_SSM} function can be used to create this \code{build} function.
+#' @param num_lambdas Integer. The number of \eqn{\lambda} values to evaluate. Ignored if \code{custom_lambdas} is specified. Default is 10.
+#' @param custom_lambdas Optional numeric vector. If supplied, these are the exact \eqn{\lambda} values used for model fitting. If not provided or set to \code{NA}, then \code{num_lambdas} \eqn{\lambda}'s are automatically chosen.
 #' @param cores Integer. Number of CPU cores to use for parallel processing. Default is 1 (sequential execution).
 #' @param B Integer. Maximum number of IPOD iterations per \eqn{\lambda}. Default is 20.
-#' @param lower Optional numeric vector of lower bounds for optimization. If `NA`, defaults to `-Inf` for all parameters. Must be of same length as `init_par`.
-#' @param upper Optional numeric vector of upper bounds for optimization. If `NA`, defaults to `Inf` for all parameters. Must be of same length as `init_par`.
-#' @param control A named list of control options to pass to `optim` via `dlm::dlmMLE()`. Default is `list(parscale = init_par)`, which can help the optimizer if parameters are on vastly different scales.
+#' @param lower Optional numeric vector of lower bounds for optimization. If \code{NA}, defaults to \code{-Inf} for all parameters. Must be of same length as \code{init_par}.
+#' @param upper Optional numeric vector of upper bounds for optimization. If \code{NA}, defaults to \code{Inf} for all parameters. Must be of same length as \code{init_par}.
+#' @param control A named list of control options to pass to \code{optim} via \code{dlm::dlmMLE()}. Default is \code{list(parscale = init_par)}, which can help the optimizer if parameters are on vastly different scales.
 #'
-#' @return If more than 1 \eqn{\lambda} values are used, returns an object of class `robularized_SSM_list` — a list containing a `robularized_SSM` model for each \eqn{\lambda}. If only 1 \eqn{\lambda} value is used (i.e. `custom_lambdas` is manually specified as a single value), returns a single `robularized_SSM` object.
+#' @return If more than 1 \eqn{\lambda} values are used, returns an object of class \code{robularized_SSM_list} — a list containing a \code{robularized_SSM} model for each \eqn{\lambda}. If only 1 \eqn{\lambda} value is used (i.e. \code{custom_lambdas} is manually specified as a single value), returns a single \code{robularized_SSM} object.
 #'
-#' Each `robularized_SSM` object includes:
+#' Each \code{robularized_SSM} object includes:
 #' \itemize{
 #'   \item \code{lambda} - The \eqn{\lambda} value used.
 #'   \item \code{prop_outlying} - Proportion of non-missing time points identified as outliers.
@@ -24,7 +24,7 @@
 #'   \item \code{RSS} - Residual sum of squares.
 #'   \item \code{gamma} - Matrix of estimated outlier adjustments.
 #'   \item \code{iterations} - Number of IPOD iterations performed.
-#'   \item Optimization output from `dlm::dlmMLE()` from the final IPOD iteration.
+#'   \item Optimization output from \code{dlm::dlmMLE()} from the final IPOD iteration.
 #'   \item \code{y} - The original data matrix.
 #'   \item \code{build} - The original build function used to specify the model.
 #' }
@@ -32,7 +32,7 @@
 #' @details
 #' The IPOD procedure alternates between estimating model parameters via maximum likelihood and identifying outlying observations based on Mahalanobis residuals. For each iteration:
 #' \enumerate{
-#'   \item A `dlm` model is fit using `dlm::dlmMLE()`.
+#'   \item A \code{dlm} model is fit using \code{dlm::dlmMLE()}.
 #'   \item Mahalanobis residuals are computed.
 #'   \item Observations with residuals above the current \eqn{\lambda} threshold are treated as missing in the next iteration.
 #' }
@@ -366,9 +366,9 @@ dlmInfo = function(y, adj_y, model, build) {
 #' Attaches detailed in-sample information—such as predicted, filtered, and smoothed states and observations—to a model object fitted using any of the package’s supported SSM estimation methods.
 #' These quantities are not stored by default in model objects due to their potentially large memory footprint.
 #'
-#' @param model A fitted model object of class `robularized_SSM`, `classical_SSM`, `oracle_SSM`, `huber_robust_SSM`, or `trimmed_robust_SSM`.
+#' @param model A fitted model object of class \code{robularized_SSM}, \code{classical_SSM}, \code{oracle_SSM}, \code{huber_robust_SSM}, or \code{trimmed_robust_SSM}.
 #'
-#' @return A modified version of the input model object, with an additional class `insample_info`, and the following in-sample elements appended:
+#' @return A modified version of the input model object, with an additional class \code{insample_info}, and the following in-sample elements appended:
 #' \describe{
 #'   \item{\code{filtered_states}}{Filtered state estimates using data up to each time point.}
 #'   \item{\code{predicted_states}}{One-step-ahead state predictions.}
@@ -380,7 +380,7 @@ dlmInfo = function(y, adj_y, model, build) {
 #'   \item{\code{mahalanobis_residuals}}{Vector of Mahalanobis distances of residuals from predicted observations.}
 #' }
 #'
-#' For models of class `robularized_SSM`, `classical_SSM`, or `oracle_SSM`, the following additional elements are also attached:
+#' For models of class \code{robularized_SSM}, \code{classical_SSM}, or \code{oracle_SSM}, the following additional elements are also attached:
 #' \describe{
 #'   \item{\code{smoothed_states}}{Posterior means of hidden states using all data.}
 #'   \item{\code{smoothed_observations}}{Posterior mean of the observed series based on smoothed states.}
@@ -389,7 +389,7 @@ dlmInfo = function(y, adj_y, model, build) {
 #'
 #' @details
 #' The attached outputs enable richer diagnostics, outlier inspection, and plotting.
-#' For `huber_robust_SSM` and `trimmed_robust_SSM` models, in-sample information is computed using a custom robust filtering function, and smoothed quantities (`smoothed_states`, `smoothed_observations`, and `smoothed_states_var`) are **not available**.
+#' For \code{huber_robust_SSM} and \code{trimmed_robust_SSM} models, in-sample information is computed using a custom robust filtering function, and smoothed quantities (\code{smoothed_states}, \code{smoothed_observations}, and \code{smoothed_states_var}) are \strong{not available}.
 #' This function should only be applied once to a model object.
 #'
 #' @seealso \code{\link{oos_filter}}
@@ -476,11 +476,11 @@ attach_insample_info = function(model) {
 #' Applies the fitted model parameters to a user-supplied out-of-sample dataset to compute predicted and filtered states and observations. Robust and classical inference procedures are supported depending on the class of the input model.
 #'
 #' @param y_oos A numeric matrix containing out-of-sample observations. Each column corresponds to a time point.
-#' @param model A fitted model object of class `robularized_SSM`, `classical_SSM`, `oracle_SSM`, `huber_robust_SSM`, or `trimmed_robust_SSM`.
-#' @param build A function that maps a numeric parameter vector to a corresponding `dlm` model object. The `specify_SSM` function can be used to create this `build` function.
-#' @param outlier_locs A logical or binary vector of the same length as `ncol(y)`, indicating time points to be treated as missing (i.e., time points that are known to be outliers). Used only with `oracle_SSM` models.
-#' @param threshold Mahalanobis distance threshold for identifying outliers in `robularized_SSM` models. Default is \code{sqrt(qchisq(0.99, nrow(y)))}.
-#' @param multiplier Multiplier for how quickly the filter grows its filtered state variance (uncertainty) after detecting an outlier in `robularized_SSM` models. Default is `1`.
+#' @param model A fitted model object of class \code{robularized_SSM}, \code{classical_SSM}, \code{oracle_SSM}, \code{huber_robust_SSM}, or \code{trimmed_robust_SSM}.
+#' @param build A function that maps a numeric parameter vector to a corresponding \code{dlm} model object. The \code{specify_SSM} function can be used to create this \code{build} function.
+#' @param outlier_locs A logical or binary vector of the same length as \code{ncol(y)}, indicating time points to be treated as missing (i.e., time points that are known to be outliers). Used only with \code{oracle_SSM} models.
+#' @param threshold Mahalanobis distance threshold for identifying outliers in \code{robularized_SSM} models. Default is \code{sqrt(qchisq(0.99, nrow(y)))}.
+#' @param multiplier Multiplier for how quickly the filter grows its filtered state variance (uncertainty) after detecting an outlier in \code{robularized_SSM} models. Default is \code{1}.
 #'
 #' @return A named list containing out-of-sample inference results:
 #' \describe{
@@ -495,7 +495,7 @@ attach_insample_info = function(model) {
 #' }
 #'
 #' @details
-#' The function reuses the model's fitted parameters to generate inference on new data `y_oos`. Robust variants use appropriate robust filters, while the classical and oracle models use standard Kalman filtering. For `oracle_SSM` models, observations flagged in `outlier_locs` are treated as missing during filtering.
+#' The function reuses the model's fitted parameters to generate inference on new data \code{y_oos}. Robust variants use appropriate robust filters, while the classical and oracle models use standard Kalman filtering. For \code{oracle_SSM} models, observations flagged in \code{outlier_locs} are treated as missing during filtering.
 #'
 #' @seealso \code{\link{attach_insample_info}}, \code{\link{specify_SSM}}
 #'
