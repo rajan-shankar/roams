@@ -15,7 +15,7 @@ oracle_SSM(
 )
 }
 \arguments{
-\item{y}{A numeric matrix of observations (time points in columns).}
+\item{y}{A numeric matrix of observations (time points in rows).}
 
 \item{init_par}{A numeric vector of initial parameter values.}
 

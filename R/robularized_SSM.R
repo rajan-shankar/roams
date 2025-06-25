@@ -1,19 +1,19 @@
 #' Robust Regularized Fitting of State Space Models
 #'
-#' Fits a robust state space model to multivariate time series data using iterative parameter estimation and outlier detection. This procedure applies the Iterative Penalized Outlier Detection (IPOD) algorithm of She and Owen (2011) over a sequence of regularization parameters (\eqn{\lambda}'s), identifying outliers via Mahalanobis residuals and re-fitting the model iteratively.
+#' Fits a robust state space model to multivariate time series data using iterative parameter estimation and outlier detection. This procedure is inspired by the Iterative Procedure for Outlier Detection (IPOD) algorithm of She and Owen (2011) and is applied over a sequence of regularization parameters (\eqn{\lambda}'s), identifying outliers via Mahalanobis residuals and re-fitting the model iteratively.
 #'
-#' @param y A numeric matrix of observations, with each column corresponding to a time point.
+#' @param y A numeric matrix of observations, with each row corresponding to a time point.
 #' @param init_par A numeric vector of initial parameter values for optimization.
 #' @param build A function that accepts a parameter vector and returns a \code{dlm} model (as used in \code{dlm::dlmMLE()}). The \code{specify_SSM} function can be used to create this \code{build} function.
-#' @param num_lambdas Integer. The number of \eqn{\lambda} values to evaluate. Ignored if \code{custom_lambdas} is specified. Default is 10.
+#' @param num_lambdas Integer. The number of \eqn{\lambda} values to evaluate. Ignored if \code{custom_lambdas} is specified. Default is 20.
 #' @param custom_lambdas Optional numeric vector. If supplied, these are the exact \eqn{\lambda} values used for model fitting. If not provided or set to \code{NA}, then \code{num_lambdas} \eqn{\lambda}'s are automatically chosen.
 #' @param cores Integer. Number of CPU cores to use for parallel processing. Default is 1 (sequential execution).
-#' @param B Integer. Maximum number of IPOD iterations per \eqn{\lambda}. Default is 20.
+#' @param B Integer. Maximum number of IPOD iterations per \eqn{\lambda}. Default is 50.
 #' @param lower Optional numeric vector of lower bounds for optimization. If \code{NA}, defaults to \code{-Inf} for all parameters. Must be of same length as \code{init_par}.
 #' @param upper Optional numeric vector of upper bounds for optimization. If \code{NA}, defaults to \code{Inf} for all parameters. Must be of same length as \code{init_par}.
 #' @param control A named list of control options to pass to \code{optim} via \code{dlm::dlmMLE()}. Default is \code{list(parscale = init_par)}, which can help the optimizer if parameters are on vastly different scales.
 #'
-#' @return If more than 1 \eqn{\lambda} values are used, returns an object of class \code{robularized_SSM_list} — a list containing a \code{robularized_SSM} model for each \eqn{\lambda}. If only 1 \eqn{\lambda} value is used (i.e. \code{custom_lambdas} is manually specified as a single value), returns a single \code{robularized_SSM} object.
+#' @return If more than one \eqn{\lambda} values are used, returns an object of class \code{robularized_SSM_list} — a list containing a \code{robularized_SSM} model for each \eqn{\lambda}. If only one \eqn{\lambda} value is used (i.e. \code{custom_lambdas} is manually specified as a single value), returns a single \code{robularized_SSM} object.
 #'
 #' Each \code{robularized_SSM} object includes:
 #' \itemize{
@@ -43,25 +43,27 @@
 #'
 #' @references She, Y., & Owen, A. B. (2011). Outlier Detection Using Nonconvex Penalized Regression. *Journal of the American Statistical Association, 106*(494), 626–639. https://doi.org/10.1198/jasa.2011.tm10390
 #'
+#' @importFrom foreach %dopar%
+#'
 #' @export
 robularized_SSM = function(
     y,
     init_par,
     build,
-    num_lambdas = 10,
+    num_lambdas = 20,
     custom_lambdas = NA,
     cores = 1,
-    B = 20,
+    B = 50,
     lower = NA,
     upper = NA,
     control = list(parscale = init_par)
     ) {
 
-  if (nrow(y) > ncol(y)) {
-    warning("Input data has more rows than columns. Did you forget to transpose your data? This function expects each column to represent a time point (i.e., observations in columns).")
+  if (ncol(y) > nrow(y)) {
+    warning("Input data has more columns than rows. Did you forget to transpose your data? This function expects each row to represent a time point (i.e., observations in rows).")
   }
 
-  if (is.na(custom_lambdas)) {
+  if (any(is.na(custom_lambdas))) {
   # Completely automatic fit
 
     # Classical fit by using large lambda
@@ -179,11 +181,11 @@ run_IPOD = function(
   if (is.na(lower)[1]) {lower = rep(-Inf, length(init_par))}
   if (is.na(upper)[1]) {upper = rep(Inf, length(init_par))}
 
-  n = ncol(y)
-  n_complete = sum(!is.na(y[1,]))
-  dim_obs = nrow(y)
+  n = nrow(y)
+  n_complete = sum(!is.na(rowSums(y)))
+  dim_obs = ncol(y)
   par = init_par
-  gamma = matrix(0, nrow = dim_obs, ncol = n)
+  gamma = matrix(0, nrow = n, ncol = dim_obs)
   adj_y = y
   r = NA
   theta_old = par
@@ -192,7 +194,7 @@ run_IPOD = function(
     if (j != 1) {theta_old = fit$par}
 
     fit = dlm::dlmMLE(
-      t(adj_y),
+      adj_y,
       parm = par,
       build = build,
       method = "L-BFGS-B",
@@ -212,14 +214,14 @@ run_IPOD = function(
     info_output = dlmInfo(y, adj_y, fit, build)
     r = y - info_output$predicted_observations
     gamma_old = gamma
-    gamma = matrix(0, nrow = dim_obs, ncol = n)
-    gamma[,info_output$mahalanobis_residuals > lambda] = r[,info_output$mahalanobis_residuals > lambda]
+    gamma = matrix(0, nrow = n, ncol = dim_obs)
+    gamma[info_output$mahalanobis_residuals > lambda,] = r[info_output$mahalanobis_residuals > lambda,]
     adj_y = y
-    adj_y[,which(colSums(abs(gamma)) != 0)] = NA
+    adj_y[which(rowSums(abs(gamma)) != 0),] = NA
     gap_gamma = max(abs(gamma - gamma_old))
     gap_theta = max(abs(fit$par - theta_old))
 
-    nz = sum(colSums(abs(gamma_old)) != 0)
+    nz = sum(rowSums(abs(gamma_old)) != 0)
     prop_outlying = nz / n_complete
 
     if ((gap_gamma < 1e-4) && (gap_theta < 1e-4)) {
@@ -234,7 +236,7 @@ run_IPOD = function(
 
   p = length(init_par)
   RSS = sum((r - gamma_old)^2, na.rm = TRUE)
-  loglik = -dlm::dlmLL(t(adj_y), mod = build(fit$par))
+  loglik = -dlm::dlmLL(adj_y, mod = build(fit$par))
   BIC = nz*log(n_complete) - 2*loglik
 
   model = c(
@@ -267,8 +269,8 @@ IPOD_oos_robust_filter = function(y, par, build, threshold, multiplier = 1) {
   x_tt = SSM_specs$m0
   P_tt = SSM_specs$C0
 
-  n = ncol(y)
-  dim_obs = nrow(y)
+  n = nrow(y)
+  dim_obs = ncol(y)
   dim_state = nrow(Phi)
 
   x_tt_1 = NA
@@ -276,10 +278,10 @@ IPOD_oos_robust_filter = function(y, par, build, threshold, multiplier = 1) {
   y_tt_1 = NA
   S_t = NA
 
-  filtered_states = matrix(0, nrow = dim_state, ncol = n)
-  filtered_observations = matrix(0, nrow = dim_obs, ncol = n)
-  predicted_states = matrix(0, nrow = dim_state, ncol = n)
-  predicted_observations = matrix(0, nrow = dim_obs, ncol = n)
+  filtered_states = matrix(0, nrow = n, ncol = dim_state)
+  filtered_observations = matrix(0, nrow = n, ncol = dim_obs)
+  predicted_states = matrix(0, nrow = n, ncol = dim_state)
+  predicted_observations = matrix(0, nrow = n, ncol = dim_obs)
   filtered_states_var = list()
   predicted_states_var = list()
   predicted_observations_var = list()
@@ -293,17 +295,17 @@ IPOD_oos_robust_filter = function(y, par, build, threshold, multiplier = 1) {
     S_t = A %*% P_tt_1 %*% t(A) + Sigma_v
     inv_S_t = solve(S_t)
 
-    if (any(is.na(y[,t]))) {
+    if (any(is.na(y[t,]))) {
       mahalanobis_residuals[t] = 0
       x_tt = x_tt_1
       P_tt = multiplier*P_tt_1
     } else {
 
-      mahalanobis_residuals[t] = drop(sqrt(t(y[,t] - y_tt_1) %*% inv_S_t %*% (y[,t] - y_tt_1)))
+      mahalanobis_residuals[t] = drop(sqrt(t(y[t,] - y_tt_1) %*% inv_S_t %*% (y[t,] - y_tt_1)))
 
       if (mahalanobis_residuals[t] <= threshold) {
         K_t = P_tt_1 %*% t(A) %*% inv_S_t
-        x_tt = x_tt_1 + K_t %*% (y[,t] - y_tt_1)
+        x_tt = x_tt_1 + K_t %*% (y[t,] - y_tt_1)
         P_tt = P_tt_1 - K_t %*% A %*% P_tt_1
       } else {
         x_tt = x_tt_1
@@ -312,10 +314,10 @@ IPOD_oos_robust_filter = function(y, par, build, threshold, multiplier = 1) {
       }
     }
 
-    filtered_states[,t] = x_tt
-    filtered_observations[,t] = A %*% x_tt
-    predicted_states[,t] = x_tt_1
-    predicted_observations[,t] = y_tt_1
+    filtered_states[t,] = x_tt
+    filtered_observations[t,] = A %*% x_tt
+    predicted_states[t,] = x_tt_1
+    predicted_observations[t,] = y_tt_1
     filtered_states_var[[t]] = P_tt
     predicted_states_var[[t]] = P_tt_1
     predicted_observations_var[[t]] = S_t
@@ -338,7 +340,7 @@ IPOD_oos_robust_filter = function(y, par, build, threshold, multiplier = 1) {
 # Mainly used for getting residuals and predictions from robularized models.
 dlmInfo = function(y, adj_y, model, build) {
 
-  filter_output = dlm::dlmFilter(t(adj_y), mod = build(model$par))
+  filter_output = dlm::dlmFilter(adj_y, mod = build(model$par))
   smoother_output = dlm::dlmSmooth(filter_output)
   A = filter_output$mod$FF
 
@@ -346,16 +348,16 @@ dlmInfo = function(y, adj_y, model, build) {
           ~ A %*% . %*% t(A) + filter_output$mod$V)
   inv_S = purrr::map(S, ~ solve(.))
   mahalanobis_residuals = purrr::map2_dbl(
-    apply(t(y) - filter_output$f, 1, c, simplify = FALSE),
+    apply(y - filter_output$f, 1, c, simplify = FALSE),
     inv_S,
     ~ drop(t(.x) %*% .y %*% .x)) %>% sqrt()
 
   mahalanobis_residuals = ifelse(is.na(mahalanobis_residuals), 0, mahalanobis_residuals)
 
   return(list(
-    smoothed_observations = (A %*% t(smoother_output$s))[,2:(ncol(y) + 1)],
-    filtered_observations = (A %*% t(filter_output$m))[,2:(ncol(y) + 1)],
-    predicted_observations = t(filter_output$f),
+    smoothed_observations = (smoother_output$s %*% t(A))[2:(nrow(y) + 1),],
+    filtered_observations = (filter_output$m %*% t(A))[2:(nrow(y) + 1),],
+    predicted_observations = filter_output$f,
     mahalanobis_residuals = mahalanobis_residuals
   ))
 
@@ -408,27 +410,27 @@ attach_insample_info = function(model) {
   if (inherits(model, "huber_robust_SSM")) {
     insample_info = ruben_filter(model$par, y, model$build, obj_type = "huber")
     output = c(model, insample_info)
-    class(output) == c("huber_robust_SSM", "insample_info")
+    class(output) = c("huber_robust_SSM", "insample_info")
     return(output)
   } else if (inherits(model, "trimmed_robust_SSM")) {
     insample_info = ruben_filter(model$par, y, model$build, obj_type = "trimmed", alpha = model$alpha)
     output = c(model, insample_info)
-    class(output) == c("trimmed_robust_SSM", "insample_info")
+    class(output) = c("trimmed_robust_SSM", "insample_info")
     return(output)
 
   } else if (inherits(model, "robularized_SSM")){
     adj_y = y
-    adj_y[,which(colSums(abs(model$gamma)) != 0)] = NA
+    adj_y[which(rowSums(abs(model$gamma)) != 0),] = NA
   } else if (inherits(model, "classical_SSM")) {
     adj_y = y
   } else if (inherits(model, "oracle_SSM")) {
     adj_y = y
-    adj_y[,model$outlier_locs != 0] = NA
+    adj_y[model$outlier_locs != 0,] = NA
   } else {
     stop("Invalid model class. Expected 'robularized_SSM' or 'classical_SSM' or 'oracle_SSM' or 'huber_robust_SSM' or 'trimmed_robust_SSM'.")
   }
 
-  filter_output = dlm::dlmFilter(t(adj_y), mod = model$build(model$par))
+  filter_output = dlm::dlmFilter(adj_y, mod = model$build(model$par))
   smoother_output = dlm::dlmSmooth(filter_output)
   A = filter_output$mod$FF
 
@@ -439,7 +441,7 @@ attach_insample_info = function(model) {
 
   inv_S = purrr::map(S, ~ solve(.))
   mahalanobis_residuals = purrr::map2_dbl(
-    apply(t(y) - filter_output$f, 1, c, simplify = FALSE),
+    apply(y - filter_output$f, 1, c, simplify = FALSE),
     inv_S,
     ~ drop(t(.x) %*% .y %*% .x)) %>% sqrt()
 
@@ -447,12 +449,12 @@ attach_insample_info = function(model) {
 
   output = c(model,
     list(
-    smoothed_states  = t(smoother_output$s)[,2:(ncol(y) + 1)],
-    filtered_states  = t(filter_output$m)[,2:(ncol(y) + 1)],
-    predicted_states = t(filter_output$a),
-    smoothed_observations  = (A %*% t(smoother_output$s))[,2:(ncol(y) + 1)],
-    filtered_observations  = (A %*% t(filter_output$m))[,2:(ncol(y) + 1)],
-    predicted_observations = t(filter_output$f),
+    smoothed_states  = smoother_output$s[2:(nrow(y) + 1),],
+    filtered_states  = filter_output$m[2:(nrow(y) + 1),],
+    predicted_states = filter_output$a,
+    smoothed_observations  = (smoother_output$s %*% t(A))[2:(nrow(y) + 1),],
+    filtered_observations  = (filter_output$m %*% t(A))[2:(nrow(y) + 1),],
+    predicted_observations = filter_output$f,
     smoothed_states_var = P_tt_smooth,
     filtered_states_var = P_tt,
     predicted_states_var = P_tt_1,
@@ -475,12 +477,12 @@ attach_insample_info = function(model) {
 #'
 #' Applies the fitted model parameters to a user-supplied out-of-sample dataset to compute predicted and filtered states and observations. Robust and classical inference procedures are supported depending on the class of the input model.
 #'
-#' @param y_oos A numeric matrix containing out-of-sample observations. Each column corresponds to a time point.
+#' @param y_oos A numeric matrix containing out-of-sample observations. Each row corresponds to a time point.
 #' @param model A fitted model object of class \code{robularized_SSM}, \code{classical_SSM}, \code{oracle_SSM}, \code{huber_robust_SSM}, or \code{trimmed_robust_SSM}.
 #' @param build A function that maps a numeric parameter vector to a corresponding \code{dlm} model object. The \code{specify_SSM} function can be used to create this \code{build} function.
-#' @param outlier_locs A logical or binary vector of the same length as \code{ncol(y)}, indicating time points to be treated as missing (i.e., time points that are known to be outliers). Used only with \code{oracle_SSM} models.
-#' @param threshold Mahalanobis distance threshold for identifying outliers in \code{robularized_SSM} models. Default is \code{sqrt(qchisq(0.99, nrow(y)))}.
-#' @param multiplier Multiplier for how quickly the filter grows its filtered state variance (uncertainty) after detecting an outlier in \code{robularized_SSM} models. Default is \code{1}.
+#' @param outlier_locs A logical or binary vector of the same length as \code{nrow(y)}, indicating time points to be treated as missing (i.e., time points that are known to be outliers). Used only with \code{oracle_SSM} models.
+#' @param threshold Mahalanobis distance threshold for identifying outliers in \code{robularized_SSM} models. Default is \code{sqrt(qchisq(0.99, ncol(y)))}.
+#' @param multiplier Multiplier for how quickly the filter grows its filtered state variance (uncertainty) after detecting an outlier in \code{robularized_SSM} models. Default is \code{2}.
 #'
 #' @return A named list containing out-of-sample inference results:
 #' \describe{
@@ -503,9 +505,9 @@ attach_insample_info = function(model) {
 #'
 #' @export
 oos_filter = function(y_oos, model, build,
-                      outlier_locs = rep(0, ncol(y)),
-                      threshold = sqrt(qchisq(0.99, nrow(y))),
-                      multiplier = 1) {
+                      outlier_locs = rep(0, nrow(y_oos)),
+                      threshold = sqrt(qchisq(0.99, ncol(y_oos))),
+                      multiplier = 2) {
 
   y = y_oos
 
@@ -533,12 +535,12 @@ oos_filter = function(y_oos, model, build,
     adj_y = y
   } else if (inherits(model, "oracle_SSM")) {
     adj_y = y
-    adj_y[,outlier_locs != 0] = NA
+    adj_y[outlier_locs != 0,] = NA
   } else {
     stop("Invalid model class. Expected 'robularized_SSM' or 'classical_SSM' or 'oracle_SSM' or 'huber_robust_SSM' or 'trimmed_robust_SSM'.")
   }
 
-  filter_output = dlm::dlmFilter(t(adj_y), mod = build(model$par))
+  filter_output = dlm::dlmFilter(adj_y, mod = build(model$par))
   A = filter_output$mod$FF
 
   P_tt_1 = dlm::dlmSvd2var(filter_output$U.R, filter_output$D.R)
@@ -547,17 +549,17 @@ oos_filter = function(y_oos, model, build,
 
   inv_S = purrr::map(S, ~ solve(.))
   mahalanobis_residuals = purrr::map2_dbl(
-    apply(t(y) - filter_output$f, 1, c, simplify = FALSE),
+    apply(y - filter_output$f, 1, c, simplify = FALSE),
     inv_S,
     ~ drop(t(.x) %*% .y %*% .x)) %>% sqrt()
 
   mahalanobis_residuals = ifelse(is.na(mahalanobis_residuals), 0, mahalanobis_residuals)
 
   return(list(
-             filtered_states  = t(filter_output$m)[,2:(ncol(y) + 1)],
-             predicted_states = t(filter_output$a),
-             filtered_observations  = (A %*% t(filter_output$m))[,2:(ncol(y) + 1)],
-             predicted_observations = t(filter_output$f),
+             filtered_states  = filter_output$m[2:(nrow(y) + 1),],
+             predicted_states = filter_output$a,
+             filtered_observations  = (filter_output$m %*% t(A))[2:(nrow(y) + 1),],
+             predicted_observations = filter_output$f,
              filtered_states_var = P_tt,
              predicted_states_var = P_tt_1,
              predicted_observations_var = S,

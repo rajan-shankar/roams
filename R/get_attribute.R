@@ -22,14 +22,13 @@
 #'   \item \code{RSS}: Residual sum of squares.
 #'   \item \code{iterations}: Number of IPOD iterations.
 #'   \item \code{value}: Final objective function value.
-#'   \item \code{counts}: Optimization evaluation counts.
 #'   \item \code{convergence}: Convergence status of optimizer.
 #'   \item \code{message}: Optimizer termination message.
 #' }
 #'
 #' \strong{List/Vector Attributes that are always available:}
 #' \itemize{
-#'   \item \code{par}, \code{gamma}, \code{y}
+#'   \item \code{par}, \code{gamma}, \code{y}, \code{counts}
 #' }
 #'
 #' \strong{List/Vector Attributes that are only available if in-sample info is attached:}
@@ -61,6 +60,7 @@ get_attribute = function(model_list, attribute) {
       "par",
       "gamma",
       "y",
+      "counts",
       "smoothed_states",
       "filtered_states",
       "predicted_states",
@@ -77,7 +77,8 @@ get_attribute = function(model_list, attribute) {
     list_attributes = c(
       "par",
       "gamma",
-      "y"
+      "y",
+      "counts"
     )
   }
 
@@ -89,7 +90,6 @@ get_attribute = function(model_list, attribute) {
     "RSS",
     "iterations",
     "value",
-    "counts",
     "convergence",
     "message"
   )

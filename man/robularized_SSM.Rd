@@ -8,29 +8,29 @@ robularized_SSM(
   y,
   init_par,
   build,
-  num_lambdas = 10,
+  num_lambdas = 20,
   custom_lambdas = NA,
   cores = 1,
-  B = 20,
+  B = 50,
   lower = NA,
   upper = NA,
   control = list(parscale = init_par)
 )
 }
 \arguments{
-\item{y}{A numeric matrix of observations, with each column corresponding to a time point.}
+\item{y}{A numeric matrix of observations, with each row corresponding to a time point.}
 
 \item{init_par}{A numeric vector of initial parameter values for optimization.}
 
 \item{build}{A function that accepts a parameter vector and returns a \code{dlm} model (as used in \code{dlm::dlmMLE()}). The \code{specify_SSM} function can be used to create this \code{build} function.}
 
-\item{num_lambdas}{Integer. The number of \eqn{\lambda} values to evaluate. Ignored if \code{custom_lambdas} is specified. Default is 10.}
+\item{num_lambdas}{Integer. The number of \eqn{\lambda} values to evaluate. Ignored if \code{custom_lambdas} is specified. Default is 20.}
 
 \item{custom_lambdas}{Optional numeric vector. If supplied, these are the exact \eqn{\lambda} values used for model fitting. If not provided or set to \code{NA}, then \code{num_lambdas} \eqn{\lambda}'s are automatically chosen.}
 
 \item{cores}{Integer. Number of CPU cores to use for parallel processing. Default is 1 (sequential execution).}
 
-\item{B}{Integer. Maximum number of IPOD iterations per \eqn{\lambda}. Default is 20.}
+\item{B}{Integer. Maximum number of IPOD iterations per \eqn{\lambda}. Default is 50.}
 
 \item{lower}{Optional numeric vector of lower bounds for optimization. If \code{NA}, defaults to \code{-Inf} for all parameters. Must be of same length as \code{init_par}.}
 
@@ -39,7 +39,7 @@ robularized_SSM(
 \item{control}{A named list of control options to pass to \code{optim} via \code{dlm::dlmMLE()}. Default is \code{list(parscale = init_par)}, which can help the optimizer if parameters are on vastly different scales.}
 }
 \value{
-If more than 1 \eqn{\lambda} values are used, returns an object of class \code{robularized_SSM_list} — a list containing a \code{robularized_SSM} model for each \eqn{\lambda}. If only 1 \eqn{\lambda} value is used (i.e. \code{custom_lambdas} is manually specified as a single value), returns a single \code{robularized_SSM} object.
+If more than one \eqn{\lambda} values are used, returns an object of class \code{robularized_SSM_list} — a list containing a \code{robularized_SSM} model for each \eqn{\lambda}. If only one \eqn{\lambda} value is used (i.e. \code{custom_lambdas} is manually specified as a single value), returns a single \code{robularized_SSM} object.
 
 Each \code{robularized_SSM} object includes:
 \itemize{
@@ -56,7 +56,7 @@ Each \code{robularized_SSM} object includes:
 }
 }
 \description{
-Fits a robust state space model to multivariate time series data using iterative parameter estimation and outlier detection. This procedure applies the Iterative Penalized Outlier Detection (IPOD) algorithm of She and Owen (2011) over a sequence of regularization parameters (\eqn{\lambda}'s), identifying outliers via Mahalanobis residuals and re-fitting the model iteratively.
+Fits a robust state space model to multivariate time series data using iterative parameter estimation and outlier detection. This procedure is inspired by the Iterative Procedure for Outlier Detection (IPOD) algorithm of She and Owen (2011) and is applied over a sequence of regularization parameters (\eqn{\lambda}'s), identifying outliers via Mahalanobis residuals and re-fitting the model iteratively.
 }
 \details{
 The IPOD procedure alternates between estimating model parameters via maximum likelihood and identifying outlying observations based on Mahalanobis residuals. For each iteration:

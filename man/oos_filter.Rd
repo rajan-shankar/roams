@@ -8,23 +8,23 @@ oos_filter(
   y_oos,
   model,
   build,
-  outlier_locs = rep(0, ncol(y)),
-  threshold = sqrt(qchisq(0.99, nrow(y))),
-  multiplier = 1
+  outlier_locs = rep(0, nrow(y_oos)),
+  threshold = sqrt(qchisq(0.99, ncol(y_oos))),
+  multiplier = 2
 )
 }
 \arguments{
-\item{y_oos}{A numeric matrix containing out-of-sample observations. Each column corresponds to a time point.}
+\item{y_oos}{A numeric matrix containing out-of-sample observations. Each row corresponds to a time point.}
 
 \item{model}{A fitted model object of class \code{robularized_SSM}, \code{classical_SSM}, \code{oracle_SSM}, \code{huber_robust_SSM}, or \code{trimmed_robust_SSM}.}
 
 \item{build}{A function that maps a numeric parameter vector to a corresponding \code{dlm} model object. The \code{specify_SSM} function can be used to create this \code{build} function.}
 
-\item{outlier_locs}{A logical or binary vector of the same length as \code{ncol(y)}, indicating time points to be treated as missing (i.e., time points that are known to be outliers). Used only with \code{oracle_SSM} models.}
+\item{outlier_locs}{A logical or binary vector of the same length as \code{nrow(y)}, indicating time points to be treated as missing (i.e., time points that are known to be outliers). Used only with \code{oracle_SSM} models.}
 
-\item{threshold}{Mahalanobis distance threshold for identifying outliers in \code{robularized_SSM} models. Default is \code{sqrt(qchisq(0.99, nrow(y)))}.}
+\item{threshold}{Mahalanobis distance threshold for identifying outliers in \code{robularized_SSM} models. Default is \code{sqrt(qchisq(0.99, ncol(y)))}.}
 
-\item{multiplier}{Multiplier for how quickly the filter grows its filtered state variance (uncertainty) after detecting an outlier in \code{robularized_SSM} models. Default is \code{1}.}
+\item{multiplier}{Multiplier for how quickly the filter grows its filtered state variance (uncertainty) after detecting an outlier in \code{robularized_SSM} models. Default is \code{2}.}
 }
 \value{
 A named list containing out-of-sample inference results:

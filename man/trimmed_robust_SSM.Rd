@@ -15,13 +15,13 @@ trimmed_robust_SSM(
 )
 }
 \arguments{
-\item{y}{A numeric matrix of observations (variables in rows, time points in columns).}
+\item{y}{A numeric matrix of observations (time points in rows).}
 
 \item{init_par}{A numeric vector of initial parameter values.}
 
 \item{build}{A function that returns a \code{dlm} model given a parameter vector. The \code{specify_SSM()} function can be used to create this \code{build} function.}
 
-\item{alpha}{Numeric value in (0, 1) indicating the trimming proportion (i.e., the proportion of data to exclude as outliers).}
+\item{alpha}{Numeric value in the interval [0, 1) indicating the trimming proportion (i.e., the proportion of data to exclude as outliers).}
 
 \item{lower}{Optional numeric vector of lower bounds for parameter estimation. Defaults to \code{-Inf}. Must be of same length as \code{init_par}.}
 

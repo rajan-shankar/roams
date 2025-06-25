@@ -61,3 +61,6 @@ This will result in \eqn{5\times 1 + 5\times 1 = 10} data sets. However, the mid
 data_study2 = simulate_data_study2(samples = 5, seed = 456)
 
 }
+\seealso{
+\code{\link{simulate_data_study1}}
+}

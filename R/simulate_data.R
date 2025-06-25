@@ -4,7 +4,7 @@
 #' for Study 1 in the paper. This study evaluates performance under different types of outlier configurations.
 #' All arguments have default values matching the simulation setup used in the paper.
 #'
-#' @param sample_sizes Vector of sample sizes \eqn{n} for each simulated dataset. Default is \code{c(100, 200, 500)}.
+#' @param sample_sizes Vector of sample sizes \eqn{n} for each simulated dataset. Default is \code{c(100, 200, 500, 1000)}.
 #' @param samples Number of simulated data sets per \eqn{n} and per outlier configuration. Default is 100.
 #' @param n_oos Number of out-of-sample (future) timesteps. Default is 20.
 #' @param contamination Proportion of contaminated (outlying) observations. Default is 0.1.
@@ -24,11 +24,13 @@
 #' @examples
 #' data_study1 = simulate_data_study1(samples = 5, seed = 123)
 #'
+#' @seealso \code{\link{simulate_data_study2}}
+#'
 #' @import tidyverse
 #'
 #' @export
 simulate_data_study1 = function(
-  sample_sizes = c(100, 200, 500),
+  sample_sizes = c(100, 200, 500, 1000),
   samples = 100,
   n_oos = 20,
   contamination = 0.1,
@@ -99,16 +101,16 @@ simulate_data_study1 = function(
     for (n in ns) {
       for (sample_number in samples) {
         # State process
-        x = matrix(nrow = 4, ncol = n + n_oos)
-        x[,1] = Phi %*% x0 + MASS::mvrnorm(mu = rep(0,4), Sigma = Q)
+        x = matrix(nrow = n + n_oos, ncol = 4)
+        x[1,] = Phi %*% x0 + MASS::mvrnorm(mu = rep(0,4), Sigma = Q)
         for (t in 2:(n + n_oos)) {
-          x[,t] = Phi %*% x[,t-1] + MASS::mvrnorm(mu = rep(0,4), Sigma = Q)
+          x[t,] = Phi %*% x[t-1,] + MASS::mvrnorm(mu = rep(0,4), Sigma = Q)
         }
 
         # Observation process
-        y_clean = matrix(nrow = 2, ncol = n + n_oos)
+        y_clean = matrix(nrow = n + n_oos, ncol = 2)
         for (t in 1:(n + n_oos)) {
-          y_clean[,t] = A %*% x[,t] + MASS::mvrnorm(mu = rep(0,2), Sigma = R)
+          y_clean[t,] = A %*% x[t,] + MASS::mvrnorm(mu = rep(0,2), Sigma = R)
         }
 
         # Generate outliers
@@ -117,7 +119,7 @@ simulate_data_study1 = function(
 
           if (setting == "clean data") {
             outlier_locs = rep(0, n)
-            outlier_vecs = matrix(0, nrow = 2, ncol = n)
+            outlier_vecs = matrix(0, nrow = n, ncol = 2)
 
           } else {
             outlier_locs = c(
@@ -130,7 +132,7 @@ simulate_data_study1 = function(
 
             angles = runif(n, max = 2*pi)
             outlier_unit_vecs = do.call(
-              cbind,
+              rbind,
               map(angles, ~ c(cos(.), sin(.)))
             )
 
@@ -154,10 +156,10 @@ simulate_data_study1 = function(
                 }
               }
 
-              outlier_vecs = outlier_unit_vecs %*% diag(outlier_levels)
+              outlier_vecs = diag(outlier_levels) %*% outlier_unit_vecs
 
             } else if (setting == "cluster") {
-              outlier_vecs = matrix(0, nrow = 2, ncol = n)
+              outlier_vecs = matrix(0, nrow = n, ncol = 2)
             }
           }
 
@@ -173,11 +175,11 @@ simulate_data_study1 = function(
         y = y_clean
         if (setting != "cluster") {
           for (t in 1:n) {
-            y[,t] = y_clean[,t] + outlier_info$locs[t]*outlier_info$vecs[,t]
+            y[t,] = y_clean[t,] + outlier_info$locs[t]*outlier_info$vecs[t,]
           }
         } else {
           for (t in 1:n) {
-            y[,t] = (1 - outlier_info$locs[t])*y_clean[,t] + outlier_info$locs[t]*(MASS::mvrnorm(mu = mean_cluster, Sigma = sd_cluster^2*diag(2)))
+            y[t,] = (1 - outlier_info$locs[t])*y_clean[t,] + outlier_info$locs[t]*(MASS::mvrnorm(mu = mean_cluster, Sigma = sd_cluster^2*diag(2)))
           }
         }
 
@@ -186,11 +188,11 @@ simulate_data_study1 = function(
             sample = sample_number,
             n = n,
             setting = setting,
-            y_oos = list(y[,(n + 1):(n + n_oos)]),
-            x_oos = list(x[,(n + 1):(n + n_oos)]),
-            y = list(y[,1:n]),
-            y_clean = list(y_clean[,1:n]),
-            x = list(x[,1:n]),
+            y_oos = list(y[(n + 1):(n + n_oos),]),
+            x_oos = list(x[(n + 1):(n + n_oos),]),
+            y = list(y[1:n,]),
+            y_clean = list(y_clean[1:n,]),
+            x = list(x[1:n,]),
             outlier_locs = list(outlier_info$locs),
             outlier_levels = list(outlier_info$levels)
           )
@@ -235,6 +237,8 @@ simulate_data_study1 = function(
 #'
 #' @examples
 #' data_study2 = simulate_data_study2(samples = 5, seed = 456)
+#'
+#' @seealso \code{\link{simulate_data_study1}}
 #'
 #' @import tidyverse
 #'
@@ -297,13 +301,13 @@ simulate_data_study2 = function(
   for (i in 1:samples) {
 
     # State process
-    x = matrix(0, nrow = 4, ncol = n+n_oos)
-    x[,1] = x0
-    for (t in 2:(n+n_oos)) {
-      x[,t] = Phi %*% x[,t-1] + MASS::mvrnorm(mu = c(0,0,0,0), Sigma = Q)
+    x = matrix(0, nrow = n + n_oos, ncol = 4)
+    x[1,] = x0
+    for (t in 2:(n + n_oos)) {
+      x[t,] = Phi %*% x[t-1,] + MASS::mvrnorm(mu = c(0,0,0,0), Sigma = Q)
     }
 
-    y_noises = t(MASS::mvrnorm(n+n_oos, mu = c(0,0), Sigma = R))
+    y_noises = MASS::mvrnorm(n + n_oos, mu = c(0,0), Sigma = R)
     outlier_locs_all = sample(c(
       rep(2, ceiling(max_contamination * n / 4)),
       rep(3, ceiling(max_contamination * n / 4)),
@@ -315,9 +319,9 @@ simulate_data_study2 = function(
     angles = runif(n, max = 2*pi)
 
     # Observation process
-    y = matrix(0, nrow = 2, ncol = n+n_oos)
-    for (t in 1:(n+n_oos)) {
-      y[,t] = A %*% x[,t] + y_noises[,t]
+    y = matrix(0, nrow = n + n_oos, ncol = 2)
+    for (t in 1:(n + n_oos)) {
+      y[t,] = A %*% x[t,] + y_noises[t,]
     }
 
     y_clean = y
@@ -330,21 +334,20 @@ simulate_data_study2 = function(
       if (counter == 4) {
         for (distance in distances) {
           # Additive observational outlier process
-          z = matrix(0, nrow = 2, ncol = n)
           for (t in 1:n) {
-            z[,t] = y[,t] + outlier_locs[t]*c(cos(angles[t]),
-                                              sin(angles[t]))*distance
+            y[t,] = y_clean[t,] + outlier_locs[t]*c(cos(angles[t]),
+                                                    sin(angles[t]))*distance
           }
           data_sets = data_sets %>%
             add_row(
               sample = i,
               contamination = contaminations[6+1-counter],
               distance = distance,
-              y_oos = list(y[, (n + 1):(n + n_oos)]),
-              x_oos = list(x[, (n + 1):(n + n_oos)]),
-              y = list(z[, 1:n]),
-              x = list(x[, 1:n]),
-              y_clean = list(y_clean[, 1:n]),
+              y_oos = list(y[(n + 1):(n + n_oos),]),
+              x_oos = list(x[(n + 1):(n + n_oos),]),
+              y = list(y[1:n,]),
+              x = list(x[1:n,]),
+              y_clean = list(y_clean[1:n,]),
               outlier_locs = list(outlier_locs)
             )
         }
@@ -352,21 +355,20 @@ simulate_data_study2 = function(
       } else {
         distance = distances[median(1:length(distances))]
         # Additive observational outlier process
-        z = matrix(0, nrow = 2, ncol = n)
         for (t in 1:n) {
-          z[,t] = y[,t] + outlier_locs[t]*c(cos(angles[t]),
-                                            sin(angles[t]))*distance
+          y[t,] = y_clean[t,] + outlier_locs[t]*c(cos(angles[t]),
+                                                  sin(angles[t]))*distance
         }
         data_sets = data_sets %>%
           add_row(
             sample = i,
             contamination = contaminations[6+1-counter],
             distance = distance,
-            y_oos = list(y[, (n + 1):(n + n_oos)]),
-            x_oos = list(x[, (n + 1):(n + n_oos)]),
-            y = list(z[, 1:n]),
-            x = list(x[, 1:n]),
-            y_clean = list(y_clean[, 1:n]),
+            y_oos = list(y[(n + 1):(n + n_oos),]),
+            x_oos = list(x[(n + 1):(n + n_oos),]),
+            y = list(y[1:n,]),
+            x = list(x[1:n,]),
+            y_clean = list(y_clean[1:n,]),
             outlier_locs = list(outlier_locs)
           )
       }
@@ -379,5 +381,4 @@ simulate_data_study2 = function(
     select(sample, contamination, distance, y, x, y_oos, x_oos, y_clean, outlier_locs)
 
   return(data_sets)
-
 }

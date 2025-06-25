@@ -27,7 +27,8 @@ Imports:
   expm,
   dlm,
   purrr,
-  MASS
+  MASS,
+  patchwork
 Depends:
   tidyverse,
   ggplot2

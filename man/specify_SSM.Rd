@@ -48,8 +48,8 @@ build_function = function(par) {
   Phi[4,2] = 1
 
   A = diag(4)[1:2,]
-  Sigma_V = diag(c(par[2], par[3], 0, 0))
-  Sigma_W = diag(c(par[4], par[5]))
+  Sigma_W = diag(c(par[2], par[3], 0, 0))
+  Sigma_V = diag(c(par[4], par[5]))
 
   mu0 = rep(0, 4)
   P0 = diag(rep(0, 4))

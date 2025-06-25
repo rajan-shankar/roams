@@ -4,23 +4,25 @@
 \alias{autoplot.robularized_SSM_list}
 \title{Autoplot for Robularized State Space Model List}
 \usage{
-\method{autoplot}{robularized_SSM_list}(object, attribute = "BIC", ...)
+\method{autoplot}{robularized_SSM_list}(object, attribute1 = "BIC", attribute2 = "prop_outlying", ...)
 }
 \arguments{
 \item{object}{An object of class \code{robularized_SSM_list} as returned by \code{\link{robularized_SSM}} when multiple \eqn{\lambda} values are used.}
 
-\item{attribute}{A character string indicating which model attribute to plot. Options include \code{lambda}, \code{prop_outlying}, \code{BIC}, \code{loglik}, \code{RSS}, \code{iterations}, \code{value}, and \code{counts}. Defaults to \code{BIC}.}
+\item{attribute1}{A character string indicating the first model attribute to plot on the top panel. Options include \code{"lambda"}, \code{"prop_outlying"}, \code{"BIC"}, \code{"loglik"}, \code{"RSS"}, \code{"iterations"}, \code{"value"}, and \code{"counts"}. Defaults to \code{"BIC"}.}
+
+\item{attribute2}{A character string indicating the second model attribute to plot on the bottom panel. Uses the same options as \code{attribute1}. Defaults to \code{"prop_outlying"}.}
 
 \item{...}{Other arguments passed to specific methods. Not used in this method.}
 }
 \value{
-A \code{ggplot} object showing the trajectory of the specified attribute across \eqn{\lambda}.
+A \code{ggplot} object arranged using the \pkg{patchwork} package, showing the specified attributes plotted against \eqn{\lambda} in two vertically stacked panels.
 }
 \description{
-Generates a diagnostic plot for a list of robust state space models fit across a sequence of \eqn{\lambda} values. The plot displays the specified model attribute (e.g., BIC, proportion outlying, log-likelihood) against \eqn{\lambda}, with a vertical dashed line indicating the model with the lowest BIC among those with fewer than 50\% outliers.
+Generates diagnostic plots for a list of robust state space models fit across a sequence of \eqn{\lambda} values. Two model attributes are plotted against \eqn{\lambda}, each in its own panel, with a vertical dashed line indicating the model with the lowest BIC among those with fewer than 50\% outliers.
 }
 \details{
-The red dashed vertical line indicates the model with the lowest BIC among models with less than 50\% outlying time points, as a heuristic for robust model selection.
+In each panel, a red dashed vertical line indicates the model with the lowest BIC among those with fewer than 50\% outlying time points, serving as a heuristic for robust model selection.
 }
 \seealso{
 \code{\link{robularized_SSM}}, \code{\link{get_attribute}}

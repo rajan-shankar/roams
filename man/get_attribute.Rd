@@ -31,14 +31,13 @@ Available attributes depend on whether in-sample information has been attached u
   \item \code{RSS}: Residual sum of squares.
   \item \code{iterations}: Number of IPOD iterations.
   \item \code{value}: Final objective function value.
-  \item \code{counts}: Optimization evaluation counts.
   \item \code{convergence}: Convergence status of optimizer.
   \item \code{message}: Optimizer termination message.
 }
 
 \strong{List/Vector Attributes that are always available:}
 \itemize{
-  \item \code{par}, \code{gamma}, \code{y}
+  \item \code{par}, \code{gamma}, \code{y}, \code{counts}
 }
 
 \strong{List/Vector Attributes that are only available if in-sample info is attached:}

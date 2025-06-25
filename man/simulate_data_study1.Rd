@@ -5,7 +5,7 @@
 \title{Simulate DCRW Data for Study 1: Different Outlier Configurations}
 \usage{
 simulate_data_study1(
-  sample_sizes = c(100, 200, 500),
+  sample_sizes = c(100, 200, 500, 1000),
   samples = 100,
   n_oos = 20,
   contamination = 0.1,
@@ -23,7 +23,7 @@ simulate_data_study1(
 )
 }
 \arguments{
-\item{sample_sizes}{Vector of sample sizes \eqn{n} for each simulated dataset. Default is \code{c(100, 200, 500)}.}
+\item{sample_sizes}{Vector of sample sizes \eqn{n} for each simulated dataset. Default is \code{c(100, 200, 500, 1000)}.}
 
 \item{samples}{Number of simulated data sets per \eqn{n} and per outlier configuration. Default is 100.}
 
@@ -61,4 +61,7 @@ All arguments have default values matching the simulation setup used in the pape
 \examples{
 data_study1 = simulate_data_study1(samples = 5, seed = 123)
 
+}
+\seealso{
+\code{\link{simulate_data_study2}}
 }

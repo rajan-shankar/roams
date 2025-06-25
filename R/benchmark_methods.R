@@ -2,7 +2,7 @@
 #'
 #' Fits a state space model by treating a known set of outliers as missing data. This benchmark model assumes prior knowledge of outlier locations and is intended for comparison with automatic outlier detection procedures.
 #'
-#' @param y A numeric matrix of observations (time points in columns).
+#' @param y A numeric matrix of observations (time points in rows).
 #' @param init_par A numeric vector of initial parameter values.
 #' @param build A function that returns a \code{dlm} model given a parameter vector. The \code{specify_SSM()} function can be used to create this \code{build} function.
 #' @param outlier_locs An integer or logical vector of length equal to the number of time points, indicating locations of known outliers.
@@ -29,10 +29,10 @@ oracle_SSM = function(
   if (is.na(upper)[1]) {upper = rep(Inf, length(init_par))}
 
   adj_y = y
-  adj_y[,outlier_locs != 0] = NA
+  adj_y[outlier_locs != 0,] = NA
 
   optim_output = dlm::dlmMLE(
-    t(adj_y),
+    adj_y,
     parm = init_par,
     build,
     method = "L-BFGS-B",
@@ -50,7 +50,7 @@ oracle_SSM = function(
 #'
 #' Fits a state space model using classical maximum likelihood estimation with no attempt to detect or account for outliers. This serves as a baseline model for comparison.
 #'
-#' @param y A numeric matrix of observations (time points in columns).
+#' @param y A numeric matrix of observations (time points in rows).
 #' @param init_par A numeric vector of initial parameter values.
 #' @param build A function that returns a \code{dlm} model given a parameter vector. The \code{specify_SSM()} function can be used to create this \code{build} function.
 #' @param lower Optional numeric vector of lower bounds for parameter estimation. Defaults to \code{-Inf}. Must be of same length as \code{init_par}.
@@ -74,11 +74,11 @@ classical_SSM = function(
   if (is.na(lower)[1]) {lower = rep(-Inf, length(init_par))}
   if (is.na(upper)[1]) {upper = rep(Inf, length(init_par))}
 
-  n = ncol(y)
-  dim_obs = nrow(y)
+  n = nrow(y)
+  dim_obs = ncol(y)
 
   optim_output = dlm::dlmMLE(
-    t(y),
+    y,
     parm = init_par,
     build,
     method = "L-BFGS-B",
@@ -96,7 +96,7 @@ classical_SSM = function(
 #'
 #' Fits a robust state space model by minimizing a Huber loss objective as per Crevits and Croux (2018), providing protection against moderate outliers. The predicted observations used in the Huber loss are computed using the Huber robust filter from Cipra and Romera (1997).
 #'
-#' @param y A numeric matrix of observations (time points in columns).
+#' @param y A numeric matrix of observations (time points in rows).
 #' @param init_par A numeric vector of initial parameter values.
 #' @param build A function that returns a \code{dlm} model given a parameter vector. The \code{specify_SSM()} function can be used to create this \code{build} function.
 #' @param lower Optional numeric vector of lower bounds for parameter estimation. Defaults to \code{-Inf}. Must be of same length as \code{init_par}.
@@ -145,10 +145,10 @@ huber_robust_SSM = function(
 #'
 #' Fits a robust state space model by minimizing a trimmed loss function as per Crevits and Croux (2018). A fixed proportion of the largest residuals are excluded from the objective, providing robustness against extreme outliers. The predicted observations used in the trimmed loss are computed using the Huber robust filter from Cipra and Romera (1997).
 #'
-#' @param y A numeric matrix of observations (variables in rows, time points in columns).
+#' @param y A numeric matrix of observations (time points in rows).
 #' @param init_par A numeric vector of initial parameter values.
 #' @param build A function that returns a \code{dlm} model given a parameter vector. The \code{specify_SSM()} function can be used to create this \code{build} function.
-#' @param alpha Numeric value in (0, 1) indicating the trimming proportion (i.e., the proportion of data to exclude as outliers).
+#' @param alpha Numeric value in the interval [0, 1) indicating the trimming proportion (i.e., the proportion of data to exclude as outliers).
 #' @param lower Optional numeric vector of lower bounds for parameter estimation. Defaults to \code{-Inf}. Must be of same length as \code{init_par}.
 #' @param upper Optional numeric vector of upper bounds for parameter estimation. Defaults to \code{Inf}. Must be of same length as \code{init_par}.
 #' @param control Optional list of control parameters passed to \code{optim}. Default is \code{list(parscale = init_par)}, which can help the optimizer if parameters are on vastly different scales.
@@ -222,8 +222,8 @@ ruben_filter = function(
   x_tt = SSM_specs$m0
   P_tt = SSM_specs$C0
 
-  n = ncol(y)
-  dim_obs = nrow(y)
+  n = nrow(y)
+  dim_obs = ncol(y)
   dim_state = nrow(Phi)
 
 
@@ -246,10 +246,10 @@ ruben_filter = function(
   objective = 0
 
   if (!return_obj) {
-    filtered_states = matrix(0, nrow = dim_state, ncol = n)
-    filtered_observations = matrix(0, nrow = dim_obs, ncol = n)
-    predicted_states = matrix(0, nrow = dim_state, ncol = n)
-    predicted_observations = matrix(0, nrow = dim_obs, ncol = n)
+    filtered_states = matrix(0, nrow = n, ncol = dim_state)
+    filtered_observations = matrix(0, nrow = n, ncol = dim_obs)
+    predicted_states = matrix(0, nrow = n, ncol = dim_state)
+    predicted_observations = matrix(0, nrow = n, ncol = dim_obs)
     predicted_observations_var = list()
     filtered_states_var = list()
     predicted_states_var = list()
@@ -263,36 +263,36 @@ ruben_filter = function(
 
     sqrt_Sigma_v = expm::sqrtm(Sigma_v)
     inv_sqrt_Sigma_v = solve(sqrt_Sigma_v)
-    W_elements = drop(psi_huber(inv_sqrt_Sigma_v %*% (y[,t] - y_tt_1))) / drop(inv_sqrt_Sigma_v %*% (y[,t] - y_tt_1))
+    W_elements = drop(psi_huber(inv_sqrt_Sigma_v %*% (y[t,] - y_tt_1))) / drop(inv_sqrt_Sigma_v %*% (y[t,] - y_tt_1))
     inv_W = diag(1/W_elements)
     S_t = A %*% P_tt_1 %*% t(A) + sqrt_Sigma_v %*% inv_W %*% sqrt_Sigma_v
     inv_S_t = solve(S_t)
 
-    if (is.na(y[1,t])) {
+    if (any(is.na(y[t,]))) {
       x_tt = x_tt_1
       P_tt = P_tt_1
     } else {
       K_t = P_tt_1 %*% t(A) %*% inv_S_t
-      x_tt = x_tt_1 + K_t %*% (y[,t] - y_tt_1)
+      x_tt = x_tt_1 + K_t %*% (y[t,] - y_tt_1)
       P_tt = P_tt_1 - K_t %*% A %*% P_tt_1
     }
 
     if (return_obj) {
       if (obj_type == "huber") {
-        objective = objective + 1/(2*n) * log(det(S_t)) + c_H/n * rho_huber_mv(expm::sqrtm(inv_S_t) %*% (y[,t] - y_tt_1))
+        objective = objective + 1/(2*n) * log(det(S_t)) + c_H/n * rho_huber_mv(expm::sqrtm(inv_S_t) %*% (y[t,] - y_tt_1))
       } else if (obj_type == "trimmed") {
-        mahalanobis_residuals[t] = drop(sqrt(t(y[,t] - y_tt_1) %*% inv_S_t %*% (y[,t] - y_tt_1)))
+        mahalanobis_residuals[t] = drop(sqrt(t(y[t,] - y_tt_1) %*% inv_S_t %*% (y[t,] - y_tt_1)))
         det_S_t[t] = det(S_t)
       }
     } else {
-      filtered_states[,t] = x_tt
-      filtered_observations[,t] = A %*% x_tt
-      predicted_states[,t] = x_tt_1
-      predicted_observations[,t] = y_tt_1
+      filtered_states[t,] = x_tt
+      filtered_observations[t,] = A %*% x_tt
+      predicted_states[t,] = x_tt_1
+      predicted_observations[t,] = y_tt_1
       predicted_observations_var[[t]] = S_t
       filtered_states_var[[t]] = P_tt
       predicted_states_var[[t]] = P_tt_1
-      mahalanobis_residuals[t] = drop(sqrt(t(y[,t] - y_tt_1) %*% inv_S_t %*% (y[,t] - y_tt_1)))
+      mahalanobis_residuals[t] = drop(sqrt(t(y[t,] - y_tt_1) %*% inv_S_t %*% (y[t,] - y_tt_1)))
     }
   }
 
