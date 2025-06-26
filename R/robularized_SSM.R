@@ -43,8 +43,6 @@
 #'
 #' @references She, Y., & Owen, A. B. (2011). Outlier Detection Using Nonconvex Penalized Regression. *Journal of the American Statistical Association, 106*(494), 626–639. https://doi.org/10.1198/jasa.2011.tm10390
 #'
-#' @importFrom foreach %dopar%
-#'
 #' @export
 robularized_SSM = function(
     y,
@@ -145,23 +143,38 @@ lambda_grid = function(
                                  control)
     }
   } else {
-    cl = parallel::makeCluster(cores)
-    doParallel::registerDoParallel(cl)
-                                   #export = list(run_IPOD = run_IPOD))
-    model_list = foreach::foreach(
-      i = 1:length(lambdas)) %dopar% {
-                    model = run_IPOD(y,
-                                     lambdas[i],
-                                     init_par,
-                                     build,
-                                     B,
-                                     lower,
-                                     upper,
-                                     control)
-                    return(model)
-                    }
-    parallel::stopCluster(cl)
+
+    future::plan(future::multisession, workers = cores)
+
+    model_list = furrr::future_map(lambdas, ~ run_IPOD(y,
+                                                       .x,
+                                                       init_par,
+                                                       build,
+                                                       B,
+                                                       lower,
+                                                       upper,
+                                                       control))
+
+    future::plan(future::sequential)
   }
+
+  #   cl = parallel::makeCluster(cores)
+  #   doParallel::registerDoParallel(cl)
+  #                                  #export = list(run_IPOD = run_IPOD))
+  #   model_list = foreach::foreach(
+  #     i = 1:length(lambdas)) %dopar% {
+  #                   model = run_IPOD(y,
+  #                                    lambdas[i],
+  #                                    init_par,
+  #                                    build,
+  #                                    B,
+  #                                    lower,
+  #                                    upper,
+  #                                    control)
+  #                   return(model)
+  #                   }
+  #   parallel::stopCluster(cl)
+  # }
 
   class(model_list) = "robularized_SSM_list"
   return(model_list)

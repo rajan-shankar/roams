@@ -18,9 +18,6 @@ LazyData: true
 RoxygenNote: 7.3.2
 Imports:
   stats,
-  parallel,
-  doParallel,
-  foreach,
   magrittr,
   latex2exp,
   dplyr,
@@ -28,7 +25,9 @@ Imports:
   dlm,
   purrr,
   MASS,
-  patchwork
+  patchwork,
+  future,
+  furrr
 Depends:
   tidyverse,
   ggplot2
