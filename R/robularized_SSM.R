@@ -502,6 +502,7 @@ attach_insample_info = function(model) {
 #'   \item{\code{predicted_states_var}}{List of one-step-ahead state prediction variances.}
 #'   \item{\code{predicted_observations_var}}{List of one-step-ahead observation forecast variances.}
 #'   \item{\code{mahalanobis_residuals}}{Vector of Mahalanobis distances of residuals from predicted observations.}
+#'   \item{\code{outliers_flagged}}{Vector of 1's and 0's indicating whether timepoints are flagged as outlying or not based on the \code{threshold} supplied (only available if \code{model} is of class \code{robularized_SSM}).}
 #' }
 #'
 #' @details
