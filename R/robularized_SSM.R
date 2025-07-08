@@ -216,15 +216,7 @@ run_IPOD = function(
       control = control
       )
 
-    # par = init_par
-
-
-    # If the fit is at edge of parameter space, use the initial parameters for next iteration
-    if ((sum(fit$par == lower) + sum(fit$par == upper)) == 0) {
-      par = fit$par
-    } else {
-      par = init_par
-    }
+    par = init_par
 
     # Update gammas
     info_output = dlmInfo(y, adj_y, fit, build)
