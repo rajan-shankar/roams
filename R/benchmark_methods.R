@@ -41,7 +41,7 @@ oracle_SSM = function(
     control = control
   )
 
-  model = c(optim_output, outlier_locs = outlier_locs, list(y = y), list(build = build))
+  model = c(optim_output, "outlier_locs" = outlier_locs, list("y" = y), list("build" = build))
   class(model) = "oracle_SSM"
   return(model)
 }
@@ -87,7 +87,7 @@ classical_SSM = function(
     control = control
   )
 
-  model = c(optim_output, list(y = y), list(build = build))
+  model = c(optim_output, list("y" = y), list("build" = build))
   class(model) = "classical_SSM"
   return(model)
 }
@@ -136,7 +136,7 @@ huber_robust_SSM = function(
     control = control
   )
 
-  model = c(optim_output, list(y = y), list(build = build))
+  model = c(optim_output, list("y" = y), list("build" = build))
   class(model) = "huber_robust_SSM"
   return(model)
 }
@@ -188,7 +188,7 @@ trimmed_robust_SSM = function(
     control = control
   )
 
-  model = c(optim_output, alpha = alpha, list(y = y), list(build = build))
+  model = c(optim_output, "alpha" = alpha, list("y" = y), list("build" = build))
   class(model) = "trimmed_robust_SSM"
   return(model)
 }

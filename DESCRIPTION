@@ -1,7 +1,7 @@
 Package: robularizedSSM
 Type: Package
 Title: Robust Regularized State-Space Modeling
-Version: 0.1.0
+Version: 0.1.1
 Author: Rajan Shankar [aut, cre], Garth Tarr [aut], Ines Wilms [aut], Jakob Raymaekers [aut]
 Maintainer: Rajan Shankar <rajan.shankar@sydney.edu.au>
 Description: Provides methods for robust estimation and outlier detection in 
