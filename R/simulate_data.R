@@ -313,8 +313,10 @@ simulate_data_study2 = function(
       rep(3, ceiling(max_contamination * n / 4)),
       rep(4, floor(max_contamination * n / 4)),
       rep(5, floor(max_contamination * n / 4)),
-      rep(0, n - ceiling(max_contamination * n / 4)*2 - floor(max_contamination * n / 4)*2)
-    ), size = n)
+      rep(0, n - ceiling(max_contamination * n / 4)*2 - floor(max_contamination * n / 4)*2 - 1)
+    ), size = n - 1)
+
+    outlier_locs_all = c(0, outlier_locs_all)  # first point cannot be an outlier
 
     angles = runif(n, max = 2*pi)
 
