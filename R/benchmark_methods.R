@@ -41,7 +41,7 @@ oracle_SSM = function(
     control = control
   )
 
-  model = c(optim_output, "outlier_locs" = outlier_locs, list("y" = y), list("build" = build))
+  model = c(optim_output, list("outlier_locs" = outlier_locs), list("y" = y), list("build" = build))
   class(model) = "oracle_SSM"
   return(model)
 }
