@@ -41,7 +41,7 @@ print.oracle_SSM = function(x, ...) {
   cat("Oracle SSM Model\n",
       " * Log-Likelihood: ", round(model$value, 3), "\n",
       " * optim() Iterations: ", model$counts[1], "\n",
-      " * True Outlier Locations: ", model$outlier_locs, "n",
+      " * True Outlier Locations: ", model$outlier_locs, "\n",
       ifelse(inherits(model, "insample_info"),
              "In-sample information attached. Use $ to see more attributes.\n",
              "Use $ to see more attributes.\n"),
