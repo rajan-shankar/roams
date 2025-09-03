@@ -1,8 +1,25 @@
-Package: robularizedSSM
+Package: roams
 Type: Package
-Title: Robust Regularized State-Space Modeling
-Version: 0.2.1
-Author: Rajan Shankar [aut, cre], Garth Tarr [aut], Ines Wilms [aut], Jakob Raymaekers [aut]
+Title: Robust Outlier-Adjusted Mean-Shift Estimation of State-Space Models
+Version: 0.3.1
+Authors@R: c(
+    person("Rajan", "Shankar", 
+           email = "rajan.shankar@sydney.edu.au", 
+           role = c("aut", "cre"),
+           comment = c(ORCID = "0000-0002-XXXX-YYYY")),
+    person("Garth", "Tarr", 
+           email = "garth.tarr@sydney.edu.au", 
+           role = "aut",
+           comment = c(ORCID = "0000-0002-6605-7478")),
+    person("Ines", "Wilms", 
+           email = "i.wilms@maastrichtuniversity.nl", 
+           role = "aut",
+           comment = c(ORCID = "0000-0003-3269-4601")),
+    person("Jakob", "Raymaekers", 
+           email = "jakob.raymaekers@uantwerpen.be", 
+           role = "aut",
+           comment = c(ORCID = "0000-0002-2093-3137"))
+    )
 Maintainer: Rajan Shankar <rajan.shankar@sydney.edu.au>
 Description: Provides methods for robust estimation and outlier detection in 
     state-space models. 
