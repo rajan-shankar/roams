@@ -20,6 +20,8 @@ library(janitor)
 library(tsibble)
 ```
 
+This page shows how the examples in section 3.1 of \cite{shankar2025} are generated.
+
 These examples all use the first-differenced correlated random walk (DCRW) model, a type of linear Gaussian SSM. This model is detailed in \cite{auger-methe_guide_2021}. The DCRW model has the following observation and state processes,
 \begin{align} \label{eq:DCRW_equations}
 \begin{split}
@@ -154,9 +156,6 @@ whale_2008 %>%
   theme_minimal() +
   theme(legend.position = "none")
 ```
-
-
-
 
 
 ## Polar bear
