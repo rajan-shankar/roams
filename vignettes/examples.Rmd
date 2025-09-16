@@ -1,0 +1,98 @@
+---
+title: "Examples"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{examples}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup, message=FALSE}
+library(roams)
+library(janitor)
+library(tsibble)
+```
+
+## Blue whale (2008)
+
+```{r whale_2008_import, message=FALSE}
+whale_2008 = read_csv("data/Blue whales Eastern North Pacific 1993-2008 - Argos Data.csv") |>
+  # Standardise column names
+  janitor::clean_names() |>  
+  # Keep only rows for the whale with ID "2008CA-Bmu-10839"
+  filter(individual_local_identifier == "2008CA-Bmu-10839") |> 
+  # Replace missing values in 'manually_marked_outlier' with FALSE
+  mutate(manually_marked_outlier = tidyr::replace_na(manually_marked_outlier, FALSE)) |> 
+  # Round timestamps to the nearest 12 hours
+  mutate(timestamp = lubridate::round_date(timestamp, "12 hours")) |> 
+  # Within each group, keep only the last row (e.g. latest observation per 12-hour block)
+  group_by(timestamp) |> 
+  slice_tail(n = 1) |> 
+  # Convert the data to a tsibble object (time series tibble)
+  tsibble::tsibble() |>
+  # Fill in missing time points in the series with explicit gaps
+  tsibble::fill_gaps() |>
+   # Convert back to a regular tibble
+  as_tibble() |> 
+  # Rename longitude/latitude columns to x and y
+  rename(x = location_long,
+         y = location_lat)
+```
+
+Plot with world map data:
+
+```{r}
+library(rnaturalearth)
+library(rnaturalearthdata)
+library(sf)
+
+# Get country boundaries as an sf object
+world <- ne_countries(scale = "medium", returnclass = "sf")
+
+# Work out x/y ranges with some padding
+x_range <- range(whale_2008$x, na.rm = TRUE)
+y_range <- range(whale_2008$y, na.rm = TRUE)
+
+x_pad <- diff(x_range) * 0.05  # 5% padding
+y_pad <- diff(y_range) * 0.05 # 5% padding
+
+whale_2008 %>% 
+  ggplot() +
+  # Country boundaries
+  geom_sf(data = world, fill = "grey95", colour = "grey70", size = 0.3) +
+  
+  # Whale track and points
+  geom_path(aes(x = x, y = y, colour = timestamp), alpha = 0.2) +
+  geom_point(aes(x = x, y = y, colour = timestamp)) +
+  
+  # Colour scale
+  viridis::scale_color_viridis() +
+  
+  # Focus map on whale’s range
+  coord_sf(
+    xlim = c(x_range[1] - x_pad, x_range[2] + x_pad),
+    ylim = c(y_range[1] - y_pad, y_range[2] + y_pad),
+    expand = FALSE
+  ) +
+  
+  # Labels and theme
+  labs(x = "Longitude", y = "Latitude", subtitle = "whale_2008") +
+  theme_minimal() +
+  theme(legend.position = "none")
+```
+
+
+
+
+
+## Polar bear
+
+
+## Seal

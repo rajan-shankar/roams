@@ -48,3 +48,7 @@ Imports:
 Depends:
   tidyverse,
   ggplot2
+Suggests: 
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr
