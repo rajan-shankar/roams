@@ -1,8 +1,8 @@
 ---
-title: "Examples"
+title: "DCRW examples"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{examples}
+  %\VignetteIndexEntry{DCRW examples}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -19,6 +19,73 @@ library(roams)
 library(janitor)
 library(tsibble)
 ```
+
+These examples all use the first-differenced correlated random walk (DCRW) model, a type of linear Gaussian SSM. This model is detailed in \cite{auger-methe_guide_2021}. The DCRW model has the following observation and state processes,
+\begin{align} \label{eq:DCRW_equations}
+\begin{split}
+    \mathbf{y}_t &= \mathbf{z}_{t} + \mathbf{v}_t \\
+    \mathbf{z}_t &= \mathbf{z}_{t-1} + \phi(\mathbf{z}_{t-1} - \mathbf{z}_{t-2}) + \mathbf{w}_t,
+\end{split}
+\end{align}
+where $\mathbf{y}_t$ is the location observed by the satellite, $\mathbf{v}_t$ is the error from the satellite measurements, $\mathbf{z}_t$ is the true location of the whale, and $\mathbf{w}_t$ captures the randomness in the whale's movement. Both $\mathbf{y}_t$ and $\mathbf{z}_t$ are 2-dimensional vectors containing longitude and latitude coordinates. The DCRW model assumes that the whale's location depends on the previous location $\mathbf{z}_{t-1}$, and the previous direction and speed of movement $\mathbf{z}_{t-1} - \mathbf{z}_{t-2}$. The amount of dependence on $\mathbf{z}_{t-1} - \mathbf{z}_{t-2}$ is determined by the correlation parameter $\phi\in [0,1)$.
+
+Notice the use of $\mathbf{z}$ instead of $\bx$ for the state process; the DCRW model as presented in \eqref{eq:DCRW_equations} is not in state-space form since the state process depends on the previous \textit{two} states, $\mathbf{z}_{t-1}$ and $\mathbf{z}_{t-2}$. This presentation makes it easier to understand the model dynamics, but in order to estimate the parameters of the model, the model must be converted into state-space form.
+
+We use a diagonal structure for the observation error variance matrix, allowing for different variances to be estimated for the longitude and the latitude directions,
+\begin{align*}
+    \bSigma_\mathbf{v} &= \left[\begin{matrix}\sigma^2_{\mathbf{v},\text{lon}} & 0 \\ 0 & \sigma^2_{\mathbf{v},\text{lat}} \end{matrix}\right].
+\end{align*}
+A similar matrix is used for the state error variance matrix $\bSigma_\mathbf{w}$.
+$$
+\begin{align}
+\left[
+\begin{matrix}
+\mathbf z_t \\ \mathbf z_{t-1}
+\end{matrix}
+\right] &= 
+\left[
+\begin{matrix}
+1+\gamma&0&-\gamma&0 \\
+0&1+\gamma&0&-\gamma \\
+1&0&0&0 \\
+0&1&0&0 \\
+\end{matrix}
+\right]
+\left[
+\begin{matrix}
+\mathbf z_{t-1} \\ \mathbf z_{t-2}
+\end{matrix}
+\right] + \boldsymbol \epsilon_t, \ \ \boldsymbol \epsilon_t \sim N\left(\mathbf 0, \boldsymbol \Sigma \right), \\
+\boldsymbol\Sigma &= \left[
+\begin{matrix}
+\sigma^2_{\epsilon,lon}&0&0&0 \\
+0&\sigma^2_{\epsilon,lat}&0&0 \\
+0&0&0&0 \\
+0&0&0&0 \\
+\end{matrix}
+\right] \\
+\mathbf y_t &=
+\left[
+\begin{matrix}
+1&0&0&0 \\
+0&1&0&0
+\end{matrix}
+\right]
+\left[
+\begin{matrix}
+\mathbf z_t \\ \mathbf z_{t-1}
+\end{matrix}\right] + \boldsymbol \eta_t, \ \ \boldsymbol \eta_t \sim N\left(\mathbf 0, \mathbf R \right), \\
+\mathbf R &= \left[
+\begin{matrix}
+\sigma^2_{\eta,lon}&0 \\
+0&\sigma^2_{\eta,lat}  \\
+\end{matrix}
+\right] \\
+\text{initial state} &= (\mathbf y_1, \mathbf y_1) \\
+\text{initial state variance} &= \mathbf 0_{4\times 4}
+\end{align}
+$$
+
 
 ## Blue whale (2008)
 
