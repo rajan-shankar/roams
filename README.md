@@ -7,7 +7,13 @@
 
 <!-- badges: end -->
 
-The goal of roams is to …
+The goal of roams is to provide methods for robust estimation and
+outlier detection in state-space models. It includes functionality for
+fitting benchmark models, visualizing model selection criteria, and
+evaluating in-sample and out-of-sample performance. Simulation tools for
+generating synthetic data under a first-difference correlated random
+walk (DCRW) model are also included. Designed with flexibility for
+user-defined model structures via the ‘specify_SSM()’ interface.
 
 ## Installation
 
