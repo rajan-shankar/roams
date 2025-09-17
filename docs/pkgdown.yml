@@ -1,8 +1,8 @@
-pandoc: 3.6.3
-pkgdown: 2.1.3
+pandoc: 3.1.1
+pkgdown: 2.1.1
 pkgdown_sha: ~
 articles:
   ARexamples: ARexamples.html
   examples: examples.html
   Introduction: Introduction.html
-last_built: 2025-09-16T09:42Z
+last_built: 2025-09-17T06:49Z

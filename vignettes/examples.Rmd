@@ -25,6 +25,8 @@ knitr::opts_chunk$set(
 library(roams)
 library(janitor)
 library(tsibble)
+library(tidyverse)
+library(patchwork)
 ```
 
 These examples all use the first-differenced correlated random walk (DCRW) model, a type of linear Gaussian SSM. This model is detailed in @auger-methe_guide_2021. The DCRW model has the following observation and state processes,
@@ -165,5 +167,504 @@ whale_2008 %>%
 
 ## Polar bear
 
+```{r}
+polar_low_freq = read_csv("data/PB_Argos.csv") %>% 
+  # Standardise column names
+  clean_names() %>% 
+  # Convert date_time column to a proper datetime object called 'timestamp'
+  mutate(timestamp = ymd_hms(date_time)) %>% 
+  # Drop the original date_time column
+  select(-date_time) %>% 
+  # Round timestamps to the nearest day
+  mutate(timestamp = lubridate::round_date(timestamp, "1 day")) %>% 
+  # Within each group, keep only the first row (e.g. earliest observation per day)
+  group_by(timestamp) %>% 
+  slice_head(n = 1) %>% 
+  # Convert timestamp to a Date object (drop time-of-day information)
+  mutate(timestamp = as.Date(timestamp)) %>% 
+  # Convert the data to a tsibble object (time series tibble)
+  tsibble::tsibble() %>%
+  # Fill in missing time points in the series with explicit gaps
+  tsibble::fill_gaps() %>%
+  # Convert back to a regular tibble
+  as_tibble() %>% 
+  # Rename longitude/latitude columns to x and y
+  rename(x = lon,
+         y = lat)
+```
+
 
 ## Seal
+
+```{r}
+seal = read_csv("data/sealLocs.csv") %>% 
+  # Keep only rows for the seal with ID "stephanie"
+  filter(id == "stephanie") %>% 
+  # Round timestamps to the nearest day
+  mutate(timestamp = lubridate::round_date(time, "1 day")) %>% 
+  # Within each group, keep only the last row (e.g. latest observation per day)
+  group_by(timestamp) %>% 
+  slice_tail(n = 1) %>% 
+  # Convert timestamp to a Date object (drop time-of-day information)
+  mutate(timestamp = as.Date(timestamp)) %>% 
+  # Convert the data to a tsibble object indexed by timestamp
+  tsibble::tsibble(index = timestamp) %>%
+  # Fill in missing time points in the series with explicit gaps
+  tsibble::fill_gaps() %>%
+  # Convert back to a regular tibble
+  as_tibble() %>% 
+  # Rename longitude/latitude columns to x and y
+  rename(x = lon,
+         y = lat)
+```
+
+
+## Cats
+
+```{r}
+cat_mia = read_csv("data/Feral cat (Felis catus) - Scotia, NSW.csv") %>% 
+  clean_names() %>% 
+  mutate(algorithm_marked_outlier = ifelse(is.na(algorithm_marked_outlier), 
+                                                 FALSE,
+                                                 algorithm_marked_outlier),
+         manually_marked_outlier = ifelse(is.na(manually_marked_outlier), 
+                                                 FALSE,
+                                                 manually_marked_outlier),
+         outlier = algorithm_marked_outlier | manually_marked_outlier) %>% 
+  filter(individual_local_identifier == "Mia_FC642") %>% 
+  mutate(timestamp = lubridate::round_date(timestamp, "20 minutes")) %>% 
+  tsibble::tsibble() %>%
+  tsibble::fill_gaps() %>% 
+  slice(-(1:19)) %>% 
+  as_tibble() %>% 
+  rename(x = location_long,
+         y = location_lat)
+
+cat_max = read_csv("data/Feral cat (Felis catus) - Scotia, NSW.csv") %>% 
+  clean_names() %>% 
+  mutate(algorithm_marked_outlier = ifelse(is.na(algorithm_marked_outlier), 
+                                                 FALSE,
+                                                 algorithm_marked_outlier),
+         manually_marked_outlier = ifelse(is.na(manually_marked_outlier), 
+                                                 FALSE,
+                                                 manually_marked_outlier),
+         outlier = algorithm_marked_outlier | manually_marked_outlier) %>% 
+  filter(individual_local_identifier == "Max_MC629") %>% 
+  mutate(timestamp = lubridate::round_date(timestamp, "20 minutes")) %>% 
+  tsibble::tsibble() %>%
+  tsibble::fill_gaps() %>% 
+  slice(-(1:24)) %>% 
+  as_tibble() %>% 
+  rename(x = location_long,
+         y = location_lat)
+```
+
+
+## Cows
+
+```{r}
+cow = read_csv("data/export_UQ_GPS.csv") %>% 
+  clean_names() %>% 
+  filter(partition_key == "70741400000EB036") %>% 
+  rename(x_metres = longitude,
+         y_metres = latitude) %>% 
+  mutate(date = date(timestamp)) %>% 
+  select(date, timestamp, x_metres, y_metres) %>%
+  group_by(date) %>% 
+  mutate(diff = c(2.38, diff(timestamp))) %>%
+  mutate(missing_rows = map(diff, ~ seq_len(round(. / 2.38)))) %>%
+  unnest(missing_rows) %>%
+  mutate(x_metres = ifelse(missing_rows > 1, NA, x_metres),
+         y_metres = ifelse(missing_rows > 1, NA, y_metres)) %>% 
+  ungroup() %>% 
+  rename(x = x_metres,
+         y = y_metres)
+
+cow_10 = cow %>% filter(date == "2024-11-10")
+cow_11 = cow %>% filter(date == "2024-11-11")
+cow_12 = cow %>% filter(date == "2024-11-12")
+```
+
+
+
+## Collate data sets into a list
+
+```{r}
+data_sets = list(
+  "cat_max" = cat_max,
+  "cat_mia" = cat_mia,
+  "cow_10" = cow_10,
+  "cow_11" = cow_11,
+  "cow_12" = cow_12,
+  "polar_low_freq" = polar_low_freq,
+  "seal" = seal,
+  # "whale_1994" = whale_1994,
+  # "whale_1995" = whale_1995,
+  "whale_2008" = whale_2008
+)
+```
+
+## Summary of missingness proportion and size of data sets
+
+```{r}
+data_sets %>% 
+  map_dbl(~ mean(is.na(.$x))) %>% 
+  round(2) %>% 
+  as_tibble(rownames = "data_set") %>% 
+  rename(proportion_missing = value) %>% 
+  mutate(n = data_sets %>% map_dbl(~ length(.$x))) %>% 
+  arrange(data_set) %>% 
+  knitr::kable()
+```
+
+## Plot data sets on world map
+
+```{r}
+# Get country boundaries as an sf object
+world <- ne_countries(scale = "medium", returnclass = "sf")
+
+plots = list()
+for (i in 1:length(data_sets)) {
+  # Work out x/y ranges with some padding
+  x_range <- range(data_sets[[i]]$x, na.rm = TRUE)
+  y_range <- range(data_sets[[i]]$y, na.rm = TRUE)
+  
+  x_pad <- diff(x_range) * 0.05  # 5% padding
+  y_pad <- diff(y_range) * 0.05 # 5% padding
+
+  plots[[i]] = data_sets[[i]] %>% 
+    ggplot() +
+    # Country boundaries
+    geom_sf(data = world, fill = "grey95", colour = "grey70", size = 0.3) +
+    
+    # Animal path and points
+    geom_path(aes(x = x, y = y, colour = timestamp), alpha = 0.2) +
+    geom_point(aes(x = x, y = y, colour = timestamp)) +
+    
+    # Colour scale
+    viridis::scale_color_viridis() +
+    
+    # Focus map on animal’s range
+    coord_sf(
+      xlim = c(x_range[1] - x_pad, x_range[2] + x_pad),
+      ylim = c(y_range[1] - y_pad, y_range[2] + y_pad),
+      expand = FALSE
+    ) +
+    
+    # Labels and theme
+    labs(x = "Longitude", y = "Latitude", subtitle = names(data_sets)[i]) +
+    theme_minimal() +
+    theme(legend.position = "none")
+}
+
+wrap_plots(plots) + plot_layout(ncol = 3)
+```
+
+## Fit models using ROAMS and classical methods
+
+The last 20 points from each data set are left out to use as a 'test set' later on.
+
+```{r eval = TRUE}
+results = read_rds("data/results.rds")
+```
+
+```{r eval = FALSE}
+results = tibble(
+  name = character(),
+  data_set = list(),
+  y = list(),
+  y_oos = list(),
+  classical = list(),
+  roams = list(),
+  classical_oos = list(),
+  roams_oos = list()
+)
+
+for (i in 1:length(data_sets)) {
+  
+  y_all = data_sets[[i]] %>% 
+    select(x, y) %>% 
+    as.matrix()
+  
+  n = nrow(y_all)
+  y = y_all[1:(n-20),]
+  y_oos = y_all[(n-20+1):n,]
+  
+  var_est = c(mad(diff(y[,1]), na.rm = TRUE)^2,
+              mad(diff(y[,2]), na.rm = TRUE)^2)
+  
+  build_fn = function(parm) {
+    
+    phi_coef = parm[1]
+    Phi = diag(c(1+phi_coef, 1+phi_coef, 0, 0))
+    Phi[1,3] = -phi_coef
+    Phi[2,4] = -phi_coef
+    Phi[3,1] = 1
+    Phi[4,2] = 1
+    
+    A = diag(4)[1:2,]
+    Q = diag(c(parm[2], parm[3], 0, 0))
+    R = diag(c(parm[4], parm[5]))
+    
+    x0 = c(y[1,], y[1,])
+    P0 = diag(rep(0, 4))
+    
+    specify_SSM(
+      state_transition_matrix = Phi,
+      state_noise_var = Q,
+      observation_matrix = A,
+      observation_noise_var = R,
+      init_state_mean = x0,
+      init_state_var = P0)
+  }
+  
+  model_classical = classical_SSM(
+    y = y, 
+    init_par = c(0.5, var_est, var_est), 
+    build = build_fn, 
+    lower = c(0, rep(1e-12, 4)),
+    upper = c(1, rep(Inf, 4)),
+    )
+  
+  model_roams = robularized_SSM(
+    y = y,
+    init_par = c(0.5, var_est, var_est),
+    build = build_fn,
+    num_lambdas = 20,
+    cores = 4,
+    lower = c(0, rep(1e-12, 4)),
+    upper = c(1, rep(Inf, 4)),
+    B = 50
+    )
+  
+  model_classical = attach_insample_info(model_classical)
+  
+  model_roams_best = best_BIC_model(model_roams)
+  model_roams_best = attach_insample_info(model_roams_best)
+  
+  # Out-of-sample metrics
+  
+  # Re-create build function with different initial state mean
+  build_oos_fn = function(par) {
+
+    phi_coef = par[1]
+    Phi = diag(c(1+phi_coef, 1+phi_coef, 0, 0))
+    Phi[1,3] = -phi_coef
+    Phi[2,4] = -phi_coef
+    Phi[3,1] = 1
+    Phi[4,2] = 1
+
+    A = diag(4)[1:2,]
+    Q = diag(c(par[2], par[3], 0, 0))
+    R = diag(c(par[4], par[5]))
+    
+    # Some data sets have first few out-of-sample timepoints missing, so get use first non-missing timepoint to initialise
+    first_complete_obs = which(!is.na(y_oos[,1]))[1]
+    x0_oos = c(y_oos[first_complete_obs,], 
+               y_oos[first_complete_obs,])
+    P0 = diag(rep(0, 4))
+
+    specify_SSM(
+      state_transition_matrix = Phi,
+      state_noise_var = Q,
+      observation_matrix = A,
+      observation_noise_var = R,
+      init_state_mean = x0_oos,
+      init_state_var = P0)
+  }
+  
+  classical_oos = oos_filter(
+    y_oos = y_oos, 
+    model = model_classical, 
+    build = build_oos_fn)
+  
+  roams_oos = oos_filter(
+    y_oos = y_oos, 
+    model = model_roams_best, 
+    build = build_oos_fn)
+  
+  results = results %>% 
+    add_row(
+      name = names(data_sets)[i],
+      data_set = list(data_sets[[i]]),
+      y = list(y),
+      y_oos = list(y_oos),
+      classical = list(model_classical),
+      roams = list(model_roams_best),
+      classical_oos = list(classical_oos),
+      roams_oos = list(roams_oos)
+    )
+  
+  cat("Data set", i, "complete\n")
+}
+
+# readr::write_rds(results, "vignettes/data/results.rds")
+```
+
+## Compute and summarise results
+
+```{r}
+results %>% 
+  mutate(
+    n = map_dbl(y, ~ nrow(.)),
+    n_complete = map_dbl(y, ~ sum(!is.na(.[,1]))),
+    n_oos = 20,
+    n_oos_complete = map_dbl(y_oos, ~ sum(!is.na(.[,1]))),
+    
+    in_sample_detected = map2_dbl(roams, n_complete,
+                                  ~ .x$prop_outlying * .y),
+    oos_detected = map_dbl(roams_oos,
+                           ~ sum(.$outliers_flagged)),
+    
+    classical_phi = map_dbl(classical, ~ .$par[1]),
+    roams_phi = map_dbl(roams, ~ .$par[1]),
+    roams_obs_var = map_dbl(roams, ~ sum(.$par[4:5])),
+    roams_state_var = map_dbl(roams, ~ sum(.$par[2:3])),
+    
+    classical_MSFE = map2_dbl(
+      classical_oos, y_oos,
+      ~ mean(rowSums((.y - .x$predicted_observations)^2), 
+             na.rm = TRUE)),
+    roams_MSFE = map2_dbl(
+      roams_oos, y_oos,
+      ~ mean(rowSums((.y - .x$predicted_observations)^2), 
+             na.rm = TRUE)),
+    classical_MedSFE = map2_dbl(
+      classical_oos, y_oos,
+      ~ median(rowSums((.y - .x$predicted_observations)^2), 
+               na.rm = TRUE)),
+    roams_MedSFE = map2_dbl(
+      roams_oos, y_oos,
+      ~ median(rowSums((.y - .x$predicted_observations)^2), 
+               na.rm = TRUE))
+    )  %>% 
+  select(name, n, n_complete, n_oos, n_oos_complete, in_sample_detected, oos_detected, roams_phi, classical_phi, roams_MSFE, classical_MSFE, roams_MedSFE, classical_MedSFE, roams_obs_var, roams_state_var) %>% 
+  knitr::kable()
+```
+
+## Plot in-sample fit
+
+```{r}
+plots = list()
+for (i in 1:length(data_sets)) {
+  # Work out x/y ranges with some padding
+  x_range <- range(data_sets[[i]]$x, na.rm = TRUE)
+  y_range <- range(data_sets[[i]]$y, na.rm = TRUE)
+  
+  x_pad <- diff(x_range) * 0.05  # 5% padding
+  y_pad <- diff(y_range) * 0.05  # 5% padding
+  
+  result = results %>% 
+    slice(i)
+  
+  fitted_paths = tibble(
+    x_roams = result$roams[[1]]$smoothed_observations[,1],
+    y_roams = result$roams[[1]]$smoothed_observations[,2],
+    x_classical = result$classical[[1]]$smoothed_observations[,1],
+    y_classical = result$classical[[1]]$smoothed_observations[,2]
+  )
+
+  detected_outliers = which(rowSums(abs(result$roams[[1]]$gamma)) != 0)
+  
+  plots[[i]] = data_sets[[i]] %>% 
+    # Retain in-sample data points
+    slice(1:(n() - 20)) %>% 
+    ggplot() +
+    # Country boundaries
+    geom_sf(data = world, fill = "grey95", colour = "grey70", size = 0.3) +
+    
+    # Animal path and points
+    geom_point(aes(x = x, y = y)) +
+    geom_path(data = fitted_paths,
+              aes(x = x_classical,
+                  y = y_classical), colour = "royalblue") +
+    geom_path(data = fitted_paths,
+              aes(x = x_roams,
+                  y = y_roams), colour = "orange") +
+    geom_point(data = data_sets[[i]] %>% 
+                 slice(1:(n() - 20)) %>% 
+                 slice(detected_outliers),
+               aes(x = x, y = y), 
+               colour = "orange", size = 2, stroke = 1, pch = 1) +
+    
+    # Focus map on animal’s range
+    coord_sf(
+      xlim = c(x_range[1] - x_pad, x_range[2] + x_pad),
+      ylim = c(y_range[1] - y_pad, y_range[2] + y_pad),
+      expand = FALSE
+    ) +
+    
+    # Labels and theme
+    labs(x = "Longitude", y = "Latitude", subtitle = names(data_sets)[i]) +
+    theme_minimal() +
+    theme(legend.position = "none")
+}
+
+wrap_plots(plots) + plot_layout(ncol = 3)
+```
+
+## Plot one-step-ahead out-of-sample predictions
+
+```{r}
+plots = list()
+for (i in 1:length(data_sets)) {
+  # Work out x/y ranges with some padding
+  x_range <- range(data_sets[[i]]$x, na.rm = TRUE)
+  y_range <- range(data_sets[[i]]$y, na.rm = TRUE)
+  
+  x_pad <- diff(x_range) * 0.05  # 5% padding
+  y_pad <- diff(y_range) * 0.05  # 5% padding
+  
+  result = results %>% 
+    slice(i)
+  
+  oos_paths = tibble(
+    x_roams = result$roams_oos[[1]]$predicted_observations[,1],
+    y_roams = result$roams_oos[[1]]$predicted_observations[,2],
+    x_classical = result$classical_oos[[1]]$predicted_observations[,1],
+    y_classical = result$classical_oos[[1]]$predicted_observations[,2]
+  )
+  
+  detected_outliers = which(result$roams_oos[[1]]$outliers_flagged == 1)
+  
+  plots[[i]] = data_sets[[i]] %>% 
+    # Retain in-sample data points
+    slice((n() - 20 + 1) : n()) %>% 
+    ggplot() +
+    # Country boundaries
+    geom_sf(data = world, fill = "grey95", colour = "grey70", size = 0.3) +
+    
+    # Animal path and points
+    geom_point(aes(x = x, y = y)) +
+    geom_path(data = oos_paths,
+              aes(x = x_classical,
+                  y = y_classical), colour = "royalblue") +
+    geom_path(data = oos_paths,
+              aes(x = x_roams,
+                  y = y_roams), colour = "orange") +
+    geom_point(data = data_sets[[i]] %>% 
+                 slice((n() - 20 + 1) : n()) %>% 
+                 slice(detected_outliers),
+               aes(x = x, y = y), 
+               colour = "orange", size = 2, stroke = 1, pch = 1) +
+    
+    # Focus map on animal’s range
+    coord_sf(
+      xlim = c(x_range[1] - x_pad, x_range[2] + x_pad),
+      ylim = c(y_range[1] - y_pad, y_range[2] + y_pad),
+      expand = FALSE
+    ) +
+    
+    # Labels and theme
+    labs(x = "Longitude", y = "Latitude", subtitle = names(data_sets)[i]) +
+    theme_minimal() +
+    theme(legend.position = "none")
+}
+
+wrap_plots(plots) + plot_layout(ncol = 3)
+```
+
+
+
+
+
