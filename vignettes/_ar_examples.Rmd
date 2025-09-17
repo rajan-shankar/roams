@@ -1,0 +1,29 @@
+---
+title: "AR examples"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{AR examples}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+bibliography: bibliography.bib
+csl: apa-old-doi-prefix.csl
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(roams)
+```
+
+Autoregressive time series examples. Apply the final approach to some of the drinking event data.
+
+This file is currently ignored by the pkgdown site because of the underscore at the start of its name. It's a low priority for now, but when it has been implemented we can remove the leading underscore and add it to the `_pkgdown.yml` file.
+
+
+
+#### References

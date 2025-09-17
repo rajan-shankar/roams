@@ -1,8 +1,8 @@
 ---
-title: "Introduction"
+title: "Simulation study 2"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Introduction}
+  %\VignetteIndexEntry{Simulation study 2}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 bibliography: bibliography.bib
@@ -16,8 +16,11 @@ knitr::opts_chunk$set(
 )
 ```
 
+> This page shows how the simulation results in section 4.2 of @shankar2025 are generated.
+
 ```{r setup}
 library(roams)
 ```
 
-Overview of the functions, including a simulated data set.
+
+#### References

@@ -1,4 +1,14 @@
-url: ~
+url: https://github.com/rajan-shankar/roams
 template:
   bootstrap: 5
 
+
+articles:
+- title: Articles
+  navbar: ~
+  contents:
+  - introduction
+  - dcrw_examples
+  - sim1
+  - sim2
+  - sim3

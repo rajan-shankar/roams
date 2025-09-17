@@ -33,9 +33,11 @@
 <li class="active nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="../articles/ARexamples.html">ARexamples</a></li>
-    <li><a class="dropdown-item" href="../articles/examples.html">DCRW examples</a></li>
-    <li><a class="dropdown-item" href="../articles/Introduction.html">Introduction</a></li>
+<li><a class="dropdown-item" href="../articles/introduction.html">Introduction</a></li>
+    <li><a class="dropdown-item" href="../articles/dcrw_examples.html">DCRW examples</a></li>
+    <li><a class="dropdown-item" href="../articles/sim1.html">Simulation study 1</a></li>
+    <li><a class="dropdown-item" href="../articles/sim2.html">Simulation study 2</a></li>
+    <li><a class="dropdown-item" href="../articles/sim3.html">Simulation study 3</a></li>
   </ul>
 </li>
       </ul>
@@ -60,15 +62,14 @@
       <h1>DCRW examples</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/rajan-shankar/roams/blob/HEAD/vignettes/examples.Rmd"><code>vignettes/examples.Rmd</code></a></small>
-      <div class="d-none name"><code>examples.Rmd</code></div>
+      <small class="dont-index">Source: <a href="https://github.com/rajan-shankar/roams/blob/HEAD/vignettes/dcrw_examples.Rmd"><code>vignettes/dcrw_examples.Rmd</code></a></small>
+      <div class="d-none name"><code>dcrw_examples.Rmd</code></div>
     </div>
 
     
     
 <blockquote>
-<p>This page shows how the examples in section 3.1 of <span class="citation">(<strong>shankar2025?</strong>)</span> are
-generated.</p>
+<p>This page shows how the examples in section 3.1 of <span class="citation">Shankar et al. (2025)</span> are generated.</p>
 </blockquote>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/rajan-shankar/roams">roams</a></span><span class="op">)</span></span>
@@ -248,7 +249,7 @@ for the state error variance matrix
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"none"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Warning: Removed 21 rows containing missing values or values outside the scale range</span></span>
 <span><span class="co">#&gt; (`geom_point()`).</span></span></code></pre></div>
-<p><img src="examples_files/figure-html/unnamed-chunk-2-1.png" width="700"></p>
+<p><img src="dcrw_examples_files/figure-html/unnamed-chunk-2-1.png" width="700"></p>
 </div>
 <div class="section level2">
 <h2 id="polar-bear">Polar bear<a class="anchor" aria-label="anchor" href="#polar-bear"></a>
@@ -562,7 +563,7 @@ for the state error variance matrix
 <span><span class="co">#&gt; (`geom_point()`).</span></span>
 <span><span class="co">#&gt; Warning: Removed 21 rows containing missing values or values outside the scale range</span></span>
 <span><span class="co">#&gt; (`geom_point()`).</span></span></code></pre></div>
-<p><img src="examples_files/figure-html/unnamed-chunk-9-1.png" width="700"></p>
+<p><img src="dcrw_examples_files/figure-html/unnamed-chunk-9-1.png" width="700"></p>
 </div>
 <div class="section level2">
 <h2 id="fit-models-using-roams-and-classical-methods">Fit models using ROAMS and classical methods<a class="anchor" aria-label="anchor" href="#fit-models-using-roams-and-classical-methods"></a>
@@ -1000,7 +1001,7 @@ set’ later on.</p>
 <span><span class="co">#&gt; (`geom_point()`).</span></span>
 <span><span class="co">#&gt; Warning: Removed 20 rows containing missing values or values outside the scale range</span></span>
 <span><span class="co">#&gt; (`geom_point()`).</span></span></code></pre></div>
-<p><img src="examples_files/figure-html/unnamed-chunk-13-1.png" width="700"></p>
+<p><img src="dcrw_examples_files/figure-html/unnamed-chunk-13-1.png" width="700"></p>
 </div>
 <div class="section level2">
 <h2 id="plot-one-step-ahead-out-of-sample-predictions">Plot one-step-ahead out-of-sample predictions<a class="anchor" aria-label="anchor" href="#plot-one-step-ahead-out-of-sample-predictions"></a>
@@ -1082,12 +1083,20 @@ set’ later on.</p>
 <span><span class="co">#&gt; (`geom_point()`).</span></span>
 <span><span class="co">#&gt; Warning: Removed 1 row containing missing values or values outside the scale range</span></span>
 <span><span class="co">#&gt; (`geom_point()`).</span></span></code></pre></div>
-<p><img src="examples_files/figure-html/unnamed-chunk-14-1.png" width="700"></p>
+<p><img src="dcrw_examples_files/figure-html/unnamed-chunk-14-1.png" width="700"></p>
+<div class="section level4 unnumbered">
+<h4 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
+</h4>
 <div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0" line-spacing="2">
 <div id="ref-auger-methe_guide_2021" class="csl-entry">
 Auger-Méthé, M., Newman, K., Cole, D., Empacher, F., Gryba, R., King, A.
 A., … Thomas, L. (2021). A guide to state–space modeling of ecological
 time series. <em>Ecological Monographs</em>, 91(4), e01470. DOI:<a href="https://doi.org/10.1002/ecm.1470" class="external-link">10.1002/ecm.1470</a>
+</div>
+<div id="ref-shankar2025" class="csl-entry">
+Shankar, R., Wilms, I., Raymaekers, J., &amp; Tarr, G. (2025). Robust
+outlier-adjusted mean-shift estimation of state-space models. <a href="https://arxiv.org/abs/????.?????" class="external-link">https://arxiv.org/abs/????.?????</a>
+</div>
 </div>
 </div>
 </div>

@@ -21,38 +21,14 @@ knitr::opts_chunk$set(
 The goal of roams is to provide methods for robust estimation and outlier detection in state-space models. 
 It includes functionality for fitting benchmark models, visualizing model selection criteria, and evaluating in-sample and out-of-sample performance.
 Simulation tools for generating synthetic data under a first-difference correlated random walk (DCRW) model are also included. 
-Designed with flexibility for user-defined model structures via the 'specify_SSM()' interface.
+Designed with flexibility for user-defined model structures via the `specify_SSM()` interface.
 
 ## Installation
 
-You can install the development version of roams from [GitHub](https://github.com/) with:
+You can install the development version of roams from GitHub with:
 
 ``` r
 # install.packages("pak")
 pak::pak("rajan-shankar/roams")
 ```
 
-## Example
-
-This is a basic example which shows you how to solve a common problem:
-
-```{r example}
-library(roams)
-## basic example code
-```
-
-What is special about using `README.Rmd` instead of just `README.md`? You can include R chunks like so:
-
-```{r cars}
-summary(cars)
-```
-
-You'll still need to render `README.Rmd` regularly, to keep `README.md` up-to-date. `devtools::build_readme()` is handy for this.
-
-You can also embed plots, for example:
-
-```{r pressure, echo = FALSE}
-plot(pressure)
-```
-
-In that case, don't forget to commit and push the resulting figure files, so they display on GitHub and CRAN.

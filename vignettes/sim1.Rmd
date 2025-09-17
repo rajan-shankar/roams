@@ -1,10 +1,12 @@
 ---
-title: "ARexamples"
+title: "Simulation study 1"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{ARexamples}
+  %\VignetteIndexEntry{Simulation study 1}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
+bibliography: bibliography.bib
+csl: apa-old-doi-prefix.csl
 ---
 
 ```{r, include = FALSE}
@@ -14,8 +16,11 @@ knitr::opts_chunk$set(
 )
 ```
 
+> This page shows how the simulation results in section 4.1 of @shankar2025 are generated.
+
 ```{r setup}
 library(roams)
 ```
 
-Autoregressive time series examples. Apply the final approach to some of the drinking event data.
+
+#### References

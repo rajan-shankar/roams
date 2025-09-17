@@ -52,3 +52,6 @@ Suggests:
     knitr,
     rmarkdown
 VignetteBuilder: knitr
+URL: https://github.com/rajan-shankar/roams, https://rajan-shankar.github.io/roams
+BugReports: https://github.com/rajan-shankar/roams/issues
+
