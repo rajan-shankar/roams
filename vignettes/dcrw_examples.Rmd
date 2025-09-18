@@ -106,7 +106,7 @@ We illustrate our method on five example data sets.
 
 ### Blue whale
 
-```{r whale_2008_import, message=FALSE}
+```{r whale-2008-import}
 whale_2008 = read_csv("data/Blue whales Eastern North Pacific 1993-2008 - Argos Data.csv") |>
   # Standardise column names
   janitor::clean_names() |>  
@@ -132,7 +132,7 @@ whale_2008 = read_csv("data/Blue whales Eastern North Pacific 1993-2008 - Argos 
 
 Plot with world map data:
 
-```{r}
+```{r raw-data-vis-whale}
 # Work out x/y ranges with some padding
 x_range <- range(whale_2008$x, na.rm = TRUE)
 y_range <- range(whale_2008$y, na.rm = TRUE)
@@ -140,56 +140,51 @@ y_range <- range(whale_2008$y, na.rm = TRUE)
 x_pad <- diff(x_range) * 0.05  # 5% padding
 y_pad <- diff(y_range) * 0.05 # 5% padding
 
-p1 = whale_2008 %>% 
+p1 = whale_2008 |> 
   ggplot() +
   # Country boundaries
   geom_sf(data = world, fill = "grey95", colour = "grey70", size = 0.3) +
-  
   # Whale track and points
   geom_path(aes(x = x, y = y, colour = timestamp), alpha = 0.2) +
   geom_point(aes(x = x, y = y, colour = timestamp)) +
-  
   # Colour scale
   viridis::scale_color_viridis() +
-  
+  # Labels and theme
+  labs(x = "Longitude", y = "Latitude", title = "Blue whale") +
+  theme_minimal() +
+  theme(legend.position = "none") +
   # Focus map on whale’s range
   coord_sf(
     xlim = c(x_range[1] - x_pad, x_range[2] + x_pad),
     ylim = c(y_range[1] - y_pad, y_range[2] + y_pad),
     expand = FALSE
-  ) +
-  
-  # Labels and theme
-  labs(x = "Longitude", y = "Latitude", subtitle = "Blue whale") +
-  theme_minimal() +
-  theme(legend.position = "none")
+  )
 p1
 ```
 
-
 ### Polar bear
 
-```{r}
-polar_low_freq = read_csv("data/PB_Argos.csv") %>% 
+```{r polar-bear-import}
+polar_low_freq = read_csv("data/PB_Argos.csv") |> 
   # Standardise column names
-  clean_names() %>% 
+  clean_names() |> 
   # Convert date_time column to a proper datetime object called 'timestamp'
-  mutate(timestamp = ymd_hms(date_time)) %>% 
+  mutate(timestamp = ymd_hms(date_time)) |> 
   # Drop the original date_time column
-  select(-date_time) %>% 
+  select(-date_time) |> 
   # Round timestamps to the nearest day
-  mutate(timestamp = lubridate::round_date(timestamp, "1 day")) %>% 
+  mutate(timestamp = lubridate::round_date(timestamp, "1 day")) |> 
   # Within each group, keep only the first row (e.g. earliest observation per day)
-  group_by(timestamp) %>% 
-  slice_head(n = 1) %>% 
+  group_by(timestamp) |> 
+  slice_head(n = 1) |> 
   # Convert timestamp to a Date object (drop time-of-day information)
-  mutate(timestamp = as.Date(timestamp)) %>% 
+  mutate(timestamp = as.Date(timestamp)) |> 
   # Convert the data to a tsibble object (time series tibble)
-  tsibble::tsibble() %>%
+  tsibble::tsibble() |>
   # Fill in missing time points in the series with explicit gaps
-  tsibble::fill_gaps() %>%
+  tsibble::fill_gaps() |>
   # Convert back to a regular tibble
-  as_tibble() %>% 
+  as_tibble() |> 
   # Rename longitude/latitude columns to x and y
   rename(x = lon, y = lat)
 ```
@@ -197,7 +192,7 @@ polar_low_freq = read_csv("data/PB_Argos.csv") %>%
 
 Plot with world map data:
 
-```{r}
+```{r raw-data-vis-polar_bear}
 # Work out x/y ranges with some padding
 x_range <- range(polar_low_freq$x, na.rm = TRUE)
 y_range <- range(polar_low_freq$y, na.rm = TRUE)
@@ -205,34 +200,38 @@ y_range <- range(polar_low_freq$y, na.rm = TRUE)
 x_pad <- diff(x_range) * 0.05  # 5% padding
 y_pad <- diff(y_range) * 0.05 # 5% padding
 
-p1 %+% polar_low_freq + 
+p2 = p1 %+% polar_low_freq + 
   # Focus map on polar bear's range
   coord_sf(
     xlim = c(x_range[1] - x_pad, x_range[2] + x_pad),
     ylim = c(y_range[1] - y_pad, y_range[2] + y_pad),
     expand = FALSE
-  )
+  ) + 
+  labs(title = "Polar bear")
+p2
 ```
+
+
 
 ### Seal
 
-```{r}
-seal = read_csv("data/sealLocs.csv") %>% 
+```{r seal-import}
+seal = read_csv("data/sealLocs.csv") |> 
   # Keep only rows for the seal with ID "stephanie"
-  filter(id == "stephanie") %>% 
+  filter(id == "stephanie") |> 
   # Round timestamps to the nearest day
-  mutate(timestamp = lubridate::round_date(time, "1 day")) %>% 
+  mutate(timestamp = lubridate::round_date(time, "1 day")) |> 
   # Within each group, keep only the last row (e.g. latest observation per day)
-  group_by(timestamp) %>% 
-  slice_tail(n = 1) %>% 
+  group_by(timestamp) |> 
+  slice_tail(n = 1) |> 
   # Convert timestamp to a Date object (drop time-of-day information)
-  mutate(timestamp = as.Date(timestamp)) %>% 
+  mutate(timestamp = as.Date(timestamp)) |> 
   # Convert the data to a tsibble object indexed by timestamp
-  tsibble::tsibble(index = timestamp) %>%
+  tsibble::tsibble(index = timestamp) |>
   # Fill in missing time points in the series with explicit gaps
-  tsibble::fill_gaps() %>%
+  tsibble::fill_gaps() |>
   # Convert back to a regular tibble
-  as_tibble() %>% 
+  as_tibble() |> 
   # Rename longitude/latitude columns to x and y
   rename(x = lon,
          y = lat)
@@ -241,7 +240,7 @@ seal = read_csv("data/sealLocs.csv") %>%
 
 Plot with world map data:
 
-```{r}
+```{r raw-data-vis-seal, fig.height=5}
 # Work out x/y ranges with some padding
 x_range <- range(seal$x, na.rm = TRUE)
 y_range <- range(seal$y, na.rm = TRUE)
@@ -255,80 +254,119 @@ p1 %+% seal +
     xlim = c(x_range[1] - x_pad, x_range[2] + x_pad),
     ylim = c(y_range[1] - y_pad, y_range[2] + y_pad),
     expand = FALSE
-  )
+  ) + 
+  labs(title = "Seal")
 ```
 
 ### Cats
 
 ```{r}
-cat_mia = read_csv("data/Feral cat (Felis catus) - Scotia, NSW.csv") %>% 
-  clean_names() %>% 
+cat_mia = read_csv("data/Feral cat (Felis catus) - Scotia, NSW.csv") |> 
+  clean_names() |> 
   mutate(algorithm_marked_outlier = ifelse(is.na(algorithm_marked_outlier), 
                                                  FALSE,
                                                  algorithm_marked_outlier),
          manually_marked_outlier = ifelse(is.na(manually_marked_outlier), 
                                                  FALSE,
                                                  manually_marked_outlier),
-         outlier = algorithm_marked_outlier | manually_marked_outlier) %>% 
-  filter(individual_local_identifier == "Mia_FC642") %>% 
-  mutate(timestamp = lubridate::round_date(timestamp, "20 minutes")) %>% 
-  tsibble::tsibble() %>%
-  tsibble::fill_gaps() %>% 
-  slice(-(1:19)) %>% 
-  as_tibble() %>% 
+         outlier = algorithm_marked_outlier | manually_marked_outlier) |> 
+  filter(individual_local_identifier == "Mia_FC642") |> 
+  mutate(timestamp = lubridate::round_date(timestamp, "20 minutes")) |> 
+  tsibble::tsibble() |>
+  tsibble::fill_gaps() |> 
+  slice(-(1:19)) |> 
+  as_tibble() |> 
   rename(x = location_long,
          y = location_lat)
 
-cat_max = read_csv("data/Feral cat (Felis catus) - Scotia, NSW.csv") %>% 
-  clean_names() %>% 
+cat_max = read_csv("data/Feral cat (Felis catus) - Scotia, NSW.csv") |> 
+  clean_names() |> 
   mutate(algorithm_marked_outlier = ifelse(is.na(algorithm_marked_outlier), 
                                                  FALSE,
                                                  algorithm_marked_outlier),
          manually_marked_outlier = ifelse(is.na(manually_marked_outlier), 
                                                  FALSE,
                                                  manually_marked_outlier),
-         outlier = algorithm_marked_outlier | manually_marked_outlier) %>% 
-  filter(individual_local_identifier == "Max_MC629") %>% 
-  mutate(timestamp = lubridate::round_date(timestamp, "20 minutes")) %>% 
-  tsibble::tsibble() %>%
-  tsibble::fill_gaps() %>% 
-  slice(-(1:24)) %>% 
-  as_tibble() %>% 
+         outlier = algorithm_marked_outlier | manually_marked_outlier) |> 
+  filter(individual_local_identifier == "Max_MC629") |> 
+  mutate(timestamp = lubridate::round_date(timestamp, "20 minutes")) |> 
+  tsibble::tsibble() |>
+  tsibble::fill_gaps() |> 
+  slice(-(1:24)) |> 
+  as_tibble() |> 
   rename(x = location_long,
          y = location_lat)
 ```
 
+Plot with world map data:
+
+```{r raw-data-vis-cat, fig.height=5}
+# Work out x/y ranges with some padding
+x_range <- range(cat_mia$x, na.rm = TRUE)
+y_range <- range(cat_mia$y, na.rm = TRUE)
+
+x_pad <- diff(x_range) * 0.05  # 5% padding
+y_pad <- diff(y_range) * 0.05 # 5% padding
+
+p1 %+% cat_mia + 
+  # Focus map on s's range
+  coord_sf(
+    xlim = c(x_range[1] - x_pad, x_range[2] + x_pad),
+    ylim = c(y_range[1] - y_pad, y_range[2] + y_pad),
+    expand = FALSE
+  ) + 
+  labs(title = "Cat Mia")
+```
 
 ### Cows
 
 ```{r}
-cow = read_csv("data/export_UQ_GPS.csv") %>% 
-  clean_names() %>% 
-  filter(partition_key == "70741400000EB036") %>% 
+cow = read_csv("data/export_UQ_GPS.csv") |> 
+  clean_names() |> 
+  filter(partition_key == "70741400000EB036") |> 
   # The cow data longitude and latitude are swapped! So we set x to be latitude and y to be longitude:
   rename(x = latitude,
-         y = longitude) %>% 
-  mutate(date = date(timestamp)) %>% 
-  select(date, timestamp, x, y) %>%
-  group_by(date) %>% 
-  mutate(diff = c(2.38, diff(timestamp))) %>%
-  mutate(missing_rows = map(diff, ~ seq_len(round(. / 2.38)))) %>%
-  unnest(missing_rows) %>%
+         y = longitude) |> 
+  mutate(date = date(timestamp)) |> 
+  select(date, timestamp, x, y) |>
+  group_by(date) |> 
+  mutate(diff = c(2.38, diff(timestamp))) |>
+  mutate(missing_rows = map(diff, ~ seq_len(round(. / 2.38)))) |>
+  unnest(missing_rows) |>
   mutate(x = ifelse(missing_rows > 1, NA, x),
-         y = ifelse(missing_rows > 1, NA, y)) %>% 
-  ungroup() %>% 
+         y = ifelse(missing_rows > 1, NA, y)) |> 
+  ungroup() |> 
   rename(x = x,
          y = y)
 
-cow_10 = cow %>% filter(date == "2024-11-10")
-cow_11 = cow %>% filter(date == "2024-11-11")
-cow_12 = cow %>% filter(date == "2024-11-12")
+cow_10 = cow |> filter(date == "2024-11-10")
+cow_11 = cow |> filter(date == "2024-11-11")
+cow_12 = cow |> filter(date == "2024-11-12")
 ```
 
+Plot with world map data:
 
-## Results
+```{r raw-data-vis-cow, fig.height=5}
+# Work out x/y ranges with some padding
+x_range <- range(cow_11$x, na.rm = TRUE)
+y_range <- range(cow_11$y, na.rm = TRUE)
 
-### Collate data sets into a list
+x_pad <- diff(x_range) * 0.05  # 5% padding
+y_pad <- diff(y_range) * 0.05 # 5% padding
+
+p1 %+% cow_11 + 
+  # Focus map on s's range
+  coord_sf(
+    xlim = c(x_range[1] - x_pad, x_range[2] + x_pad),
+    ylim = c(y_range[1] - y_pad, y_range[2] + y_pad),
+    expand = FALSE
+  ) + 
+  labs(title = "Cow 11")
+```
+
+## Data summary
+
+Combine the data sets into a list:
 
 ```{r}
 data_sets = list(
@@ -346,32 +384,39 @@ data_sets = list(
 ### Summary of missingness proportion and size of data sets
 
 ```{r}
-data_sets %>% 
-  map_dbl(~ mean(is.na(.$x))) %>% 
-  round(2) %>% 
-  as_tibble(rownames = "data_set") %>% 
-  rename(proportion_missing = value) %>% 
-  mutate(n = data_sets %>% map_dbl(~ length(.$x))) %>% 
-  arrange(data_set) %>% 
-  knitr::kable()
+# Add column containing frequency of measurements for each data set
+frequencies = c("20 minutes", "20 minutes", 
+                "2 minutes and 23 seconds", "2 minutes and 23 seconds", 
+                "2 minutes and 23 seconds", 
+                "1 day", "1 day", "12 hours")
+data_sets |> 
+  map_dbl(~ mean(is.na(.$x))) |> 
+  round(2) |> 
+  as_tibble(rownames = "data_set") |> 
+  rename(proportion_missing = value) |> 
+  mutate(n = data_sets |> map_dbl(~ length(.$x))) |> 
+  arrange(data_set) |> 
+  select(data_set, n, proportion_missing) |> 
+  mutate(interval = frequencies) |>
+  knitr::kable(
+    col.names = c("Data set", "Number of observations",  
+                  "Proportion missing", "Interval"))
 ```
+
+
 
 ### Plot data sets on world map
 
-```{r}
-# Get country boundaries as an sf object
-world <- ne_countries(scale = "medium", returnclass = "sf")
-
+```{r raw-data-vis-all, fig.height = 7}
 plots = list()
 for (i in 1:length(data_sets)) {
   # Work out x/y ranges with some padding
   x_range <- range(data_sets[[i]]$x, na.rm = TRUE)
   y_range <- range(data_sets[[i]]$y, na.rm = TRUE)
-  
-  x_pad <- max(diff(y_range) - diff(x_range), 0) / 2  + diff(x_range) * 0.05
-  y_pad <- max(diff(x_range) - diff(y_range), 0) / 6  + diff(y_range) * 0.05
-  
-  plots[[i]] = data_sets[[i]] %>% 
+  x_pad <- diff(x_range) * 0.05  # 5% padding
+  y_pad <- diff(y_range) * 0.05 # 5% padding
+
+  plots[[i]] = data_sets[[i]] |> 
     ggplot() +
     # Country boundaries
     geom_sf(data = world, fill = "grey95", colour = "grey70", size = 0.3) +
@@ -383,7 +428,7 @@ for (i in 1:length(data_sets)) {
     # Colour scale
     viridis::scale_color_viridis() +
     
-    # Focus map on animal’s range
+    # Focus map on animal's range
     coord_sf(
       xlim = c(x_range[1] - x_pad, x_range[2] + x_pad),
       ylim = c(y_range[1] - y_pad, y_range[2] + y_pad),
@@ -399,13 +444,9 @@ for (i in 1:length(data_sets)) {
 wrap_plots(plots) + plot_layout(ncol = 3)
 ```
 
-### Fit models using ROAMS and classical methods
+## Model fitting
 
 The last 10% of points from each data set are left out to use as a 'test set' later on.
-
-```{r eval = TRUE}
-results = read_rds("data/results.rds")
-```
 
 ```{r eval = FALSE}
 results = tibble(
@@ -421,8 +462,8 @@ results = tibble(
 
 for (i in 1:length(data_sets)) {
   
-  y_all = data_sets[[i]] %>% 
-    select(x, y) %>% 
+  y_all = data_sets[[i]] |> 
+    select(x, y) |> 
     as.matrix()
   
   n = nrow(y_all)
@@ -500,7 +541,8 @@ for (i in 1:length(data_sets)) {
     Q = diag(c(par[2], par[3], 0, 0))
     R = diag(c(par[4], par[5]))
     
-    # Some data sets have first few out-of-sample timepoints missing, so get use first non-missing timepoint to initialise
+    # Some data sets have first (few) out-of-sample timepoints missing, 
+    # so get use first non-missing timepoint to initialise
     first_complete_obs = which(!is.na(y_oos[,1]))[1]
     x0_oos = c(y_oos[first_complete_obs,], 
                y_oos[first_complete_obs,])
@@ -525,7 +567,7 @@ for (i in 1:length(data_sets)) {
     model = model_roams_best, 
     build = build_oos_fn)
   
-  results = results %>% 
+  results = results |> 
     add_row(
       name = names(data_sets)[i],
       data_set = list(data_sets[[i]]),
@@ -540,18 +582,23 @@ for (i in 1:length(data_sets)) {
   cat("Data set", i, "complete\n")
 }
 
-# Add column containing frequency of measurements for each data set
-frequencies = c("20 minutes", "20 minutes", "2 minutes and 23 seconds", "2 minutes and 23 seconds", "2 minutes and 23 seconds", "1 day", "1 day", "12 hours")
-results = results %>% 
+results = results |> 
   mutate(frequency = frequencies)
 
 # readr::write_rds(results, "data/results.rds")
 ```
 
-### Compute and summarise results
+
+
+```{r eval = TRUE}
+# load pre-computed results
+results = read_rds("data/results.rds")
+```
+
+## Results
 
 ```{r}
-results %>% 
+results |> 
   mutate(
     n = map_dbl(y_train, ~ nrow(.)),
     n_complete = map_dbl(y_train, ~ sum(!is.na(.[,1]))),
@@ -584,8 +631,6 @@ results %>%
         return(MSFE)
       }
     ),
-    
-    
     roams_trimmed_MSFE_5perc = map2_dbl(
       roams_oos, y_oos,
       function(roams_oos, y_oos) {
@@ -634,8 +679,6 @@ results %>%
         return(trimmed_MSFE)
       }
     ),
-    
-    
     roams_MSFE_clean = map2_dbl(
       roams_oos, y_oos,
       function(roams_oos, y_oos) {
@@ -667,17 +710,17 @@ results %>%
     #            na.rm = TRUE)
     # )
     
-    )  %>% 
+    )  |> 
   select(name, frequency, n, n_complete, n_oos, n_oos_complete,
          in_sample_detected, oos_detected, roams_phi, classical_phi,
-         roams_MSFE:classical_MSFE_clean) %>% 
+         roams_MSFE:classical_MSFE_clean) |> 
   knitr::kable()
 ```
 
 ### Plot out-of-sample squared forecast errors
 
-```{r}
-results %>% 
+```{r oos-sfe-boxplots}
+results |> 
   mutate(
     classical_SFEs = map2(
       classical_oos, y_oos, 
@@ -695,12 +738,12 @@ results %>%
         return(SFEs)
       }
     )
-  ) %>% 
-  select(name, classical_SFEs, roams_SFEs) %>% 
+  ) |> 
+  select(name, classical_SFEs, roams_SFEs) |> 
   pivot_longer(c(classical_SFEs, roams_SFEs), 
-               names_to = "method", values_to = "SFE") %>% 
-  mutate(method = stringr::word(method, start = 1, end = 1, sep = "_")) %>% 
-  unnest_longer(SFE) %>% 
+               names_to = "method", values_to = "SFE") |> 
+  mutate(method = stringr::word(method, start = 1, end = 1, sep = "_")) |> 
+  unnest_longer(SFE) |> 
   ggplot() +
   aes(x = method, y = SFE, colour = name) +
   geom_boxplot() +
@@ -709,11 +752,9 @@ results %>%
   theme(legend.position = "none")
 ```
 
-
 ### Plot in-sample fit
 
-
-```{r}
+```{r in-sample-fits, fig.height = 7}
 plots = list()
 for (i in 1:length(data_sets)) {
   # Work out x/y ranges with some padding
@@ -723,7 +764,7 @@ for (i in 1:length(data_sets)) {
   x_pad <- max(diff(y_range) - diff(x_range), 0) / 2  + diff(x_range) * 0.05
   y_pad <- max(diff(x_range) - diff(y_range), 0) / 6  + diff(y_range) * 0.05
   
-  result = results %>% 
+  result = results |> 
     slice(i)
   
   fitted_paths = tibble(
@@ -735,9 +776,9 @@ for (i in 1:length(data_sets)) {
 
   detected_outliers = which(rowSums(abs(result$roams[[1]]$gamma)) != 0)
   
-  plots[[i]] = data_sets[[i]] %>% 
+  plots[[i]] = data_sets[[i]] |> 
     # Retain in-sample data points
-    slice(1:round(0.9*n())) %>% 
+    slice(1:round(0.9*n())) |> 
     ggplot() +
     # Country boundaries
     geom_sf(data = world, fill = "grey95", colour = "grey70", size = 0.3) +
@@ -750,8 +791,8 @@ for (i in 1:length(data_sets)) {
     geom_path(data = fitted_paths,
               aes(x = x_roams,
                   y = y_roams), colour = "orange") +
-    geom_point(data = data_sets[[i]] %>% 
-                 slice(1:round(0.9*n())) %>% 
+    geom_point(data = data_sets[[i]] |> 
+                 slice(1:round(0.9*n())) |> 
                  slice(detected_outliers),
                aes(x = x, y = y), 
                colour = "orange", size = 2, stroke = 1, pch = 1) +
@@ -774,7 +815,9 @@ wrap_plots(plots) + plot_layout(ncol = 3)
 
 ### Plot one-step-ahead out-of-sample predictions
 
-```{r}
+These plots only show the out of sample predictions (not the full path). We should consider resetting the x/y axis range to just the out of sample prediction range, but at the same time, it's kind of interesting to see where the OOS observations lie relative to the in-sample observations (blank canvas for some of these data sets).
+
+```{r one-step-ahead-preds, fig.height = 7}
 plots = list()
 for (i in 1:length(data_sets)) {
   # Work out x/y ranges with some padding
@@ -784,7 +827,7 @@ for (i in 1:length(data_sets)) {
   x_pad <- max(diff(y_range) - diff(x_range), 0) / 2  + diff(x_range) * 0.05
   y_pad <- max(diff(x_range) - diff(y_range), 0) / 6  + diff(y_range) * 0.05
   
-  result = results %>% 
+  result = results |> 
     slice(i)
   
   oos_paths = tibble(
@@ -796,9 +839,9 @@ for (i in 1:length(data_sets)) {
   
   detected_outliers = which(result$roams_oos[[1]]$outliers_flagged == 1)
   
-  plots[[i]] = data_sets[[i]] %>% 
-    # Retain in-sample data points
-    slice((round(0.9*n()) + 1) : n()) %>% 
+  plots[[i]] = data_sets[[i]] |> 
+    # Retain out-of-sample data points only
+    slice((round(0.9*n()) + 1) : n()) |> 
     ggplot() +
     # Country boundaries
     geom_sf(data = world, fill = "grey95", colour = "grey70", size = 0.3) +
@@ -811,13 +854,13 @@ for (i in 1:length(data_sets)) {
     geom_path(data = oos_paths,
               aes(x = x_roams,
                   y = y_roams), colour = "orange") +
-    geom_point(data = data_sets[[i]] %>% 
-                 slice((round(0.9*n()) + 1) : n()) %>% 
+    geom_point(data = data_sets[[i]] |> 
+                 slice((round(0.9*n()) + 1) : n()) |> 
                  slice(detected_outliers),
                aes(x = x, y = y), 
                colour = "orange", size = 2, stroke = 1, pch = 1) +
     
-    # Focus map on animal’s range
+    # Focus map on animal's range
     coord_sf(
       xlim = c(x_range[1] - x_pad, x_range[2] + x_pad),
       ylim = c(y_range[1] - y_pad, y_range[2] + y_pad),
@@ -832,7 +875,6 @@ for (i in 1:length(data_sets)) {
 
 wrap_plots(plots) + plot_layout(ncol = 3)
 ```
-
 
 #### References
 
