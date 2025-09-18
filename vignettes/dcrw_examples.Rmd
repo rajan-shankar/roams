@@ -12,7 +12,8 @@ csl: apa-old-doi-prefix.csl
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>"
+  comment = "#>",
+  message = FALSE
 )
 ```
 
@@ -24,6 +25,11 @@ library(janitor)
 library(tsibble)
 library(tidyverse)
 library(patchwork)
+library(rnaturalearth)
+library(rnaturalearthdata)
+library(sf)
+# Get country boundaries as an sf object for later use
+world <- rnaturalearth::ne_countries(scale = "medium", returnclass = "sf")
 ```
 
 These examples all use the first-differenced correlated random walk (DCRW) model, a type of linear Gaussian SSM. This model is detailed in @auger-methe_guide_2021. The DCRW model has the following observation and state processes,
@@ -93,7 +99,11 @@ $$
 $$
 
 
-## Blue whale (2008)
+## Animals {.tabset}
+
+We illustrate our method on five example data sets.
+
+### Blue whale
 
 ```{r whale_2008_import, message=FALSE}
 whale_2008 = read_csv("data/Blue whales Eastern North Pacific 1993-2008 - Argos Data.csv") |>
@@ -122,13 +132,6 @@ whale_2008 = read_csv("data/Blue whales Eastern North Pacific 1993-2008 - Argos 
 Plot with world map data:
 
 ```{r}
-library(rnaturalearth)
-library(rnaturalearthdata)
-library(sf)
-
-# Get country boundaries as an sf object
-world <- ne_countries(scale = "medium", returnclass = "sf")
-
 # Work out x/y ranges with some padding
 x_range <- range(whale_2008$x, na.rm = TRUE)
 y_range <- range(whale_2008$y, na.rm = TRUE)
@@ -136,7 +139,7 @@ y_range <- range(whale_2008$y, na.rm = TRUE)
 x_pad <- diff(x_range) * 0.05  # 5% padding
 y_pad <- diff(y_range) * 0.05 # 5% padding
 
-whale_2008 %>% 
+p1 = whale_2008 %>% 
   ggplot() +
   # Country boundaries
   geom_sf(data = world, fill = "grey95", colour = "grey70", size = 0.3) +
@@ -156,13 +159,14 @@ whale_2008 %>%
   ) +
   
   # Labels and theme
-  labs(x = "Longitude", y = "Latitude", subtitle = "whale_2008") +
+  labs(x = "Longitude", y = "Latitude", subtitle = "Blue whale") +
   theme_minimal() +
   theme(legend.position = "none")
+p1
 ```
 
 
-## Polar bear
+### Polar bear
 
 ```{r}
 polar_low_freq = read_csv("data/PB_Argos.csv") %>% 
@@ -186,12 +190,30 @@ polar_low_freq = read_csv("data/PB_Argos.csv") %>%
   # Convert back to a regular tibble
   as_tibble() %>% 
   # Rename longitude/latitude columns to x and y
-  rename(x = lon,
-         y = lat)
+  rename(x = lon, y = lat)
 ```
 
 
-## Seal
+Plot with world map data:
+
+```{r}
+# Work out x/y ranges with some padding
+x_range <- range(polar_low_freq$x, na.rm = TRUE)
+y_range <- range(polar_low_freq$y, na.rm = TRUE)
+
+x_pad <- diff(x_range) * 0.05  # 5% padding
+y_pad <- diff(y_range) * 0.05 # 5% padding
+
+p1 %+% polar_low_freq + 
+  # Focus map on polar bear's range
+  coord_sf(
+    xlim = c(x_range[1] - x_pad, x_range[2] + x_pad),
+    ylim = c(y_range[1] - y_pad, y_range[2] + y_pad),
+    expand = FALSE
+  )
+```
+
+### Seal
 
 ```{r}
 seal = read_csv("data/sealLocs.csv") %>% 
@@ -216,7 +238,26 @@ seal = read_csv("data/sealLocs.csv") %>%
 ```
 
 
-## Cats
+Plot with world map data:
+
+```{r}
+# Work out x/y ranges with some padding
+x_range <- range(seal$x, na.rm = TRUE)
+y_range <- range(seal$y, na.rm = TRUE)
+
+x_pad <- diff(x_range) * 0.05  # 5% padding
+y_pad <- diff(y_range) * 0.05 # 5% padding
+
+p1 %+% seal + 
+  # Focus map on s's range
+  coord_sf(
+    xlim = c(x_range[1] - x_pad, x_range[2] + x_pad),
+    ylim = c(y_range[1] - y_pad, y_range[2] + y_pad),
+    expand = FALSE
+  )
+```
+
+### Cats
 
 ```{r}
 cat_mia = read_csv("data/Feral cat (Felis catus) - Scotia, NSW.csv") %>% 
@@ -257,7 +298,7 @@ cat_max = read_csv("data/Feral cat (Felis catus) - Scotia, NSW.csv") %>%
 ```
 
 
-## Cows
+### Cows
 
 ```{r}
 cow = read_csv("data/export_UQ_GPS.csv") %>% 
@@ -283,8 +324,9 @@ cow_12 = cow %>% filter(date == "2024-11-12")
 ```
 
 
+## Results
 
-## Collate data sets into a list
+### Collate data sets into a list
 
 ```{r}
 data_sets = list(
@@ -301,7 +343,7 @@ data_sets = list(
 )
 ```
 
-## Summary of missingness proportion and size of data sets
+### Summary of missingness proportion and size of data sets
 
 ```{r}
 data_sets %>% 
@@ -314,7 +356,7 @@ data_sets %>%
   knitr::kable()
 ```
 
-## Plot data sets on world map
+### Plot data sets on world map
 
 ```{r}
 # Get country boundaries as an sf object
@@ -357,7 +399,7 @@ for (i in 1:length(data_sets)) {
 wrap_plots(plots) + plot_layout(ncol = 3)
 ```
 
-## Fit models using ROAMS and classical methods
+### Fit models using ROAMS and classical methods
 
 The last 20 points from each data set are left out to use as a 'test set' later on.
 
@@ -498,7 +540,7 @@ for (i in 1:length(data_sets)) {
 # readr::write_rds(results, "vignettes/data/results.rds")
 ```
 
-## Compute and summarise results
+### Compute and summarise results
 
 ```{r}
 results %>% 
@@ -539,7 +581,7 @@ results %>%
   knitr::kable()
 ```
 
-## Plot in-sample fit
+### Plot in-sample fit
 
 ```{r}
 plots = list()
@@ -600,7 +642,7 @@ for (i in 1:length(data_sets)) {
 wrap_plots(plots) + plot_layout(ncol = 3)
 ```
 
-## Plot one-step-ahead out-of-sample predictions
+### Plot one-step-ahead out-of-sample predictions
 
 ```{r}
 plots = list()
