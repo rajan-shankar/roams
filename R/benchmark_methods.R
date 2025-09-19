@@ -223,6 +223,7 @@ ruben_filter = function(
   P_tt = SSM_specs$C0
 
   n = nrow(y)
+  n_complete = nrow(na.omit(y))
   dim_obs = ncol(y)
   dim_state = nrow(Phi)
 
@@ -312,9 +313,9 @@ ruben_filter = function(
   if (obj_type == "trimmed" & return_obj) {
     complete = which(!is.na(mahalanobis_residuals))
     mahalanobis_residuals_complete = mahalanobis_residuals[complete]
-    keep_set = which(rank(mahalanobis_residuals_complete) < (1 - alpha)*n)
+    keep_set = which(rank(mahalanobis_residuals_complete) < (1 - alpha)*n_complete)
     det_S_t_complete = det_S_t[complete]
-    objective = 1/(2*n*(1-alpha)) * sum(log(det_S_t[keep_set]) + c_T*mahalanobis_residuals_complete[keep_set]^2)
+    objective = 1/(2*n*(1-alpha)) * sum(log(det_S_t_complete[keep_set]) + c_T*mahalanobis_residuals_complete[keep_set]^2)
   }
 
   if (return_obj) {
