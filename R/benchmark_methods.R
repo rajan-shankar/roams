@@ -279,9 +279,17 @@ ruben_filter = function(
 
     if (return_obj) {
       if (obj_type == "huber") {
-        objective = objective + 1/(2*n) * log(det(S_t)) + c_H/n * rho_huber_mv(expm::sqrtm(inv_S_t) %*% (y[t,] - y_tt_1))
+        objective = ifelse(
+          any(is.na(y[t,])),
+          objective,
+          objective + 1/(2*n) * log(det(S_t)) + c_H/n * rho_huber_mv(expm::sqrtm(inv_S_t) %*% (y[t,] - y_tt_1))
+        )
       } else if (obj_type == "trimmed") {
-        mahalanobis_residuals[t] = drop(sqrt(t(y[t,] - y_tt_1) %*% inv_S_t %*% (y[t,] - y_tt_1)))
+        mahalanobis_residuals[t] = ifelse(
+          any(is.na(y[t,])),
+          0,
+          drop(sqrt(t(y[t,] - y_tt_1) %*% inv_S_t %*% (y[t,] - y_tt_1)))
+        )
         det_S_t[t] = det(S_t)
       }
     } else {
@@ -292,7 +300,11 @@ ruben_filter = function(
       predicted_observations_var[[t]] = S_t
       filtered_states_var[[t]] = P_tt
       predicted_states_var[[t]] = P_tt_1
-      mahalanobis_residuals[t] = drop(sqrt(t(y[t,] - y_tt_1) %*% inv_S_t %*% (y[t,] - y_tt_1)))
+      mahalanobis_residuals[t] = ifelse(
+        any(is.na(y[t,])),
+        0,
+        drop(sqrt(t(y[t,] - y_tt_1) %*% inv_S_t %*% (y[t,] - y_tt_1)))
+      )
     }
   }
 

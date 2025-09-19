@@ -370,11 +370,11 @@ Combine the data sets into a list:
 
 ```{r}
 data_sets = list(
-  "cat_max" = cat_max,
+  # "cat_max" = cat_max,
   "cat_mia" = cat_mia,
-  "cow_10" = cow_10,
+  # "cow_10" = cow_10,
   "cow_11" = cow_11,
-  "cow_12" = cow_12,
+  # "cow_12" = cow_12,
   "polar_low_freq" = polar_low_freq,
   "seal" = seal,
   "whale_2008" = whale_2008
@@ -385,9 +385,11 @@ data_sets = list(
 
 ```{r}
 # Add column containing frequency of measurements for each data set
-frequencies = c("20 minutes", "20 minutes", 
-                "2 minutes and 23 seconds", "2 minutes and 23 seconds", 
+frequencies = c("20 minutes", 
+                # "20 minutes", 
                 "2 minutes and 23 seconds", 
+                # "2 minutes and 23 seconds", 
+                # "2 minutes and 23 seconds", 
                 "1 day", "1 day", "12 hours")
 data_sets |> 
   map_dbl(~ mean(is.na(.$x))) |> 
@@ -454,10 +456,19 @@ results = tibble(
   data_set = list(),
   y_train = list(),
   y_oos = list(),
+  
   classical = list(),
   roams = list(),
+  huber = list(),
+  trimmed = list(),
+  
   classical_oos = list(),
-  roams_oos = list()
+  roams_fut_oos = list(),
+  roams_kalman_oos = list(),
+  huber_oos = list(),
+  trimmed_oos = list(),
+  
+  oos_outliers_flagged = list()
 )
 
 for (i in 1:length(data_sets)) {
@@ -501,7 +512,36 @@ for (i in 1:length(data_sets)) {
       init_state_var = P0)
   }
   
-  model_classical = classical_SSM(
+  build_fn_huber_trimmed = function(parm) {
+    
+    phi_coef = parm[1]
+    Phi = diag(c(1+phi_coef, 1+phi_coef, 0, 0))
+    Phi[1,3] = -phi_coef
+    Phi[2,4] = -phi_coef
+    Phi[3,1] = 1
+    Phi[4,2] = 1
+    
+    A = diag(4)[1:2,]
+    Q = diag(c(parm[2], parm[3], 0, 0))
+    R = diag(c(parm[4], parm[5]))
+    
+    second_complete_obs = which(!is.na(y_train[,1]))[2]
+    diff = sum(abs(y_train[1,] - y_train[second_complete_obs,]))
+
+    x0 = c(y_train[1,], y_train[1,] + diff * 0.1)
+    # x0 = c(y_train[1,], y_train[1,] + 0.1)
+    P0 = diag(rep(0, 4))
+    
+    specify_SSM(
+      state_transition_matrix = Phi,
+      state_noise_var = Q,
+      observation_matrix = A,
+      observation_noise_var = R,
+      init_state_mean = x0,
+      init_state_var = P0)
+  }
+  
+  classical_model = classical_SSM(
     y = y_train, 
     init_par = c(0.5, var_est, var_est), 
     build = build_fn, 
@@ -509,7 +549,26 @@ for (i in 1:length(data_sets)) {
     upper = c(1, rep(Inf, 4)),
     )
   
-  model_roams = robularized_SSM(
+
+  
+  huber_model = huber_robust_SSM(
+    y = y_train,
+    init_par = c(0.5, var_est, var_est),
+    build = build_fn_huber_trimmed,
+    lower = c(0.001, 1e-12, 1e-12, 1e-12, 1e-12),
+    upper = c(0.999, Inf, Inf, Inf, Inf)
+  )
+  
+  trimmed_model = trimmed_robust_SSM(
+    y = y_train,
+    init_par = c(0.5, var_est, var_est),
+    build = build_fn_huber_trimmed,
+    alpha = 0.05,  # assume a low level of 5% contamination
+    lower = c(0.001, 1e-12, 1e-12, 1e-12, 1e-12),
+    upper = c(0.999, Inf, Inf, Inf, Inf)
+  )
+  
+    roams_model_list = robularized_SSM(
     y = y_train,
     init_par = c(0.5, var_est, var_est),
     build = build_fn,
@@ -520,10 +579,12 @@ for (i in 1:length(data_sets)) {
     B = 50
     )
   
-  model_classical = attach_insample_info(model_classical)
+  classical_model = attach_insample_info(classical_model)
+  huber_model = attach_insample_info(huber_model)
+  trimmed_model = attach_insample_info(trimmed_model)
   
-  model_roams_best = best_BIC_model(model_roams)
-  model_roams_best = attach_insample_info(model_roams_best)
+  roams_model = best_BIC_model(roams_model_list)
+  roams_model = attach_insample_info(roams_model)
   
   # Out-of-sample metrics
   
@@ -557,15 +618,66 @@ for (i in 1:length(data_sets)) {
       init_state_var = P0)
   }
   
+  # Huber and trimmed methods require the last two elements of the initial state mean to be perturbed by a small amount from the first two elements of the initial state mean
+  build_oos_fn_huber_trimmed = function(par) {
+
+    phi_coef = par[1]
+    Phi = diag(c(1+phi_coef, 1+phi_coef, 0, 0))
+    Phi[1,3] = -phi_coef
+    Phi[2,4] = -phi_coef
+    Phi[3,1] = 1
+    Phi[4,2] = 1
+
+    A = diag(4)[1:2,]
+    Q = diag(c(par[2], par[3], 0, 0))
+    R = diag(c(par[4], par[5]))
+    
+    # Some data sets have first (few) out-of-sample timepoints missing, 
+    # so get use first non-missing timepoint to initialise
+    first_complete_obs = which(!is.na(y_oos[,1]))[1]
+    second_complete_obs = which(!is.na(y_oos[,1]))[2]
+    diff = sum(abs(y_oos[first_complete_obs,] - y_oos[second_complete_obs,]))
+    x0_oos = c(y_oos[first_complete_obs,], 
+               y_oos[first_complete_obs,] + diff * 0.1)
+    P0 = diag(rep(0, 4))
+
+    specify_SSM(
+      state_transition_matrix = Phi,
+      state_noise_var = Q,
+      observation_matrix = A,
+      observation_noise_var = R,
+      init_state_mean = x0_oos,
+      init_state_var = P0)
+  }
+  
   classical_oos = oos_filter(
     y_oos = y_oos, 
-    model = model_classical, 
+    model = classical_model, 
     build = build_oos_fn)
   
-  roams_oos = oos_filter(
+  roams_fut_oos = oos_filter(
     y_oos = y_oos, 
-    model = model_roams_best, 
-    build = build_oos_fn)
+    model = roams_model, 
+    build = build_oos_fn,
+    multiplier = 2)
+  
+  oos_outliers_flagged = which(roams_fut_oos$outliers_flagged == 1)
+  
+  roams_kalman_oos = oos_filter(
+    y_oos = y_oos, 
+    model = roams_model, 
+    build = build_oos_fn,
+    multiplier = 1, threshold = Inf)
+  
+  huber_oos = oos_filter(
+    y_oos = y_oos, 
+    model = huber_model, 
+    build = build_oos_fn_huber_trimmed)
+  
+  trimmed_oos = oos_filter(
+    y_oos = y_oos, 
+    model = trimmed_model, 
+    build = build_oos_fn_huber_trimmed)
   
   results = results |> 
     add_row(
@@ -573,10 +685,19 @@ for (i in 1:length(data_sets)) {
       data_set = list(data_sets[[i]]),
       y_train = list(y_train),
       y_oos = list(y_oos),
-      classical = list(model_classical),
-      roams = list(model_roams_best),
+      
+      classical_model = list(classical_model),
+      roams_model = list(roams_model),
+      huber_model = list(huber_model),
+      trimmed_model = list(trimmed_model),
+      
       classical_oos = list(classical_oos),
-      roams_oos = list(roams_oos)
+      roams_fut_oos = list(roams_fut_oos),
+      roams_kalman_oos = list(roams_kalman_oos),
+      huber_oos = list(huber_oos),
+      trimmed_oos = list(trimmed_oos),
+      
+      oos_outliers_flagged = list(oos_outliers_flagged)
     )
   
   cat("Data set", i, "complete\n")
@@ -605,6 +726,7 @@ results |>
     n_oos = map_dbl(y_oos, ~ nrow(.)),
     n_oos_complete = map_dbl(y_oos, ~ sum(!is.na(.[,1]))),
     
+    lambda = map_dbl(roams, ~ .$lambda),
     in_sample_detected = map2_dbl(roams, n_complete,
                                   ~ .x$prop_outlying * .y),
     oos_detected = map_dbl(roams_oos,
@@ -612,8 +734,6 @@ results |>
     
     roams_phi = map_dbl(roams, ~ .$par[1]),
     classical_phi = map_dbl(classical, ~ .$par[1]),
-    #roams_obs_var = map_dbl(roams, ~ sum(.$par[4:5])),
-    #roams_state_var = map_dbl(roams, ~ sum(.$par[2:3])),
     
     roams_MSFE = map2_dbl(
       roams_oos, y_oos,
@@ -631,54 +751,54 @@ results |>
         return(MSFE)
       }
     ),
-    roams_trimmed_MSFE_5perc = map2_dbl(
-      roams_oos, y_oos,
-      function(roams_oos, y_oos) {
-        SFEs = rowSums((y_oos - roams_oos$predicted_observations)^2)
-        num_trim = round(0.05 * length(SFEs))
-        ascending_SFEs = sort(na.omit(SFEs))
-        n_complete = length(ascending_SFEs)
-        trimmed_SFEs = ascending_SFEs[1:(n_complete - num_trim)]
-        trimmed_MSFE = mean(trimmed_SFEs)
-        return(trimmed_MSFE)
-      }
-    ),
-    classical_trimmed_MSFE_5perc = map2_dbl(
-      classical_oos, y_oos,
-      function(classical_oos, y_oos) {
-        SFEs = rowSums((y_oos - classical_oos$predicted_observations)^2)
-        num_trim = round(0.05 * length(SFEs))
-        ascending_SFEs = sort(na.omit(SFEs))
-        n_complete = length(ascending_SFEs)
-        trimmed_SFEs = ascending_SFEs[1:(n_complete - num_trim)]
-        trimmed_MSFE = mean(trimmed_SFEs)
-        return(trimmed_MSFE)
-      }
-    ),
-    roams_trimmed_MSFE_10perc = map2_dbl(
-      roams_oos, y_oos,
-      function(roams_oos, y_oos) {
-        SFEs = rowSums((y_oos - roams_oos$predicted_observations)^2)
-        num_trim = round(0.1 * length(SFEs))
-        ascending_SFEs = sort(na.omit(SFEs))
-        n_complete = length(ascending_SFEs)
-        trimmed_SFEs = ascending_SFEs[1:(n_complete - num_trim)]
-        trimmed_MSFE = mean(trimmed_SFEs)
-        return(trimmed_MSFE)
-      }
-    ),
-    classical_trimmed_MSFE_10perc = map2_dbl(
-      classical_oos, y_oos,
-      function(classical_oos, y_oos) {
-        SFEs = rowSums((y_oos - classical_oos$predicted_observations)^2)
-        num_trim = round(0.1 * length(SFEs))
-        ascending_SFEs = sort(na.omit(SFEs))
-        n_complete = length(ascending_SFEs)
-        trimmed_SFEs = ascending_SFEs[1:(n_complete - num_trim)]
-        trimmed_MSFE = mean(trimmed_SFEs)
-        return(trimmed_MSFE)
-      }
-    ),
+    # roams_trimmed_MSFE_5perc = map2_dbl(
+    #   roams_oos, y_oos,
+    #   function(roams_oos, y_oos) {
+    #     SFEs = rowSums((y_oos - roams_oos$predicted_observations)^2)
+    #     num_trim = round(0.05 * length(SFEs))
+    #     ascending_SFEs = sort(na.omit(SFEs))
+    #     n_complete = length(ascending_SFEs)
+    #     trimmed_SFEs = ascending_SFEs[1:(n_complete - num_trim)]
+    #     trimmed_MSFE = mean(trimmed_SFEs)
+    #     return(trimmed_MSFE)
+    #   }
+    # ),
+    # classical_trimmed_MSFE_5perc = map2_dbl(
+    #   classical_oos, y_oos,
+    #   function(classical_oos, y_oos) {
+    #     SFEs = rowSums((y_oos - classical_oos$predicted_observations)^2)
+    #     num_trim = round(0.05 * length(SFEs))
+    #     ascending_SFEs = sort(na.omit(SFEs))
+    #     n_complete = length(ascending_SFEs)
+    #     trimmed_SFEs = ascending_SFEs[1:(n_complete - num_trim)]
+    #     trimmed_MSFE = mean(trimmed_SFEs)
+    #     return(trimmed_MSFE)
+    #   }
+    # ),
+    # roams_trimmed_MSFE_10perc = map2_dbl(
+    #   roams_oos, y_oos,
+    #   function(roams_oos, y_oos) {
+    #     SFEs = rowSums((y_oos - roams_oos$predicted_observations)^2)
+    #     num_trim = round(0.1 * length(SFEs))
+    #     ascending_SFEs = sort(na.omit(SFEs))
+    #     n_complete = length(ascending_SFEs)
+    #     trimmed_SFEs = ascending_SFEs[1:(n_complete - num_trim)]
+    #     trimmed_MSFE = mean(trimmed_SFEs)
+    #     return(trimmed_MSFE)
+    #   }
+    # ),
+    # classical_trimmed_MSFE_10perc = map2_dbl(
+    #   classical_oos, y_oos,
+    #   function(classical_oos, y_oos) {
+    #     SFEs = rowSums((y_oos - classical_oos$predicted_observations)^2)
+    #     num_trim = round(0.1 * length(SFEs))
+    #     ascending_SFEs = sort(na.omit(SFEs))
+    #     n_complete = length(ascending_SFEs)
+    #     trimmed_SFEs = ascending_SFEs[1:(n_complete - num_trim)]
+    #     trimmed_MSFE = mean(trimmed_SFEs)
+    #     return(trimmed_MSFE)
+    #   }
+    # ),
     roams_MSFE_clean = map2_dbl(
       roams_oos, y_oos,
       function(roams_oos, y_oos) {
@@ -711,7 +831,7 @@ results |>
     # )
     
     )  |> 
-  select(name, frequency, n, n_complete, n_oos, n_oos_complete,
+  select(name, frequency, n, n_complete, n_oos, n_oos_complete, lambda,
          in_sample_detected, oos_detected, roams_phi, classical_phi,
          roams_MSFE:classical_MSFE_clean) |> 
   knitr::kable()
