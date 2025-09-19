@@ -287,7 +287,7 @@ ruben_filter = function(
       } else if (obj_type == "trimmed") {
         mahalanobis_residuals[t] = ifelse(
           any(is.na(y[t,])),
-          0,
+          NA,
           drop(sqrt(t(y[t,] - y_tt_1) %*% inv_S_t %*% (y[t,] - y_tt_1)))
         )
         det_S_t[t] = det(S_t)
@@ -302,7 +302,7 @@ ruben_filter = function(
       predicted_states_var[[t]] = P_tt_1
       mahalanobis_residuals[t] = ifelse(
         any(is.na(y[t,])),
-        0,
+        NA,
         drop(sqrt(t(y[t,] - y_tt_1) %*% inv_S_t %*% (y[t,] - y_tt_1)))
       )
     }
@@ -310,8 +310,11 @@ ruben_filter = function(
 
   # Compute trimmed likelihood
   if (obj_type == "trimmed" & return_obj) {
-    keep_set = which(rank(mahalanobis_residuals) < (1 - alpha)*n)
-    objective = 1/(2*n*(1-alpha)) * sum(log(det_S_t[keep_set]) + c_T*mahalanobis_residuals[keep_set]^2)
+    complete = which(!is.na(mahalanobis_residuals))
+    mahalanobis_residuals_complete = mahalanobis_residuals[complete]
+    keep_set = which(rank(mahalanobis_residuals_complete) < (1 - alpha)*n)
+    det_S_t_complete = det_S_t[complete]
+    objective = 1/(2*n*(1-alpha)) * sum(log(det_S_t[keep_set]) + c_T*mahalanobis_residuals_complete[keep_set]^2)
   }
 
   if (return_obj) {
