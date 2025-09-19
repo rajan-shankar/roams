@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">roams</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -72,7 +72,7 @@
 <p>This page shows how the examples in section 3.1 of <span class="citation">Shankar et al. (2025)</span> are generated.</p>
 </blockquote>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">roams</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/rajan-shankar/roams">roams</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/sfirke/janitor" class="external-link">janitor</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tsibble.tidyverts.org" class="external-link">tsibble</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyverse.tidyverse.org" class="external-link">tidyverse</a></span><span class="op">)</span></span>
@@ -133,7 +133,7 @@ longitude and the latitude directions,
 \end{align*}</annotation></semantics></math> A similar matrix is used
 for the state error variance matrix
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>𝚺</mi><mi>𝐰</mi></msub><annotation encoding="application/x-tex">\mathbf{\Sigma}_\mathbf{w}</annotation></semantics></math>.
-<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtable><mtr><mtd columnalign="right" style="text-align: right"><mrow><mo stretchy="true" form="prefix">[</mo><mtable><mtr><mtd columnalign="center" style="text-align: center"><msub><mi>𝐳</mi><mi>t</mi></msub></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><msub><mi>𝐳</mi><mrow><mi>t</mi><mo>−</mo><mn>1</mn></mrow></msub></mtd></mtr></mtable><mo stretchy="true" form="postfix">]</mo></mrow></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><mrow><mo stretchy="true" form="prefix">[</mo><mtable><mtr><mtd columnalign="center" style="text-align: center"><mn>1</mn><mo>+</mo><mi>γ</mi></mtd><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd><mtd columnalign="center" style="text-align: center"><mi>−</mi><mi>γ</mi></mtd><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>1</mn><mo>+</mo><mi>γ</mi></mtd><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd><mtd columnalign="center" style="text-align: center"><mi>−</mi><mi>γ</mi></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><mn>1</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>1</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"></mtd></mtr></mtable><mo stretchy="true" form="postfix">]</mo></mrow><mrow><mo stretchy="true" form="prefix">[</mo><mtable><mtr><mtd columnalign="center" style="text-align: center"><msub><mi>𝐳</mi><mrow><mi>t</mi><mo>−</mo><mn>1</mn></mrow></msub></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><msub><mi>𝐳</mi><mrow><mi>t</mi><mo>−</mo><mn>2</mn></mrow></msub></mtd></mtr></mtable><mo stretchy="true" form="postfix">]</mo></mrow><mo>+</mo><msub><mi>𝛜</mi><mi>t</mi></msub><mo>,</mo><mspace width="0.222em"></mspace><mspace width="0.222em"></mspace><msub><mi>𝛜</mi><mi>t</mi></msub><mo>∼</mo><mi>N</mi><mrow><mo stretchy="true" form="prefix">(</mo><mn>𝟎</mn><mo>,</mo><mi>𝚺</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"><mi>𝚺</mi></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><mrow><mo stretchy="true" form="prefix">[</mo><mtable><mtr><mtd columnalign="center" style="text-align: center"><msubsup><mi>σ</mi><mrow><mi>ϵ</mi><mo>,</mo><mi>l</mi><mi>o</mi><mi>n</mi></mrow><mn>2</mn></msubsup></mtd><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd><mtd columnalign="center" style="text-align: center"><msubsup><mi>σ</mi><mrow><mi>ϵ</mi><mo>,</mo><mi>l</mi><mi>a</mi><mi>t</mi></mrow><mn>2</mn></msubsup></mtd><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"></mtd></mtr></mtable><mo stretchy="true" form="postfix">]</mo></mrow></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"><msub><mi>𝐲</mi><mi>t</mi></msub></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><mrow><mo stretchy="true" form="prefix">[</mo><mtable><mtr><mtd columnalign="center" style="text-align: center"><mn>1</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>1</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd></mtr></mtable><mo stretchy="true" form="postfix">]</mo></mrow><mrow><mo stretchy="true" form="prefix">[</mo><mtable><mtr><mtd columnalign="center" style="text-align: center"><msub><mi>𝐳</mi><mi>t</mi></msub></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><msub><mi>𝐳</mi><mrow><mi>t</mi><mo>−</mo><mn>1</mn></mrow></msub></mtd></mtr></mtable><mo stretchy="true" form="postfix">]</mo></mrow><mo>+</mo><msub><mi>𝛈</mi><mi>t</mi></msub><mo>,</mo><mspace width="0.222em"></mspace><mspace width="0.222em"></mspace><msub><mi>𝛈</mi><mi>t</mi></msub><mo>∼</mo><mi>N</mi><mrow><mo stretchy="true" form="prefix">(</mo><mn>𝟎</mn><mo>,</mo><mi>𝐑</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"><mi>𝐑</mi></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><mrow><mo stretchy="true" form="prefix">[</mo><mtable><mtr><mtd columnalign="center" style="text-align: center"><msubsup><mi>σ</mi><mrow><mi>η</mi><mo>,</mo><mi>l</mi><mi>o</mi><mi>n</mi></mrow><mn>2</mn></msubsup></mtd><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd><mtd columnalign="center" style="text-align: center"><msubsup><mi>σ</mi><mrow><mi>η</mi><mo>,</mo><mi>l</mi><mi>a</mi><mi>t</mi></mrow><mn>2</mn></msubsup></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"></mtd></mtr></mtable><mo stretchy="true" form="postfix">]</mo></mrow></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"><mtext mathvariant="normal">initial state</mtext></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>𝐲</mi><mn>1</mn></msub><mo>,</mo><msub><mi>𝐲</mi><mn>1</mn></msub><mo stretchy="true" form="postfix">)</mo></mrow></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"><mtext mathvariant="normal">initial state variance</mtext></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><msub><mn>𝟎</mn><mrow><mn>4</mn><mo>×</mo><mn>4</mn></mrow></msub></mtd></mtr></mtable><annotation encoding="application/x-tex">
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtable><mtr><mtd columnalign="right" style="text-align: right"><mrow><mo stretchy="true" form="prefix">[</mo><mtable><mtr><mtd columnalign="center" style="text-align: center"><msub><mi>𝐳</mi><mi>t</mi></msub></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><msub><mi>𝐳</mi><mrow><mi>t</mi><mo>−</mo><mn>1</mn></mrow></msub></mtd></mtr></mtable><mo stretchy="true" form="postfix">]</mo></mrow></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><mrow><mo stretchy="true" form="prefix">[</mo><mtable><mtr><mtd columnalign="center" style="text-align: center"><mn>1</mn><mo>+</mo><mi>γ</mi></mtd><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd><mtd columnalign="center" style="text-align: center"><mo>−</mo><mi>γ</mi></mtd><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>1</mn><mo>+</mo><mi>γ</mi></mtd><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd><mtd columnalign="center" style="text-align: center"><mo>−</mo><mi>γ</mi></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><mn>1</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>1</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd></mtr></mtable><mo stretchy="true" form="postfix">]</mo></mrow><mrow><mo stretchy="true" form="prefix">[</mo><mtable><mtr><mtd columnalign="center" style="text-align: center"><msub><mi>𝐳</mi><mrow><mi>t</mi><mo>−</mo><mn>1</mn></mrow></msub></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><msub><mi>𝐳</mi><mrow><mi>t</mi><mo>−</mo><mn>2</mn></mrow></msub></mtd></mtr></mtable><mo stretchy="true" form="postfix">]</mo></mrow><mo>+</mo><msub><mi>𝛜</mi><mi>t</mi></msub><mo>,</mo><mspace width="0.222em"></mspace><mspace width="0.222em"></mspace><msub><mi>𝛜</mi><mi>t</mi></msub><mo>∼</mo><mi>N</mi><mrow><mo stretchy="true" form="prefix">(</mo><mn>𝟎</mn><mo>,</mo><mi>𝚺</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"><mi>𝚺</mi></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><mrow><mo stretchy="true" form="prefix">[</mo><mtable><mtr><mtd columnalign="center" style="text-align: center"><msubsup><mi>σ</mi><mrow><mi>ϵ</mi><mo>,</mo><mi>l</mi><mi>o</mi><mi>n</mi></mrow><mn>2</mn></msubsup></mtd><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd><mtd columnalign="center" style="text-align: center"><msubsup><mi>σ</mi><mrow><mi>ϵ</mi><mo>,</mo><mi>l</mi><mi>a</mi><mi>t</mi></mrow><mn>2</mn></msubsup></mtd><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd></mtr></mtable><mo stretchy="true" form="postfix">]</mo></mrow></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"><msub><mi>𝐲</mi><mi>t</mi></msub></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><mrow><mo stretchy="true" form="prefix">[</mo><mtable><mtr><mtd columnalign="center" style="text-align: center"><mn>1</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>1</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd></mtr></mtable><mo stretchy="true" form="postfix">]</mo></mrow><mrow><mo stretchy="true" form="prefix">[</mo><mtable><mtr><mtd columnalign="center" style="text-align: center"><msub><mi>𝐳</mi><mi>t</mi></msub></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><msub><mi>𝐳</mi><mrow><mi>t</mi><mo>−</mo><mn>1</mn></mrow></msub></mtd></mtr></mtable><mo stretchy="true" form="postfix">]</mo></mrow><mo>+</mo><msub><mi>𝛈</mi><mi>t</mi></msub><mo>,</mo><mspace width="0.222em"></mspace><mspace width="0.222em"></mspace><msub><mi>𝛈</mi><mi>t</mi></msub><mo>∼</mo><mi>N</mi><mrow><mo stretchy="true" form="prefix">(</mo><mn>𝟎</mn><mo>,</mo><mi>𝐑</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"><mi>𝐑</mi></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><mrow><mo stretchy="true" form="prefix">[</mo><mtable><mtr><mtd columnalign="center" style="text-align: center"><msubsup><mi>σ</mi><mrow><mi>η</mi><mo>,</mo><mi>l</mi><mi>o</mi><mi>n</mi></mrow><mn>2</mn></msubsup></mtd><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd><mtd columnalign="center" style="text-align: center"><msubsup><mi>σ</mi><mrow><mi>η</mi><mo>,</mo><mi>l</mi><mi>a</mi><mi>t</mi></mrow><mn>2</mn></msubsup></mtd></mtr></mtable><mo stretchy="true" form="postfix">]</mo></mrow></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"><mtext mathvariant="normal">initial state</mtext></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>𝐲</mi><mn>1</mn></msub><mo>,</mo><msub><mi>𝐲</mi><mn>1</mn></msub><mo stretchy="true" form="postfix">)</mo></mrow></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"><mtext mathvariant="normal">initial state variance</mtext></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><msub><mn>𝟎</mn><mrow><mn>4</mn><mo>×</mo><mn>4</mn></mrow></msub></mtd></mtr></mtable><annotation encoding="application/x-tex">
 \begin{align}
 \left[
 \begin{matrix}
@@ -448,11 +448,11 @@ for the state error variance matrix
 <p>Combine the data sets into a list:</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">data_sets</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
-<span>  <span class="st">"cat_max"</span> <span class="op">=</span> <span class="va">cat_max</span>,</span>
+<span>  <span class="co"># "cat_max" = cat_max,</span></span>
 <span>  <span class="st">"cat_mia"</span> <span class="op">=</span> <span class="va">cat_mia</span>,</span>
-<span>  <span class="st">"cow_10"</span> <span class="op">=</span> <span class="va">cow_10</span>,</span>
+<span>  <span class="co"># "cow_10" = cow_10,</span></span>
 <span>  <span class="st">"cow_11"</span> <span class="op">=</span> <span class="va">cow_11</span>,</span>
-<span>  <span class="st">"cow_12"</span> <span class="op">=</span> <span class="va">cow_12</span>,</span>
+<span>  <span class="co"># "cow_12" = cow_12,</span></span>
 <span>  <span class="st">"polar_low_freq"</span> <span class="op">=</span> <span class="va">polar_low_freq</span>,</span>
 <span>  <span class="st">"seal"</span> <span class="op">=</span> <span class="va">seal</span>,</span>
 <span>  <span class="st">"whale_2008"</span> <span class="op">=</span> <span class="va">whale_2008</span></span>
@@ -462,9 +462,11 @@ for the state error variance matrix
 </h3>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Add column containing frequency of measurements for each data set</span></span>
-<span><span class="va">frequencies</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"20 minutes"</span>, <span class="st">"20 minutes"</span>, </span>
-<span>                <span class="st">"2 minutes and 23 seconds"</span>, <span class="st">"2 minutes and 23 seconds"</span>, </span>
+<span><span class="va">frequencies</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"20 minutes"</span>, </span>
+<span>                <span class="co"># "20 minutes", </span></span>
 <span>                <span class="st">"2 minutes and 23 seconds"</span>, </span>
+<span>                <span class="co"># "2 minutes and 23 seconds", </span></span>
+<span>                <span class="co"># "2 minutes and 23 seconds", </span></span>
 <span>                <span class="st">"1 day"</span>, <span class="st">"1 day"</span>, <span class="st">"12 hours"</span><span class="op">)</span></span>
 <span><span class="va">data_sets</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map_dbl</a></span><span class="op">(</span><span class="op">~</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">.</span><span class="op">$</span><span class="va">x</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
@@ -493,22 +495,10 @@ for the state error variance matrix
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td align="left">cat_max</td>
-<td align="right">927</td>
-<td align="right">0.27</td>
-<td align="left">20 minutes</td>
-</tr>
-<tr class="even">
 <td align="left">cat_mia</td>
 <td align="right">342</td>
 <td align="right">0.27</td>
 <td align="left">20 minutes</td>
-</tr>
-<tr class="odd">
-<td align="left">cow_10</td>
-<td align="right">603</td>
-<td align="right">0.09</td>
-<td align="left">2 minutes and 23 seconds</td>
 </tr>
 <tr class="even">
 <td align="left">cow_11</td>
@@ -517,24 +507,18 @@ for the state error variance matrix
 <td align="left">2 minutes and 23 seconds</td>
 </tr>
 <tr class="odd">
-<td align="left">cow_12</td>
-<td align="right">601</td>
-<td align="right">0.07</td>
-<td align="left">2 minutes and 23 seconds</td>
-</tr>
-<tr class="even">
 <td align="left">polar_low_freq</td>
 <td align="right">366</td>
 <td align="right">0.09</td>
 <td align="left">1 day</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">seal</td>
 <td align="right">234</td>
 <td align="right">0.15</td>
 <td align="left">1 day</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">whale_2008</td>
 <td align="right">122</td>
 <td align="right">0.17</td>
@@ -595,10 +579,19 @@ for the state error variance matrix
 <span>  data_set <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  y_train <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  y_oos <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
-<span>  classical <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
-<span>  roams <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  </span>
+<span>  classical_model <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  roams_model <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  huber_model <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  trimmed_model <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  </span>
 <span>  classical_oos <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
-<span>  roams_oos <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span></span>
+<span>  roams_fut_oos <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  roams_kalman_oos <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  huber_oos <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  trimmed_oos <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  </span>
+<span>  oos_outliers_flagged <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">data_sets</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
@@ -642,15 +635,42 @@ for the state error variance matrix
 <span>      init_state_var <span class="op">=</span> <span class="va">P0</span><span class="op">)</span></span>
 <span>  <span class="op">}</span></span>
 <span>  </span>
-<span>  <span class="va">model_classical</span> <span class="op">=</span> <span class="fu"><a href="../reference/classical_SSM.html">classical_SSM</a></span><span class="op">(</span></span>
+<span>  <span class="va">build_fn_huber_trimmed</span> <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">parm</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    </span>
+<span>    <span class="va">phi_coef</span> <span class="op">=</span> <span class="va">parm</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span></span>
+<span>    <span class="va">Phi</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/diag.html" class="external-link">diag</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">+</span><span class="va">phi_coef</span>, <span class="fl">1</span><span class="op">+</span><span class="va">phi_coef</span>, <span class="fl">0</span>, <span class="fl">0</span><span class="op">)</span><span class="op">)</span></span>
+<span>    <span class="va">Phi</span><span class="op">[</span><span class="fl">1</span>,<span class="fl">3</span><span class="op">]</span> <span class="op">=</span> <span class="op">-</span><span class="va">phi_coef</span></span>
+<span>    <span class="va">Phi</span><span class="op">[</span><span class="fl">2</span>,<span class="fl">4</span><span class="op">]</span> <span class="op">=</span> <span class="op">-</span><span class="va">phi_coef</span></span>
+<span>    <span class="va">Phi</span><span class="op">[</span><span class="fl">3</span>,<span class="fl">1</span><span class="op">]</span> <span class="op">=</span> <span class="fl">1</span></span>
+<span>    <span class="va">Phi</span><span class="op">[</span><span class="fl">4</span>,<span class="fl">2</span><span class="op">]</span> <span class="op">=</span> <span class="fl">1</span></span>
+<span>    </span>
+<span>    <span class="va">A</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/diag.html" class="external-link">diag</a></span><span class="op">(</span><span class="fl">4</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span>,<span class="op">]</span></span>
+<span>    <span class="va">Q</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/diag.html" class="external-link">diag</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">parm</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span>, <span class="va">parm</span><span class="op">[</span><span class="fl">3</span><span class="op">]</span>, <span class="fl">0</span>, <span class="fl">0</span><span class="op">)</span><span class="op">)</span></span>
+<span>    <span class="va">R</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/diag.html" class="external-link">diag</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">parm</span><span class="op">[</span><span class="fl">4</span><span class="op">]</span>, <span class="va">parm</span><span class="op">[</span><span class="fl">5</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
+<span>    </span>
+<span>    <span class="va">second_complete_obs</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">y_train</span><span class="op">[</span>,<span class="fl">1</span><span class="op">]</span><span class="op">)</span><span class="op">)</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span></span>
+<span>    <span class="va">diff</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">abs</a></span><span class="op">(</span><span class="va">y_train</span><span class="op">[</span><span class="fl">1</span>,<span class="op">]</span> <span class="op">-</span> <span class="va">y_train</span><span class="op">[</span><span class="va">second_complete_obs</span>,<span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
+<span>    <span class="va">x0</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">y_train</span><span class="op">[</span><span class="fl">1</span>,<span class="op">]</span>, <span class="va">y_train</span><span class="op">[</span><span class="fl">1</span>,<span class="op">]</span> <span class="op">+</span> <span class="va">diff</span> <span class="op">*</span> <span class="fl">0.1</span><span class="op">)</span></span>
+<span>    <span class="va">P0</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/diag.html" class="external-link">diag</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">4</span><span class="op">)</span><span class="op">)</span></span>
+<span>    </span>
+<span>    <span class="fu"><a href="../reference/specify_SSM.html">specify_SSM</a></span><span class="op">(</span></span>
+<span>      state_transition_matrix <span class="op">=</span> <span class="va">Phi</span>,</span>
+<span>      state_noise_var <span class="op">=</span> <span class="va">Q</span>,</span>
+<span>      observation_matrix <span class="op">=</span> <span class="va">A</span>,</span>
+<span>      observation_noise_var <span class="op">=</span> <span class="va">R</span>,</span>
+<span>      init_state_mean <span class="op">=</span> <span class="va">x0</span>,</span>
+<span>      init_state_var <span class="op">=</span> <span class="va">P0</span><span class="op">)</span></span>
+<span>  <span class="op">}</span></span>
+<span>  </span>
+<span>  <span class="va">classical_model</span> <span class="op">=</span> <span class="fu"><a href="../reference/classical_SSM.html">classical_SSM</a></span><span class="op">(</span></span>
 <span>    y <span class="op">=</span> <span class="va">y_train</span>, </span>
 <span>    init_par <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.5</span>, <span class="va">var_est</span>, <span class="va">var_est</span><span class="op">)</span>, </span>
 <span>    build <span class="op">=</span> <span class="va">build_fn</span>, </span>
 <span>    lower <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1e-12</span>, <span class="fl">4</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>    upper <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="cn">Inf</span>, <span class="fl">4</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>    <span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
 <span>  </span>
-<span>  <span class="va">model_roams</span> <span class="op">=</span> <span class="fu"><a href="../reference/robularized_SSM.html">robularized_SSM</a></span><span class="op">(</span></span>
+<span>  <span class="va">roams_model_list</span> <span class="op">=</span> <span class="fu"><a href="../reference/robularized_SSM.html">robularized_SSM</a></span><span class="op">(</span></span>
 <span>    y <span class="op">=</span> <span class="va">y_train</span>,</span>
 <span>    init_par <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.5</span>, <span class="va">var_est</span>, <span class="va">var_est</span><span class="op">)</span>,</span>
 <span>    build <span class="op">=</span> <span class="va">build_fn</span>,</span>
@@ -659,12 +679,31 @@ for the state error variance matrix
 <span>    lower <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1e-12</span>, <span class="fl">4</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>    upper <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="cn">Inf</span>, <span class="fl">4</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>    B <span class="op">=</span> <span class="fl">50</span></span>
-<span>    <span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
 <span>  </span>
-<span>  <span class="va">model_classical</span> <span class="op">=</span> <span class="fu"><a href="../reference/attach_insample_info.html">attach_insample_info</a></span><span class="op">(</span><span class="va">model_classical</span><span class="op">)</span></span>
+<span>  <span class="va">huber_model</span> <span class="op">=</span> <span class="fu"><a href="../reference/huber_robust_SSM.html">huber_robust_SSM</a></span><span class="op">(</span></span>
+<span>    y <span class="op">=</span> <span class="va">y_train</span>,</span>
+<span>    init_par <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.5</span>, <span class="va">var_est</span>, <span class="va">var_est</span><span class="op">)</span>,</span>
+<span>    build <span class="op">=</span> <span class="va">build_fn_huber_trimmed</span>,</span>
+<span>    lower <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.001</span>, <span class="fl">1e-12</span>, <span class="fl">1e-12</span>, <span class="fl">1e-12</span>, <span class="fl">1e-12</span><span class="op">)</span>,</span>
+<span>    upper <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.999</span>, <span class="cn">Inf</span>, <span class="cn">Inf</span>, <span class="cn">Inf</span>, <span class="cn">Inf</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
 <span>  </span>
-<span>  <span class="va">model_roams_best</span> <span class="op">=</span> <span class="fu"><a href="../reference/best_BIC_model.html">best_BIC_model</a></span><span class="op">(</span><span class="va">model_roams</span><span class="op">)</span></span>
-<span>  <span class="va">model_roams_best</span> <span class="op">=</span> <span class="fu"><a href="../reference/attach_insample_info.html">attach_insample_info</a></span><span class="op">(</span><span class="va">model_roams_best</span><span class="op">)</span></span>
+<span>  <span class="va">trimmed_model</span> <span class="op">=</span> <span class="fu"><a href="../reference/trimmed_robust_SSM.html">trimmed_robust_SSM</a></span><span class="op">(</span></span>
+<span>    y <span class="op">=</span> <span class="va">y_train</span>,</span>
+<span>    init_par <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.5</span>, <span class="va">var_est</span>, <span class="va">var_est</span><span class="op">)</span>,</span>
+<span>    build <span class="op">=</span> <span class="va">build_fn_huber_trimmed</span>,</span>
+<span>    alpha <span class="op">=</span> <span class="fl">0.05</span>,  <span class="co"># assume a low level of 5% contamination</span></span>
+<span>    lower <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.001</span>, <span class="fl">1e-12</span>, <span class="fl">1e-12</span>, <span class="fl">1e-12</span>, <span class="fl">1e-12</span><span class="op">)</span>,</span>
+<span>    upper <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.999</span>, <span class="cn">Inf</span>, <span class="cn">Inf</span>, <span class="cn">Inf</span>, <span class="cn">Inf</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
+<span>  </span>
+<span>  <span class="va">classical_model</span> <span class="op">=</span> <span class="fu"><a href="../reference/attach_insample_info.html">attach_insample_info</a></span><span class="op">(</span><span class="va">classical_model</span><span class="op">)</span></span>
+<span>  <span class="va">huber_model</span> <span class="op">=</span> <span class="fu"><a href="../reference/attach_insample_info.html">attach_insample_info</a></span><span class="op">(</span><span class="va">huber_model</span><span class="op">)</span></span>
+<span>  <span class="va">trimmed_model</span> <span class="op">=</span> <span class="fu"><a href="../reference/attach_insample_info.html">attach_insample_info</a></span><span class="op">(</span><span class="va">trimmed_model</span><span class="op">)</span></span>
+<span>  </span>
+<span>  <span class="va">roams_model</span> <span class="op">=</span> <span class="fu"><a href="../reference/best_BIC_model.html">best_BIC_model</a></span><span class="op">(</span><span class="va">roams_model_list</span><span class="op">)</span></span>
+<span>  <span class="va">roams_model</span> <span class="op">=</span> <span class="fu"><a href="../reference/attach_insample_info.html">attach_insample_info</a></span><span class="op">(</span><span class="va">roams_model</span><span class="op">)</span></span>
 <span>  </span>
 <span>  <span class="co"># Out-of-sample metrics</span></span>
 <span>  </span>
@@ -698,15 +737,66 @@ for the state error variance matrix
 <span>      init_state_var <span class="op">=</span> <span class="va">P0</span><span class="op">)</span></span>
 <span>  <span class="op">}</span></span>
 <span>  </span>
+<span>  <span class="co"># Huber and trimmed methods require the last two elements of the initial state mean to be perturbed by a small amount from the first two elements of the initial state mean</span></span>
+<span>  <span class="va">build_oos_fn_huber_trimmed</span> <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">par</span><span class="op">)</span> <span class="op">{</span></span>
+<span></span>
+<span>    <span class="va">phi_coef</span> <span class="op">=</span> <span class="va">par</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span></span>
+<span>    <span class="va">Phi</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/diag.html" class="external-link">diag</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">+</span><span class="va">phi_coef</span>, <span class="fl">1</span><span class="op">+</span><span class="va">phi_coef</span>, <span class="fl">0</span>, <span class="fl">0</span><span class="op">)</span><span class="op">)</span></span>
+<span>    <span class="va">Phi</span><span class="op">[</span><span class="fl">1</span>,<span class="fl">3</span><span class="op">]</span> <span class="op">=</span> <span class="op">-</span><span class="va">phi_coef</span></span>
+<span>    <span class="va">Phi</span><span class="op">[</span><span class="fl">2</span>,<span class="fl">4</span><span class="op">]</span> <span class="op">=</span> <span class="op">-</span><span class="va">phi_coef</span></span>
+<span>    <span class="va">Phi</span><span class="op">[</span><span class="fl">3</span>,<span class="fl">1</span><span class="op">]</span> <span class="op">=</span> <span class="fl">1</span></span>
+<span>    <span class="va">Phi</span><span class="op">[</span><span class="fl">4</span>,<span class="fl">2</span><span class="op">]</span> <span class="op">=</span> <span class="fl">1</span></span>
+<span></span>
+<span>    <span class="va">A</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/diag.html" class="external-link">diag</a></span><span class="op">(</span><span class="fl">4</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span>,<span class="op">]</span></span>
+<span>    <span class="va">Q</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/diag.html" class="external-link">diag</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">par</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span>, <span class="va">par</span><span class="op">[</span><span class="fl">3</span><span class="op">]</span>, <span class="fl">0</span>, <span class="fl">0</span><span class="op">)</span><span class="op">)</span></span>
+<span>    <span class="va">R</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/diag.html" class="external-link">diag</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">par</span><span class="op">[</span><span class="fl">4</span><span class="op">]</span>, <span class="va">par</span><span class="op">[</span><span class="fl">5</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
+<span>    </span>
+<span>    <span class="co"># Some data sets have first (few) out-of-sample timepoints missing, </span></span>
+<span>    <span class="co"># so get use first non-missing timepoint to initialise</span></span>
+<span>    <span class="va">first_complete_obs</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">y_oos</span><span class="op">[</span>,<span class="fl">1</span><span class="op">]</span><span class="op">)</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span></span>
+<span>    <span class="va">second_complete_obs</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">y_oos</span><span class="op">[</span>,<span class="fl">1</span><span class="op">]</span><span class="op">)</span><span class="op">)</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span></span>
+<span>    <span class="va">diff</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">abs</a></span><span class="op">(</span><span class="va">y_oos</span><span class="op">[</span><span class="va">first_complete_obs</span>,<span class="op">]</span> <span class="op">-</span> <span class="va">y_oos</span><span class="op">[</span><span class="va">second_complete_obs</span>,<span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
+<span>    <span class="va">x0_oos</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">y_oos</span><span class="op">[</span><span class="va">first_complete_obs</span>,<span class="op">]</span>, </span>
+<span>               <span class="va">y_oos</span><span class="op">[</span><span class="va">first_complete_obs</span>,<span class="op">]</span> <span class="op">+</span> <span class="va">diff</span> <span class="op">*</span> <span class="fl">0.1</span><span class="op">)</span></span>
+<span>    <span class="va">P0</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/diag.html" class="external-link">diag</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">4</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span>    <span class="fu"><a href="../reference/specify_SSM.html">specify_SSM</a></span><span class="op">(</span></span>
+<span>      state_transition_matrix <span class="op">=</span> <span class="va">Phi</span>,</span>
+<span>      state_noise_var <span class="op">=</span> <span class="va">Q</span>,</span>
+<span>      observation_matrix <span class="op">=</span> <span class="va">A</span>,</span>
+<span>      observation_noise_var <span class="op">=</span> <span class="va">R</span>,</span>
+<span>      init_state_mean <span class="op">=</span> <span class="va">x0_oos</span>,</span>
+<span>      init_state_var <span class="op">=</span> <span class="va">P0</span><span class="op">)</span></span>
+<span>  <span class="op">}</span></span>
+<span>  </span>
 <span>  <span class="va">classical_oos</span> <span class="op">=</span> <span class="fu"><a href="../reference/oos_filter.html">oos_filter</a></span><span class="op">(</span></span>
 <span>    y_oos <span class="op">=</span> <span class="va">y_oos</span>, </span>
-<span>    model <span class="op">=</span> <span class="va">model_classical</span>, </span>
+<span>    model <span class="op">=</span> <span class="va">classical_model</span>, </span>
 <span>    build <span class="op">=</span> <span class="va">build_oos_fn</span><span class="op">)</span></span>
 <span>  </span>
-<span>  <span class="va">roams_oos</span> <span class="op">=</span> <span class="fu"><a href="../reference/oos_filter.html">oos_filter</a></span><span class="op">(</span></span>
+<span>  <span class="va">roams_fut_oos</span> <span class="op">=</span> <span class="fu"><a href="../reference/oos_filter.html">oos_filter</a></span><span class="op">(</span></span>
 <span>    y_oos <span class="op">=</span> <span class="va">y_oos</span>, </span>
-<span>    model <span class="op">=</span> <span class="va">model_roams_best</span>, </span>
-<span>    build <span class="op">=</span> <span class="va">build_oos_fn</span><span class="op">)</span></span>
+<span>    model <span class="op">=</span> <span class="va">roams_model</span>, </span>
+<span>    build <span class="op">=</span> <span class="va">build_oos_fn</span>,</span>
+<span>    multiplier <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
+<span>  </span>
+<span>  <span class="va">oos_outliers_flagged</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="va">roams_fut_oos</span><span class="op">$</span><span class="va">outliers_flagged</span> <span class="op">==</span> <span class="fl">1</span><span class="op">)</span></span>
+<span>  </span>
+<span>  <span class="va">roams_kalman_oos</span> <span class="op">=</span> <span class="fu"><a href="../reference/oos_filter.html">oos_filter</a></span><span class="op">(</span></span>
+<span>    y_oos <span class="op">=</span> <span class="va">y_oos</span>, </span>
+<span>    model <span class="op">=</span> <span class="va">roams_model</span>, </span>
+<span>    build <span class="op">=</span> <span class="va">build_oos_fn</span>,</span>
+<span>    multiplier <span class="op">=</span> <span class="fl">1</span>, threshold <span class="op">=</span> <span class="cn">Inf</span><span class="op">)</span></span>
+<span>  </span>
+<span>  <span class="va">huber_oos</span> <span class="op">=</span> <span class="fu"><a href="../reference/oos_filter.html">oos_filter</a></span><span class="op">(</span></span>
+<span>    y_oos <span class="op">=</span> <span class="va">y_oos</span>, </span>
+<span>    model <span class="op">=</span> <span class="va">huber_model</span>, </span>
+<span>    build <span class="op">=</span> <span class="va">build_oos_fn_huber_trimmed</span><span class="op">)</span></span>
+<span>  </span>
+<span>  <span class="va">trimmed_oos</span> <span class="op">=</span> <span class="fu"><a href="../reference/oos_filter.html">oos_filter</a></span><span class="op">(</span></span>
+<span>    y_oos <span class="op">=</span> <span class="va">y_oos</span>, </span>
+<span>    model <span class="op">=</span> <span class="va">trimmed_model</span>, </span>
+<span>    build <span class="op">=</span> <span class="va">build_oos_fn_huber_trimmed</span><span class="op">)</span></span>
 <span>  </span>
 <span>  <span class="va">results</span> <span class="op">=</span> <span class="va">results</span> <span class="op">|&gt;</span> </span>
 <span>    <span class="fu"><a href="https://tibble.tidyverse.org/reference/add_row.html" class="external-link">add_row</a></span><span class="op">(</span></span>
@@ -714,10 +804,19 @@ for the state error variance matrix
 <span>      data_set <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">data_sets</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">)</span>,</span>
 <span>      y_train <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">y_train</span><span class="op">)</span>,</span>
 <span>      y_oos <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">y_oos</span><span class="op">)</span>,</span>
-<span>      classical <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">model_classical</span><span class="op">)</span>,</span>
-<span>      roams <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">model_roams_best</span><span class="op">)</span>,</span>
+<span>      </span>
+<span>      classical_model <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">classical_model</span><span class="op">)</span>,</span>
+<span>      roams_model <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">roams_model</span><span class="op">)</span>,</span>
+<span>      huber_model <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">huber_model</span><span class="op">)</span>,</span>
+<span>      trimmed_model <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">trimmed_model</span><span class="op">)</span>,</span>
+<span>      </span>
 <span>      classical_oos <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">classical_oos</span><span class="op">)</span>,</span>
-<span>      roams_oos <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">roams_oos</span><span class="op">)</span></span>
+<span>      roams_fut_oos <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">roams_fut_oos</span><span class="op">)</span>,</span>
+<span>      roams_kalman_oos <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">roams_kalman_oos</span><span class="op">)</span>,</span>
+<span>      huber_oos <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">huber_oos</span><span class="op">)</span>,</span>
+<span>      trimmed_oos <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">trimmed_oos</span><span class="op">)</span>,</span>
+<span>      </span>
+<span>      oos_outliers_flagged <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">oos_outliers_flagged</span><span class="op">)</span></span>
 <span>    <span class="op">)</span></span>
 <span>  </span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"Data set"</span>, <span class="va">i</span>, <span class="st">"complete\n"</span><span class="op">)</span></span>
@@ -734,7 +833,204 @@ for the state error variance matrix
 <div class="section level2">
 <h2 id="results">Results<a class="anchor" aria-label="anchor" href="#results"></a>
 </h2>
+<p>Evaluation metrics</p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">results</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">name</span>, <span class="va">y_oos</span>, <span class="va">oos_outliers_flagged</span>, </span>
+<span>         <span class="va">classical_oos</span><span class="op">:</span><span class="va">trimmed_oos</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/rename.html" class="external-link">rename</a></span><span class="op">(</span>y_test <span class="op">=</span> <span class="va">y_oos</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://tidyr.tidyverse.org/reference/pivot_longer.html" class="external-link">pivot_longer</a></span><span class="op">(</span>cols <span class="op">=</span> <span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html" class="external-link">ends_with</a></span><span class="op">(</span><span class="st">"_oos"</span><span class="op">)</span>, </span>
+<span>               names_to <span class="op">=</span> <span class="st">"method"</span>, values_to <span class="op">=</span> <span class="st">"oos_output"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
+<span>    MSFE <span class="op">=</span> <span class="fu"><a href="https://purrr.tidyverse.org/reference/map2.html" class="external-link">map2_dbl</a></span><span class="op">(</span></span>
+<span>      <span class="va">oos_output</span>, <span class="va">y_test</span>,</span>
+<span>      <span class="kw">function</span><span class="op">(</span><span class="va">oos_output</span>, <span class="va">y_test</span><span class="op">)</span> <span class="op">{</span></span>
+<span>        <span class="va">SFEs</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowSums</a></span><span class="op">(</span><span class="op">(</span><span class="va">y_test</span> <span class="op">-</span> <span class="va">oos_output</span><span class="op">$</span><span class="va">predicted_observations</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span></span>
+<span>        <span class="va">MSFE</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">SFEs</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span>        <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="va">MSFE</span><span class="op">)</span></span>
+<span>      <span class="op">}</span></span>
+<span>    <span class="op">)</span>,</span>
+<span>    MSFE_clean <span class="op">=</span> <span class="fu"><a href="https://purrr.tidyverse.org/reference/pmap.html" class="external-link">pmap_dbl</a></span><span class="op">(</span></span>
+<span>      <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">oos_output</span>, <span class="va">oos_outliers_flagged</span>, <span class="va">y_test</span><span class="op">)</span>,</span>
+<span>      <span class="kw">function</span><span class="op">(</span><span class="va">oos_output</span>, <span class="va">oos_outliers_flagged</span>, <span class="va">y_test</span><span class="op">)</span> <span class="op">{</span></span>
+<span>        <span class="va">SFEs</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowSums</a></span><span class="op">(</span><span class="op">(</span><span class="va">y_test</span> <span class="op">-</span> <span class="va">oos_output</span><span class="op">$</span><span class="va">predicted_observations</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span></span>
+<span>        <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">oos_outliers_flagged</span><span class="op">)</span> <span class="op">==</span> <span class="fl">0</span><span class="op">)</span> <span class="op">{</span></span>
+<span>          <span class="va">MSFE</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">SFEs</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span>        <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span></span>
+<span>          <span class="va">MSFE</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">SFEs</span><span class="op">[</span><span class="op">-</span><span class="va">oos_outliers_flagged</span><span class="op">]</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span>        <span class="op">}</span></span>
+<span>        <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="va">MSFE</span><span class="op">)</span></span>
+<span>      <span class="op">}</span></span>
+<span>    <span class="op">)</span>,</span>
+<span>  <span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">name</span>, <span class="va">method</span>, <span class="va">MSFE</span>, <span class="va">MSFE_clean</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">name</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
+<span>    MSFE <span class="op">=</span> <span class="va">MSFE</span> <span class="op">/</span> <span class="va">MSFE</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="va">method</span> <span class="op">==</span> <span class="st">"classical_oos"</span><span class="op">)</span><span class="op">]</span>,</span>
+<span>    MSFE_clean <span class="op">=</span> <span class="va">MSFE_clean</span> <span class="op">/</span> <span class="va">MSFE_clean</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="va">method</span> <span class="op">==</span> <span class="st">"classical_oos"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
+<span>  <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span>digits <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></code></pre></div>
+<table class="table">
+<thead><tr class="header">
+<th align="left">name</th>
+<th align="left">method</th>
+<th align="right">MSFE</th>
+<th align="right">MSFE_clean</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">cat_mia</td>
+<td align="left">classical_oos</td>
+<td align="right">1.000</td>
+<td align="right">1.000</td>
+</tr>
+<tr class="even">
+<td align="left">cat_mia</td>
+<td align="left">roams_fut_oos</td>
+<td align="right">1.697</td>
+<td align="right">1.686</td>
+</tr>
+<tr class="odd">
+<td align="left">cat_mia</td>
+<td align="left">roams_kalman_oos</td>
+<td align="right">1.044</td>
+<td align="right">1.038</td>
+</tr>
+<tr class="even">
+<td align="left">cat_mia</td>
+<td align="left">huber_oos</td>
+<td align="right">1.003</td>
+<td align="right">1.138</td>
+</tr>
+<tr class="odd">
+<td align="left">cat_mia</td>
+<td align="left">trimmed_oos</td>
+<td align="right">1.024</td>
+<td align="right">1.158</td>
+</tr>
+<tr class="even">
+<td align="left">cow_11</td>
+<td align="left">classical_oos</td>
+<td align="right">1.000</td>
+<td align="right">1.000</td>
+</tr>
+<tr class="odd">
+<td align="left">cow_11</td>
+<td align="left">roams_fut_oos</td>
+<td align="right">1.133</td>
+<td align="right">1.133</td>
+</tr>
+<tr class="even">
+<td align="left">cow_11</td>
+<td align="left">roams_kalman_oos</td>
+<td align="right">1.133</td>
+<td align="right">1.133</td>
+</tr>
+<tr class="odd">
+<td align="left">cow_11</td>
+<td align="left">huber_oos</td>
+<td align="right">0.938</td>
+<td align="right">0.938</td>
+</tr>
+<tr class="even">
+<td align="left">cow_11</td>
+<td align="left">trimmed_oos</td>
+<td align="right">0.914</td>
+<td align="right">0.914</td>
+</tr>
+<tr class="odd">
+<td align="left">polar_low_freq</td>
+<td align="left">classical_oos</td>
+<td align="right">1.000</td>
+<td align="right">1.000</td>
+</tr>
+<tr class="even">
+<td align="left">polar_low_freq</td>
+<td align="left">roams_fut_oos</td>
+<td align="right">0.455</td>
+<td align="right">0.005</td>
+</tr>
+<tr class="odd">
+<td align="left">polar_low_freq</td>
+<td align="left">roams_kalman_oos</td>
+<td align="right">1.246</td>
+<td align="right">1.442</td>
+</tr>
+<tr class="even">
+<td align="left">polar_low_freq</td>
+<td align="left">huber_oos</td>
+<td align="right">0.462</td>
+<td align="right">0.018</td>
+</tr>
+<tr class="odd">
+<td align="left">polar_low_freq</td>
+<td align="left">trimmed_oos</td>
+<td align="right">0.466</td>
+<td align="right">0.025</td>
+</tr>
+<tr class="even">
+<td align="left">seal</td>
+<td align="left">classical_oos</td>
+<td align="right">1.000</td>
+<td align="right">1.000</td>
+</tr>
+<tr class="odd">
+<td align="left">seal</td>
+<td align="left">roams_fut_oos</td>
+<td align="right">0.702</td>
+<td align="right">0.017</td>
+</tr>
+<tr class="even">
+<td align="left">seal</td>
+<td align="left">roams_kalman_oos</td>
+<td align="right">1.562</td>
+<td align="right">2.612</td>
+</tr>
+<tr class="odd">
+<td align="left">seal</td>
+<td align="left">huber_oos</td>
+<td align="right">1.032</td>
+<td align="right">1.009</td>
+</tr>
+<tr class="even">
+<td align="left">seal</td>
+<td align="left">trimmed_oos</td>
+<td align="right">1.289</td>
+<td align="right">1.762</td>
+</tr>
+<tr class="odd">
+<td align="left">whale_2008</td>
+<td align="left">classical_oos</td>
+<td align="right">1.000</td>
+<td align="right">1.000</td>
+</tr>
+<tr class="even">
+<td align="left">whale_2008</td>
+<td align="left">roams_fut_oos</td>
+<td align="right">0.673</td>
+<td align="right">0.411</td>
+</tr>
+<tr class="odd">
+<td align="left">whale_2008</td>
+<td align="left">roams_kalman_oos</td>
+<td align="right">0.941</td>
+<td align="right">0.852</td>
+</tr>
+<tr class="even">
+<td align="left">whale_2008</td>
+<td align="left">huber_oos</td>
+<td align="right">0.686</td>
+<td align="right">0.404</td>
+</tr>
+<tr class="odd">
+<td align="left">whale_2008</td>
+<td align="left">trimmed_oos</td>
+<td align="right">0.680</td>
+<td align="right">0.402</td>
+</tr>
+</tbody>
+</table>
+<p>Other results</p>
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">results</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
 <span>    n <span class="op">=</span> <span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map_dbl</a></span><span class="op">(</span><span class="va">y_train</span>, <span class="op">~</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">.</span><span class="op">)</span><span class="op">)</span>,</span>
@@ -742,98 +1038,97 @@ for the state error variance matrix
 <span>    n_oos <span class="op">=</span> <span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map_dbl</a></span><span class="op">(</span><span class="va">y_oos</span>, <span class="op">~</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">.</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>    n_oos_complete <span class="op">=</span> <span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map_dbl</a></span><span class="op">(</span><span class="va">y_oos</span>, <span class="op">~</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">.</span><span class="op">[</span>,<span class="fl">1</span><span class="op">]</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>    </span>
-<span>    in_sample_detected <span class="op">=</span> <span class="fu"><a href="https://purrr.tidyverse.org/reference/map2.html" class="external-link">map2_dbl</a></span><span class="op">(</span><span class="va">roams</span>, <span class="va">n_complete</span>,</span>
+<span>    lambda <span class="op">=</span> <span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map_dbl</a></span><span class="op">(</span><span class="va">roams_model</span>, <span class="op">~</span> <span class="va">.</span><span class="op">$</span><span class="va">lambda</span><span class="op">)</span>,</span>
+<span>    in_sample_detected <span class="op">=</span> <span class="fu"><a href="https://purrr.tidyverse.org/reference/map2.html" class="external-link">map2_dbl</a></span><span class="op">(</span><span class="va">roams_model</span>, <span class="va">n_complete</span>,</span>
 <span>                                  <span class="op">~</span> <span class="va">.x</span><span class="op">$</span><span class="va">prop_outlying</span> <span class="op">*</span> <span class="va">.y</span><span class="op">)</span>,</span>
-<span>    oos_detected <span class="op">=</span> <span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map_dbl</a></span><span class="op">(</span><span class="va">roams_oos</span>,</span>
+<span>    oos_detected <span class="op">=</span> <span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map_dbl</a></span><span class="op">(</span><span class="va">roams_fut_oos</span>,</span>
 <span>                           <span class="op">~</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">.</span><span class="op">$</span><span class="va">outliers_flagged</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>    </span>
-<span>    roams_phi <span class="op">=</span> <span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map_dbl</a></span><span class="op">(</span><span class="va">roams</span>, <span class="op">~</span> <span class="va">.</span><span class="op">$</span><span class="va">par</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span>,</span>
-<span>    classical_phi <span class="op">=</span> <span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map_dbl</a></span><span class="op">(</span><span class="va">classical</span>, <span class="op">~</span> <span class="va">.</span><span class="op">$</span><span class="va">par</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span>,</span>
-<span>    <span class="co">#roams_obs_var = map_dbl(roams, ~ sum(.$par[4:5])),</span></span>
-<span>    <span class="co">#roams_state_var = map_dbl(roams, ~ sum(.$par[2:3])),</span></span>
+<span>    roams_phi <span class="op">=</span> <span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map_dbl</a></span><span class="op">(</span><span class="va">roams_model</span>, <span class="op">~</span> <span class="va">.</span><span class="op">$</span><span class="va">par</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span>,</span>
+<span>    classical_phi <span class="op">=</span> <span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map_dbl</a></span><span class="op">(</span><span class="va">classical_model</span>, <span class="op">~</span> <span class="va">.</span><span class="op">$</span><span class="va">par</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span>,</span>
 <span>    </span>
-<span>    roams_MSFE <span class="op">=</span> <span class="fu"><a href="https://purrr.tidyverse.org/reference/map2.html" class="external-link">map2_dbl</a></span><span class="op">(</span></span>
-<span>      <span class="va">roams_oos</span>, <span class="va">y_oos</span>,</span>
-<span>      <span class="kw">function</span><span class="op">(</span><span class="va">roams_oos</span>, <span class="va">y_oos</span><span class="op">)</span> <span class="op">{</span></span>
-<span>        <span class="va">SFEs</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowSums</a></span><span class="op">(</span><span class="op">(</span><span class="va">y_oos</span> <span class="op">-</span> <span class="va">roams_oos</span><span class="op">$</span><span class="va">predicted_observations</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span></span>
-<span>        <span class="va">MSFE</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">SFEs</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span>        <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="va">MSFE</span><span class="op">)</span></span>
-<span>      <span class="op">}</span></span>
-<span>    <span class="op">)</span>,</span>
-<span>    classical_MSFE <span class="op">=</span> <span class="fu"><a href="https://purrr.tidyverse.org/reference/map2.html" class="external-link">map2_dbl</a></span><span class="op">(</span></span>
-<span>      <span class="va">classical_oos</span>, <span class="va">y_oos</span>,</span>
-<span>      <span class="kw">function</span><span class="op">(</span><span class="va">classical_oos</span>, <span class="va">y_oos</span><span class="op">)</span> <span class="op">{</span></span>
-<span>        <span class="va">SFEs</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowSums</a></span><span class="op">(</span><span class="op">(</span><span class="va">y_oos</span> <span class="op">-</span> <span class="va">classical_oos</span><span class="op">$</span><span class="va">predicted_observations</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span></span>
-<span>        <span class="va">MSFE</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">SFEs</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span>        <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="va">MSFE</span><span class="op">)</span></span>
-<span>      <span class="op">}</span></span>
-<span>    <span class="op">)</span>,</span>
-<span>    roams_trimmed_MSFE_5perc <span class="op">=</span> <span class="fu"><a href="https://purrr.tidyverse.org/reference/map2.html" class="external-link">map2_dbl</a></span><span class="op">(</span></span>
-<span>      <span class="va">roams_oos</span>, <span class="va">y_oos</span>,</span>
-<span>      <span class="kw">function</span><span class="op">(</span><span class="va">roams_oos</span>, <span class="va">y_oos</span><span class="op">)</span> <span class="op">{</span></span>
-<span>        <span class="va">SFEs</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowSums</a></span><span class="op">(</span><span class="op">(</span><span class="va">y_oos</span> <span class="op">-</span> <span class="va">roams_oos</span><span class="op">$</span><span class="va">predicted_observations</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span></span>
-<span>        <span class="va">num_trim</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="fl">0.05</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">SFEs</span><span class="op">)</span><span class="op">)</span></span>
-<span>        <span class="va">ascending_SFEs</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sort.html" class="external-link">sort</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/na.fail.html" class="external-link">na.omit</a></span><span class="op">(</span><span class="va">SFEs</span><span class="op">)</span><span class="op">)</span></span>
-<span>        <span class="va">n_complete</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">ascending_SFEs</span><span class="op">)</span></span>
-<span>        <span class="va">trimmed_SFEs</span> <span class="op">=</span> <span class="va">ascending_SFEs</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="op">(</span><span class="va">n_complete</span> <span class="op">-</span> <span class="va">num_trim</span><span class="op">)</span><span class="op">]</span></span>
-<span>        <span class="va">trimmed_MSFE</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">trimmed_SFEs</span><span class="op">)</span></span>
-<span>        <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="va">trimmed_MSFE</span><span class="op">)</span></span>
-<span>      <span class="op">}</span></span>
-<span>    <span class="op">)</span>,</span>
-<span>    classical_trimmed_MSFE_5perc <span class="op">=</span> <span class="fu"><a href="https://purrr.tidyverse.org/reference/map2.html" class="external-link">map2_dbl</a></span><span class="op">(</span></span>
-<span>      <span class="va">classical_oos</span>, <span class="va">y_oos</span>,</span>
-<span>      <span class="kw">function</span><span class="op">(</span><span class="va">classical_oos</span>, <span class="va">y_oos</span><span class="op">)</span> <span class="op">{</span></span>
-<span>        <span class="va">SFEs</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowSums</a></span><span class="op">(</span><span class="op">(</span><span class="va">y_oos</span> <span class="op">-</span> <span class="va">classical_oos</span><span class="op">$</span><span class="va">predicted_observations</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span></span>
-<span>        <span class="va">num_trim</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="fl">0.05</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">SFEs</span><span class="op">)</span><span class="op">)</span></span>
-<span>        <span class="va">ascending_SFEs</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sort.html" class="external-link">sort</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/na.fail.html" class="external-link">na.omit</a></span><span class="op">(</span><span class="va">SFEs</span><span class="op">)</span><span class="op">)</span></span>
-<span>        <span class="va">n_complete</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">ascending_SFEs</span><span class="op">)</span></span>
-<span>        <span class="va">trimmed_SFEs</span> <span class="op">=</span> <span class="va">ascending_SFEs</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="op">(</span><span class="va">n_complete</span> <span class="op">-</span> <span class="va">num_trim</span><span class="op">)</span><span class="op">]</span></span>
-<span>        <span class="va">trimmed_MSFE</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">trimmed_SFEs</span><span class="op">)</span></span>
-<span>        <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="va">trimmed_MSFE</span><span class="op">)</span></span>
-<span>      <span class="op">}</span></span>
-<span>    <span class="op">)</span>,</span>
-<span>    roams_trimmed_MSFE_10perc <span class="op">=</span> <span class="fu"><a href="https://purrr.tidyverse.org/reference/map2.html" class="external-link">map2_dbl</a></span><span class="op">(</span></span>
-<span>      <span class="va">roams_oos</span>, <span class="va">y_oos</span>,</span>
-<span>      <span class="kw">function</span><span class="op">(</span><span class="va">roams_oos</span>, <span class="va">y_oos</span><span class="op">)</span> <span class="op">{</span></span>
-<span>        <span class="va">SFEs</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowSums</a></span><span class="op">(</span><span class="op">(</span><span class="va">y_oos</span> <span class="op">-</span> <span class="va">roams_oos</span><span class="op">$</span><span class="va">predicted_observations</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span></span>
-<span>        <span class="va">num_trim</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="fl">0.1</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">SFEs</span><span class="op">)</span><span class="op">)</span></span>
-<span>        <span class="va">ascending_SFEs</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sort.html" class="external-link">sort</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/na.fail.html" class="external-link">na.omit</a></span><span class="op">(</span><span class="va">SFEs</span><span class="op">)</span><span class="op">)</span></span>
-<span>        <span class="va">n_complete</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">ascending_SFEs</span><span class="op">)</span></span>
-<span>        <span class="va">trimmed_SFEs</span> <span class="op">=</span> <span class="va">ascending_SFEs</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="op">(</span><span class="va">n_complete</span> <span class="op">-</span> <span class="va">num_trim</span><span class="op">)</span><span class="op">]</span></span>
-<span>        <span class="va">trimmed_MSFE</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">trimmed_SFEs</span><span class="op">)</span></span>
-<span>        <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="va">trimmed_MSFE</span><span class="op">)</span></span>
-<span>      <span class="op">}</span></span>
-<span>    <span class="op">)</span>,</span>
-<span>    classical_trimmed_MSFE_10perc <span class="op">=</span> <span class="fu"><a href="https://purrr.tidyverse.org/reference/map2.html" class="external-link">map2_dbl</a></span><span class="op">(</span></span>
-<span>      <span class="va">classical_oos</span>, <span class="va">y_oos</span>,</span>
-<span>      <span class="kw">function</span><span class="op">(</span><span class="va">classical_oos</span>, <span class="va">y_oos</span><span class="op">)</span> <span class="op">{</span></span>
-<span>        <span class="va">SFEs</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowSums</a></span><span class="op">(</span><span class="op">(</span><span class="va">y_oos</span> <span class="op">-</span> <span class="va">classical_oos</span><span class="op">$</span><span class="va">predicted_observations</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span></span>
-<span>        <span class="va">num_trim</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="fl">0.1</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">SFEs</span><span class="op">)</span><span class="op">)</span></span>
-<span>        <span class="va">ascending_SFEs</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sort.html" class="external-link">sort</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/na.fail.html" class="external-link">na.omit</a></span><span class="op">(</span><span class="va">SFEs</span><span class="op">)</span><span class="op">)</span></span>
-<span>        <span class="va">n_complete</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">ascending_SFEs</span><span class="op">)</span></span>
-<span>        <span class="va">trimmed_SFEs</span> <span class="op">=</span> <span class="va">ascending_SFEs</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="op">(</span><span class="va">n_complete</span> <span class="op">-</span> <span class="va">num_trim</span><span class="op">)</span><span class="op">]</span></span>
-<span>        <span class="va">trimmed_MSFE</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">trimmed_SFEs</span><span class="op">)</span></span>
-<span>        <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="va">trimmed_MSFE</span><span class="op">)</span></span>
-<span>      <span class="op">}</span></span>
-<span>    <span class="op">)</span>,</span>
-<span>    roams_MSFE_clean <span class="op">=</span> <span class="fu"><a href="https://purrr.tidyverse.org/reference/map2.html" class="external-link">map2_dbl</a></span><span class="op">(</span></span>
-<span>      <span class="va">roams_oos</span>, <span class="va">y_oos</span>,</span>
-<span>      <span class="kw">function</span><span class="op">(</span><span class="va">roams_oos</span>, <span class="va">y_oos</span><span class="op">)</span> <span class="op">{</span></span>
-<span>        <span class="va">clean_timepoints</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="va">roams_oos</span><span class="op">$</span><span class="va">outliers_flagged</span> <span class="op">==</span> <span class="fl">0</span><span class="op">)</span></span>
-<span>        <span class="va">SFEs</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowSums</a></span><span class="op">(</span><span class="op">(</span><span class="va">y_oos</span> <span class="op">-</span> <span class="va">roams_oos</span><span class="op">$</span><span class="va">predicted_observations</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span></span>
-<span>        <span class="va">MSFE_clean</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">SFEs</span><span class="op">[</span><span class="va">clean_timepoints</span><span class="op">]</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span>        <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="va">MSFE_clean</span><span class="op">)</span></span>
-<span>      <span class="op">}</span></span>
-<span>    <span class="op">)</span>,</span>
-<span>    classical_MSFE_clean <span class="op">=</span> <span class="fu"><a href="https://purrr.tidyverse.org/reference/pmap.html" class="external-link">pmap_dbl</a></span><span class="op">(</span></span>
-<span>      <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">classical_oos</span>, <span class="va">roams_oos</span>, <span class="va">y_oos</span><span class="op">)</span>,</span>
-<span>      <span class="kw">function</span><span class="op">(</span><span class="va">classical_oos</span>, <span class="va">roams_oos</span>, <span class="va">y_oos</span><span class="op">)</span> <span class="op">{</span></span>
-<span>        <span class="va">clean_timepoints</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="va">roams_oos</span><span class="op">$</span><span class="va">outliers_flagged</span> <span class="op">==</span> <span class="fl">0</span><span class="op">)</span></span>
-<span>        <span class="va">SFEs</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowSums</a></span><span class="op">(</span><span class="op">(</span><span class="va">y_oos</span> <span class="op">-</span> <span class="va">classical_oos</span><span class="op">$</span><span class="va">predicted_observations</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span></span>
-<span>        <span class="va">MSFE_clean</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">SFEs</span><span class="op">[</span><span class="va">clean_timepoints</span><span class="op">]</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span>        <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="va">MSFE_clean</span><span class="op">)</span></span>
-<span>      <span class="op">}</span></span>
-<span>    <span class="op">)</span></span>
+<span>    <span class="co"># roams_MSFE = map2_dbl(</span></span>
+<span>    <span class="co">#   roams_oos, y_oos,</span></span>
+<span>    <span class="co">#   function(roams_oos, y_oos) {</span></span>
+<span>    <span class="co">#     SFEs = rowSums((y_oos - roams_oos$predicted_observations)^2)</span></span>
+<span>    <span class="co">#     MSFE = mean(SFEs, na.rm = TRUE)</span></span>
+<span>    <span class="co">#     return(MSFE)</span></span>
+<span>    <span class="co">#   }</span></span>
+<span>    <span class="co"># ),</span></span>
+<span>    <span class="co"># classical_MSFE = map2_dbl(</span></span>
+<span>    <span class="co">#   classical_oos, y_oos,</span></span>
+<span>    <span class="co">#   function(classical_oos, y_oos) {</span></span>
+<span>    <span class="co">#     SFEs = rowSums((y_oos - classical_oos$predicted_observations)^2)</span></span>
+<span>    <span class="co">#     MSFE = mean(SFEs, na.rm = TRUE)</span></span>
+<span>    <span class="co">#     return(MSFE)</span></span>
+<span>    <span class="co">#   }</span></span>
+<span>    <span class="co"># ),</span></span>
+<span>    <span class="co"># roams_trimmed_MSFE_5perc = map2_dbl(</span></span>
+<span>    <span class="co">#   roams_oos, y_oos,</span></span>
+<span>    <span class="co">#   function(roams_oos, y_oos) {</span></span>
+<span>    <span class="co">#     SFEs = rowSums((y_oos - roams_oos$predicted_observations)^2)</span></span>
+<span>    <span class="co">#     num_trim = round(0.05 * length(SFEs))</span></span>
+<span>    <span class="co">#     ascending_SFEs = sort(na.omit(SFEs))</span></span>
+<span>    <span class="co">#     n_complete = length(ascending_SFEs)</span></span>
+<span>    <span class="co">#     trimmed_SFEs = ascending_SFEs[1:(n_complete - num_trim)]</span></span>
+<span>    <span class="co">#     trimmed_MSFE = mean(trimmed_SFEs)</span></span>
+<span>    <span class="co">#     return(trimmed_MSFE)</span></span>
+<span>    <span class="co">#   }</span></span>
+<span>    <span class="co"># ),</span></span>
+<span>    <span class="co"># classical_trimmed_MSFE_5perc = map2_dbl(</span></span>
+<span>    <span class="co">#   classical_oos, y_oos,</span></span>
+<span>    <span class="co">#   function(classical_oos, y_oos) {</span></span>
+<span>    <span class="co">#     SFEs = rowSums((y_oos - classical_oos$predicted_observations)^2)</span></span>
+<span>    <span class="co">#     num_trim = round(0.05 * length(SFEs))</span></span>
+<span>    <span class="co">#     ascending_SFEs = sort(na.omit(SFEs))</span></span>
+<span>    <span class="co">#     n_complete = length(ascending_SFEs)</span></span>
+<span>    <span class="co">#     trimmed_SFEs = ascending_SFEs[1:(n_complete - num_trim)]</span></span>
+<span>    <span class="co">#     trimmed_MSFE = mean(trimmed_SFEs)</span></span>
+<span>    <span class="co">#     return(trimmed_MSFE)</span></span>
+<span>    <span class="co">#   }</span></span>
+<span>    <span class="co"># ),</span></span>
+<span>    <span class="co"># roams_trimmed_MSFE_10perc = map2_dbl(</span></span>
+<span>    <span class="co">#   roams_oos, y_oos,</span></span>
+<span>    <span class="co">#   function(roams_oos, y_oos) {</span></span>
+<span>    <span class="co">#     SFEs = rowSums((y_oos - roams_oos$predicted_observations)^2)</span></span>
+<span>    <span class="co">#     num_trim = round(0.1 * length(SFEs))</span></span>
+<span>    <span class="co">#     ascending_SFEs = sort(na.omit(SFEs))</span></span>
+<span>    <span class="co">#     n_complete = length(ascending_SFEs)</span></span>
+<span>    <span class="co">#     trimmed_SFEs = ascending_SFEs[1:(n_complete - num_trim)]</span></span>
+<span>    <span class="co">#     trimmed_MSFE = mean(trimmed_SFEs)</span></span>
+<span>    <span class="co">#     return(trimmed_MSFE)</span></span>
+<span>    <span class="co">#   }</span></span>
+<span>    <span class="co"># ),</span></span>
+<span>    <span class="co"># classical_trimmed_MSFE_10perc = map2_dbl(</span></span>
+<span>    <span class="co">#   classical_oos, y_oos,</span></span>
+<span>    <span class="co">#   function(classical_oos, y_oos) {</span></span>
+<span>    <span class="co">#     SFEs = rowSums((y_oos - classical_oos$predicted_observations)^2)</span></span>
+<span>    <span class="co">#     num_trim = round(0.1 * length(SFEs))</span></span>
+<span>    <span class="co">#     ascending_SFEs = sort(na.omit(SFEs))</span></span>
+<span>    <span class="co">#     n_complete = length(ascending_SFEs)</span></span>
+<span>    <span class="co">#     trimmed_SFEs = ascending_SFEs[1:(n_complete - num_trim)]</span></span>
+<span>    <span class="co">#     trimmed_MSFE = mean(trimmed_SFEs)</span></span>
+<span>    <span class="co">#     return(trimmed_MSFE)</span></span>
+<span>    <span class="co">#   }</span></span>
+<span>    <span class="co"># ),</span></span>
+<span>    <span class="co"># roams_MSFE_clean = map2_dbl(</span></span>
+<span>    <span class="co">#   roams_oos, y_oos,</span></span>
+<span>    <span class="co">#   function(roams_oos, y_oos) {</span></span>
+<span>    <span class="co">#     clean_timepoints = which(roams_oos$outliers_flagged == 0)</span></span>
+<span>    <span class="co">#     SFEs = rowSums((y_oos - roams_oos$predicted_observations)^2)</span></span>
+<span>    <span class="co">#     MSFE_clean = mean(SFEs[clean_timepoints], na.rm = TRUE)</span></span>
+<span>    <span class="co">#     return(MSFE_clean)</span></span>
+<span>    <span class="co">#   }</span></span>
+<span>    <span class="co"># ),</span></span>
+<span>    <span class="co"># classical_MSFE_clean = pmap_dbl(</span></span>
+<span>    <span class="co">#   list(classical_oos, roams_oos, y_oos),</span></span>
+<span>    <span class="co">#   function(classical_oos, roams_oos, y_oos) {</span></span>
+<span>    <span class="co">#     clean_timepoints = which(roams_oos$outliers_flagged == 0)</span></span>
+<span>    <span class="co">#     SFEs = rowSums((y_oos - classical_oos$predicted_observations)^2)</span></span>
+<span>    <span class="co">#     MSFE_clean = mean(SFEs[clean_timepoints], na.rm = TRUE)</span></span>
+<span>    <span class="co">#     return(MSFE_clean)</span></span>
+<span>    <span class="co">#   }</span></span>
+<span>    <span class="co"># )</span></span>
 <span>    </span>
 <span>    </span>
 <span>    <span class="co"># roams_MedSFE = map2_dbl(</span></span>
@@ -848,30 +1143,22 @@ for the state error variance matrix
 <span>    <span class="co"># )</span></span>
 <span>    </span>
 <span>    <span class="op">)</span>  <span class="op">|&gt;</span> </span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">name</span>, <span class="va">frequency</span>, <span class="va">n</span>, <span class="va">n_complete</span>, <span class="va">n_oos</span>, <span class="va">n_oos_complete</span>,</span>
-<span>         <span class="va">in_sample_detected</span>, <span class="va">oos_detected</span>, <span class="va">roams_phi</span>, <span class="va">classical_phi</span>,</span>
-<span>         <span class="va">roams_MSFE</span><span class="op">:</span><span class="va">classical_MSFE_clean</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
-<span>  <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<table style="width:100%;" class="table">
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">name</span>, <span class="va">frequency</span>, <span class="va">n</span>, <span class="va">n_complete</span>, <span class="va">n_oos</span>, <span class="va">n_oos_complete</span>, <span class="va">lambda</span>,</span>
+<span>         <span class="va">in_sample_detected</span>, <span class="va">oos_detected</span>, <span class="va">roams_phi</span>, <span class="va">classical_phi</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span>digits <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></code></pre></div>
+<table class="table">
 <colgroup>
+<col width="10%">
+<col width="17%">
+<col width="2%">
+<col width="7%">
 <col width="4%">
-<col width="8%">
-<col width="1%">
-<col width="3%">
-<col width="1%">
-<col width="4%">
-<col width="6%">
-<col width="4%">
-<col width="3%">
-<col width="4%">
-<col width="3%">
-<col width="4%">
-<col width="8%">
-<col width="9%">
-<col width="8%">
-<col width="9%">
+<col width="10%">
 <col width="5%">
-<col width="6%">
+<col width="13%">
+<col width="9%">
+<col width="7%">
+<col width="10%">
 </colgroup>
 <thead><tr class="header">
 <th align="left">name</th>
@@ -880,79 +1167,25 @@ for the state error variance matrix
 <th align="right">n_complete</th>
 <th align="right">n_oos</th>
 <th align="right">n_oos_complete</th>
+<th align="right">lambda</th>
 <th align="right">in_sample_detected</th>
 <th align="right">oos_detected</th>
 <th align="right">roams_phi</th>
 <th align="right">classical_phi</th>
-<th align="right">roams_MSFE</th>
-<th align="right">classical_MSFE</th>
-<th align="right">roams_trimmed_MSFE_5perc</th>
-<th align="right">classical_trimmed_MSFE_5perc</th>
-<th align="right">roams_trimmed_MSFE_10perc</th>
-<th align="right">classical_trimmed_MSFE_10perc</th>
-<th align="right">roams_MSFE_clean</th>
-<th align="right">classical_MSFE_clean</th>
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td align="left">cat_max</td>
-<td align="left">20 minutes</td>
-<td align="right">834</td>
-<td align="right">612</td>
-<td align="right">93</td>
-<td align="right">63</td>
-<td align="right">0</td>
-<td align="right">4</td>
-<td align="right">0.5928195</td>
-<td align="right">0.5928195</td>
-<td align="right">0.0000156</td>
-<td align="right">0.0000089</td>
-<td align="right">0.0000029</td>
-<td align="right">0.0000013</td>
-<td align="right">0.0000012</td>
-<td align="right">0.0000009</td>
-<td align="right">0.0000131</td>
-<td align="right">0.0000089</td>
-</tr>
-<tr class="even">
 <td align="left">cat_mia</td>
 <td align="left">20 minutes</td>
 <td align="right">308</td>
 <td align="right">224</td>
 <td align="right">34</td>
 <td align="right">25</td>
+<td align="right">3.906</td>
 <td align="right">1</td>
 <td align="right">3</td>
-<td align="right">0.4381594</td>
-<td align="right">0.3527760</td>
-<td align="right">0.0000141</td>
-<td align="right">0.0000083</td>
-<td align="right">0.0000097</td>
-<td align="right">0.0000041</td>
-<td align="right">0.0000074</td>
-<td align="right">0.0000027</td>
-<td align="right">0.0000099</td>
-<td align="right">0.0000059</td>
-</tr>
-<tr class="odd">
-<td align="left">cow_10</td>
-<td align="left">2 minutes and 23 seconds</td>
-<td align="right">543</td>
-<td align="right">489</td>
-<td align="right">60</td>
-<td align="right">58</td>
-<td align="right">3</td>
-<td align="right">1</td>
-<td align="right">0.5527693</td>
-<td align="right">0.3610057</td>
-<td align="right">0.0000000</td>
-<td align="right">0.0000000</td>
-<td align="right">0.0000000</td>
-<td align="right">0.0000000</td>
-<td align="right">0.0000000</td>
-<td align="right">0.0000000</td>
-<td align="right">0.0000000</td>
-<td align="right">0.0000000</td>
+<td align="right">0.438</td>
+<td align="right">0.353</td>
 </tr>
 <tr class="even">
 <td align="left">cow_11</td>
@@ -961,105 +1194,57 @@ for the state error variance matrix
 <td align="right">500</td>
 <td align="right">60</td>
 <td align="right">60</td>
+<td align="right">8.806</td>
 <td align="right">2</td>
 <td align="right">0</td>
-<td align="right">0.6434862</td>
-<td align="right">0.5941739</td>
-<td align="right">0.0000000</td>
-<td align="right">0.0000000</td>
-<td align="right">0.0000000</td>
-<td align="right">0.0000000</td>
-<td align="right">0.0000000</td>
-<td align="right">0.0000000</td>
-<td align="right">0.0000000</td>
-<td align="right">0.0000000</td>
+<td align="right">0.643</td>
+<td align="right">0.594</td>
 </tr>
 <tr class="odd">
-<td align="left">cow_12</td>
-<td align="left">2 minutes and 23 seconds</td>
-<td align="right">541</td>
-<td align="right">506</td>
-<td align="right">60</td>
-<td align="right">54</td>
-<td align="right">2</td>
-<td align="right">3</td>
-<td align="right">0.4101669</td>
-<td align="right">0.3458140</td>
-<td align="right">0.0000003</td>
-<td align="right">0.0000001</td>
-<td align="right">0.0000000</td>
-<td align="right">0.0000000</td>
-<td align="right">0.0000000</td>
-<td align="right">0.0000000</td>
-<td align="right">0.0000002</td>
-<td align="right">0.0000000</td>
-</tr>
-<tr class="even">
 <td align="left">polar_low_freq</td>
 <td align="left">1 day</td>
 <td align="right">329</td>
 <td align="right">304</td>
 <td align="right">37</td>
 <td align="right">28</td>
+<td align="right">3.233</td>
 <td align="right">26</td>
 <td align="right">3</td>
-<td align="right">0.5956271</td>
-<td align="right">0.6073569</td>
-<td align="right">44.6755463</td>
-<td align="right">98.2588415</td>
-<td align="right">0.2411263</td>
-<td align="right">1.0475820</td>
-<td align="right">0.1303176</td>
-<td align="right">0.6159222</td>
-<td align="right">0.3056231</td>
-<td align="right">60.5924109</td>
+<td align="right">0.596</td>
+<td align="right">0.607</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">seal</td>
 <td align="left">1 day</td>
 <td align="right">211</td>
 <td align="right">190</td>
 <td align="right">23</td>
 <td align="right">8</td>
+<td align="right">4.083</td>
 <td align="right">1</td>
 <td align="right">1</td>
-<td align="right">0.4337738</td>
-<td align="right">0.4988243</td>
-<td align="right">15.4040433</td>
-<td align="right">21.9564892</td>
-<td align="right">0.1425846</td>
-<td align="right">8.3183182</td>
-<td align="right">0.0400377</td>
-<td align="right">1.9435781</td>
-<td align="right">0.1425846</td>
-<td align="right">8.3183182</td>
+<td align="right">0.434</td>
+<td align="right">0.499</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">whale_2008</td>
 <td align="left">12 hours</td>
 <td align="right">110</td>
 <td align="right">90</td>
 <td align="right">12</td>
 <td align="right">11</td>
+<td align="right">3.277</td>
 <td align="right">10</td>
 <td align="right">1</td>
-<td align="right">0.4319763</td>
-<td align="right">0.7861423</td>
-<td align="right">0.4815474</td>
-<td align="right">0.7160552</td>
-<td align="right">0.1973584</td>
-<td align="right">0.4799107</td>
-<td align="right">0.1973584</td>
-<td align="right">0.4799107</td>
-<td align="right">0.1973584</td>
-<td align="right">0.4799107</td>
+<td align="right">0.432</td>
+<td align="right">0.786</td>
 </tr>
 </tbody>
 </table>
 <div class="section level3">
 <h3 id="plot-out-of-sample-squared-forecast-errors">Plot out-of-sample squared forecast errors<a class="anchor" aria-label="anchor" href="#plot-out-of-sample-squared-forecast-errors"></a>
 </h3>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">results</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
 <span>    classical_SFEs <span class="op">=</span> <span class="fu"><a href="https://purrr.tidyverse.org/reference/map2.html" class="external-link">map2</a></span><span class="op">(</span></span>
@@ -1071,9 +1256,9 @@ for the state error variance matrix
 <span>      <span class="op">}</span></span>
 <span>    <span class="op">)</span>,</span>
 <span>    roams_SFEs <span class="op">=</span> <span class="fu"><a href="https://purrr.tidyverse.org/reference/map2.html" class="external-link">map2</a></span><span class="op">(</span></span>
-<span>      <span class="va">roams_oos</span>, <span class="va">y_oos</span>, </span>
-<span>      <span class="kw">function</span><span class="op">(</span><span class="va">roams_oos</span>, <span class="va">y_oos</span><span class="op">)</span> <span class="op">{</span></span>
-<span>        <span class="va">SFEs</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowSums</a></span><span class="op">(</span><span class="op">(</span><span class="va">y_oos</span> <span class="op">-</span> <span class="va">roams_oos</span><span class="op">$</span><span class="va">predicted_observations</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span></span>
+<span>      <span class="va">roams_fut_oos</span>, <span class="va">y_oos</span>, </span>
+<span>      <span class="kw">function</span><span class="op">(</span><span class="va">roams_fut_oos</span>, <span class="va">y_oos</span><span class="op">)</span> <span class="op">{</span></span>
+<span>        <span class="va">SFEs</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowSums</a></span><span class="op">(</span><span class="op">(</span><span class="va">y_oos</span> <span class="op">-</span> <span class="va">roams_fut_oos</span><span class="op">$</span><span class="va">predicted_observations</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span></span>
 <span>        <span class="va">SFEs</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/na.fail.html" class="external-link">na.omit</a></span><span class="op">(</span><span class="va">SFEs</span><span class="op">)</span></span>
 <span>        <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="va">SFEs</span><span class="op">)</span></span>
 <span>      <span class="op">}</span></span>
@@ -1095,7 +1280,7 @@ for the state error variance matrix
 <div class="section level3">
 <h3 id="plot-in-sample-fit">Plot in-sample fit<a class="anchor" aria-label="anchor" href="#plot-in-sample-fit"></a>
 </h3>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">plots</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">data_sets</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="co"># Work out x/y ranges with some padding</span></span>
@@ -1109,13 +1294,13 @@ for the state error variance matrix
 <span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html" class="external-link">slice</a></span><span class="op">(</span><span class="va">i</span><span class="op">)</span></span>
 <span>  </span>
 <span>  <span class="va">fitted_paths</span> <span class="op">=</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span></span>
-<span>    x_roams <span class="op">=</span> <span class="va">result</span><span class="op">$</span><span class="va">roams</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">smoothed_observations</span><span class="op">[</span>,<span class="fl">1</span><span class="op">]</span>,</span>
-<span>    y_roams <span class="op">=</span> <span class="va">result</span><span class="op">$</span><span class="va">roams</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">smoothed_observations</span><span class="op">[</span>,<span class="fl">2</span><span class="op">]</span>,</span>
-<span>    x_classical <span class="op">=</span> <span class="va">result</span><span class="op">$</span><span class="va">classical</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">smoothed_observations</span><span class="op">[</span>,<span class="fl">1</span><span class="op">]</span>,</span>
-<span>    y_classical <span class="op">=</span> <span class="va">result</span><span class="op">$</span><span class="va">classical</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">smoothed_observations</span><span class="op">[</span>,<span class="fl">2</span><span class="op">]</span></span>
+<span>    x_roams <span class="op">=</span> <span class="va">result</span><span class="op">$</span><span class="va">roams_model</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">smoothed_observations</span><span class="op">[</span>,<span class="fl">1</span><span class="op">]</span>,</span>
+<span>    y_roams <span class="op">=</span> <span class="va">result</span><span class="op">$</span><span class="va">roams_model</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">smoothed_observations</span><span class="op">[</span>,<span class="fl">2</span><span class="op">]</span>,</span>
+<span>    x_classical <span class="op">=</span> <span class="va">result</span><span class="op">$</span><span class="va">classical_model</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">smoothed_observations</span><span class="op">[</span>,<span class="fl">1</span><span class="op">]</span>,</span>
+<span>    y_classical <span class="op">=</span> <span class="va">result</span><span class="op">$</span><span class="va">classical_model</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">smoothed_observations</span><span class="op">[</span>,<span class="fl">2</span><span class="op">]</span></span>
 <span>  <span class="op">)</span></span>
 <span></span>
-<span>  <span class="va">detected_outliers</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowSums</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">abs</a></span><span class="op">(</span><span class="va">result</span><span class="op">$</span><span class="va">roams</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">gamma</span><span class="op">)</span><span class="op">)</span> <span class="op">!=</span> <span class="fl">0</span><span class="op">)</span></span>
+<span>  <span class="va">detected_outliers</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowSums</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">abs</a></span><span class="op">(</span><span class="va">result</span><span class="op">$</span><span class="va">roams_model</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">gamma</span><span class="op">)</span><span class="op">)</span> <span class="op">!=</span> <span class="fl">0</span><span class="op">)</span></span>
 <span>  </span>
 <span>  <span class="va">plots</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span> <span class="op">=</span> <span class="va">data_sets</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span> <span class="op">|&gt;</span> </span>
 <span>    <span class="co"># Retain in-sample data points</span></span>
@@ -1162,7 +1347,7 @@ path). We should consider resetting the x/y axis range to just the out
 of sample prediction range, but at the same time, it’s kind of
 interesting to see where the OOS observations lie relative to the
 in-sample observations (blank canvas for some of these data sets).</p>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">plots</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">data_sets</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="co"># Work out x/y ranges with some padding</span></span>
@@ -1176,13 +1361,13 @@ in-sample observations (blank canvas for some of these data sets).</p>
 <span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html" class="external-link">slice</a></span><span class="op">(</span><span class="va">i</span><span class="op">)</span></span>
 <span>  </span>
 <span>  <span class="va">oos_paths</span> <span class="op">=</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span></span>
-<span>    x_roams <span class="op">=</span> <span class="va">result</span><span class="op">$</span><span class="va">roams_oos</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">predicted_observations</span><span class="op">[</span>,<span class="fl">1</span><span class="op">]</span>,</span>
-<span>    y_roams <span class="op">=</span> <span class="va">result</span><span class="op">$</span><span class="va">roams_oos</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">predicted_observations</span><span class="op">[</span>,<span class="fl">2</span><span class="op">]</span>,</span>
+<span>    x_roams <span class="op">=</span> <span class="va">result</span><span class="op">$</span><span class="va">roams_fut_oos</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">predicted_observations</span><span class="op">[</span>,<span class="fl">1</span><span class="op">]</span>,</span>
+<span>    y_roams <span class="op">=</span> <span class="va">result</span><span class="op">$</span><span class="va">roams_fut_oos</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">predicted_observations</span><span class="op">[</span>,<span class="fl">2</span><span class="op">]</span>,</span>
 <span>    x_classical <span class="op">=</span> <span class="va">result</span><span class="op">$</span><span class="va">classical_oos</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">predicted_observations</span><span class="op">[</span>,<span class="fl">1</span><span class="op">]</span>,</span>
 <span>    y_classical <span class="op">=</span> <span class="va">result</span><span class="op">$</span><span class="va">classical_oos</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">predicted_observations</span><span class="op">[</span>,<span class="fl">2</span><span class="op">]</span></span>
 <span>  <span class="op">)</span></span>
 <span>  </span>
-<span>  <span class="va">detected_outliers</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="va">result</span><span class="op">$</span><span class="va">roams_oos</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">outliers_flagged</span> <span class="op">==</span> <span class="fl">1</span><span class="op">)</span></span>
+<span>  <span class="va">detected_outliers</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="va">result</span><span class="op">$</span><span class="va">roams_fut_oos</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">outliers_flagged</span> <span class="op">==</span> <span class="fl">1</span><span class="op">)</span></span>
 <span>  </span>
 <span>  <span class="va">plots</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span> <span class="op">=</span> <span class="va">data_sets</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span> <span class="op">|&gt;</span> </span>
 <span>    <span class="co"># Retain out-of-sample data points only</span></span>
@@ -1223,7 +1408,7 @@ in-sample observations (blank canvas for some of these data sets).</p>
 <div class="section level4 unnumbered">
 <h4 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h4>
-<div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0" line-spacing="2">
+<div id="refs" class="references csl-bib-body hanging-indent" line-spacing="2">
 <div id="ref-auger-methe_guide_2021" class="csl-entry">
 Auger-Méthé, M., Newman, K., Cole, D., Empacher, F., Gryba, R., King, A.
 A., … Thomas, L. (2021). A guide to state–space modeling of ecological
@@ -1248,7 +1433,7 @@ outlier-adjusted mean-shift estimation of state-space models. <a href="https://a
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
 </div>
 
     </footer>

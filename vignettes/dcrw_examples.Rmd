@@ -457,10 +457,10 @@ results = tibble(
   y_train = list(),
   y_oos = list(),
   
-  classical = list(),
-  roams = list(),
-  huber = list(),
-  trimmed = list(),
+  classical_model = list(),
+  roams_model = list(),
+  huber_model = list(),
+  trimmed_model = list(),
   
   classical_oos = list(),
   roams_fut_oos = list(),
@@ -527,9 +527,7 @@ for (i in 1:length(data_sets)) {
     
     second_complete_obs = which(!is.na(y_train[,1]))[2]
     diff = sum(abs(y_train[1,] - y_train[second_complete_obs,]))
-
     x0 = c(y_train[1,], y_train[1,] + diff * 0.1)
-    # x0 = c(y_train[1,], y_train[1,] + 0.1)
     P0 = diag(rep(0, 4))
     
     specify_SSM(
@@ -547,9 +545,18 @@ for (i in 1:length(data_sets)) {
     build = build_fn, 
     lower = c(0, rep(1e-12, 4)),
     upper = c(1, rep(Inf, 4)),
-    )
+  )
   
-
+  roams_model_list = robularized_SSM(
+    y = y_train,
+    init_par = c(0.5, var_est, var_est),
+    build = build_fn,
+    num_lambdas = 20,
+    cores = 4,
+    lower = c(0, rep(1e-12, 4)),
+    upper = c(1, rep(Inf, 4)),
+    B = 50
+  )
   
   huber_model = huber_robust_SSM(
     y = y_train,
@@ -567,17 +574,6 @@ for (i in 1:length(data_sets)) {
     lower = c(0.001, 1e-12, 1e-12, 1e-12, 1e-12),
     upper = c(0.999, Inf, Inf, Inf, Inf)
   )
-  
-    roams_model_list = robularized_SSM(
-    y = y_train,
-    init_par = c(0.5, var_est, var_est),
-    build = build_fn,
-    num_lambdas = 20,
-    cores = 4,
-    lower = c(0, rep(1e-12, 4)),
-    upper = c(1, rep(Inf, 4)),
-    B = 50
-    )
   
   classical_model = attach_insample_info(classical_model)
   huber_model = attach_insample_info(huber_model)
@@ -718,6 +714,47 @@ results = read_rds("data/results.rds")
 
 ## Results
 
+Evaluation metrics
+
+```{r}
+results %>% 
+  select(name, y_oos, oos_outliers_flagged, 
+         classical_oos:trimmed_oos) %>% 
+  rename(y_test = y_oos) %>% 
+  pivot_longer(cols = ends_with("_oos"), 
+               names_to = "method", values_to = "oos_output") %>% 
+  mutate(
+    MSFE = map2_dbl(
+      oos_output, y_test,
+      function(oos_output, y_test) {
+        SFEs = rowSums((y_test - oos_output$predicted_observations)^2)
+        MSFE = mean(SFEs, na.rm = TRUE)
+        return(MSFE)
+      }
+    ),
+    MSFE_clean = pmap_dbl(
+      list(oos_output, oos_outliers_flagged, y_test),
+      function(oos_output, oos_outliers_flagged, y_test) {
+        SFEs = rowSums((y_test - oos_output$predicted_observations)^2)
+        if (length(oos_outliers_flagged) == 0) {
+          MSFE = mean(SFEs, na.rm = TRUE)
+        } else {
+          MSFE = mean(SFEs[-oos_outliers_flagged], na.rm = TRUE)
+        }
+        return(MSFE)
+      }
+    ),
+  ) %>% 
+  select(name, method, MSFE, MSFE_clean) %>% 
+  group_by(name) %>% 
+  mutate(
+    MSFE = MSFE / MSFE[which(method == "classical_oos")],
+    MSFE_clean = MSFE_clean / MSFE_clean[which(method == "classical_oos")]) %>% 
+  knitr::kable(digits = 3)
+```
+
+Other results
+
 ```{r}
 results |> 
   mutate(
@@ -726,31 +763,31 @@ results |>
     n_oos = map_dbl(y_oos, ~ nrow(.)),
     n_oos_complete = map_dbl(y_oos, ~ sum(!is.na(.[,1]))),
     
-    lambda = map_dbl(roams, ~ .$lambda),
-    in_sample_detected = map2_dbl(roams, n_complete,
+    lambda = map_dbl(roams_model, ~ .$lambda),
+    in_sample_detected = map2_dbl(roams_model, n_complete,
                                   ~ .x$prop_outlying * .y),
-    oos_detected = map_dbl(roams_oos,
+    oos_detected = map_dbl(roams_fut_oos,
                            ~ sum(.$outliers_flagged)),
     
-    roams_phi = map_dbl(roams, ~ .$par[1]),
-    classical_phi = map_dbl(classical, ~ .$par[1]),
+    roams_phi = map_dbl(roams_model, ~ .$par[1]),
+    classical_phi = map_dbl(classical_model, ~ .$par[1]),
     
-    roams_MSFE = map2_dbl(
-      roams_oos, y_oos,
-      function(roams_oos, y_oos) {
-        SFEs = rowSums((y_oos - roams_oos$predicted_observations)^2)
-        MSFE = mean(SFEs, na.rm = TRUE)
-        return(MSFE)
-      }
-    ),
-    classical_MSFE = map2_dbl(
-      classical_oos, y_oos,
-      function(classical_oos, y_oos) {
-        SFEs = rowSums((y_oos - classical_oos$predicted_observations)^2)
-        MSFE = mean(SFEs, na.rm = TRUE)
-        return(MSFE)
-      }
-    ),
+    # roams_MSFE = map2_dbl(
+    #   roams_oos, y_oos,
+    #   function(roams_oos, y_oos) {
+    #     SFEs = rowSums((y_oos - roams_oos$predicted_observations)^2)
+    #     MSFE = mean(SFEs, na.rm = TRUE)
+    #     return(MSFE)
+    #   }
+    # ),
+    # classical_MSFE = map2_dbl(
+    #   classical_oos, y_oos,
+    #   function(classical_oos, y_oos) {
+    #     SFEs = rowSums((y_oos - classical_oos$predicted_observations)^2)
+    #     MSFE = mean(SFEs, na.rm = TRUE)
+    #     return(MSFE)
+    #   }
+    # ),
     # roams_trimmed_MSFE_5perc = map2_dbl(
     #   roams_oos, y_oos,
     #   function(roams_oos, y_oos) {
@@ -799,24 +836,24 @@ results |>
     #     return(trimmed_MSFE)
     #   }
     # ),
-    roams_MSFE_clean = map2_dbl(
-      roams_oos, y_oos,
-      function(roams_oos, y_oos) {
-        clean_timepoints = which(roams_oos$outliers_flagged == 0)
-        SFEs = rowSums((y_oos - roams_oos$predicted_observations)^2)
-        MSFE_clean = mean(SFEs[clean_timepoints], na.rm = TRUE)
-        return(MSFE_clean)
-      }
-    ),
-    classical_MSFE_clean = pmap_dbl(
-      list(classical_oos, roams_oos, y_oos),
-      function(classical_oos, roams_oos, y_oos) {
-        clean_timepoints = which(roams_oos$outliers_flagged == 0)
-        SFEs = rowSums((y_oos - classical_oos$predicted_observations)^2)
-        MSFE_clean = mean(SFEs[clean_timepoints], na.rm = TRUE)
-        return(MSFE_clean)
-      }
-    )
+    # roams_MSFE_clean = map2_dbl(
+    #   roams_oos, y_oos,
+    #   function(roams_oos, y_oos) {
+    #     clean_timepoints = which(roams_oos$outliers_flagged == 0)
+    #     SFEs = rowSums((y_oos - roams_oos$predicted_observations)^2)
+    #     MSFE_clean = mean(SFEs[clean_timepoints], na.rm = TRUE)
+    #     return(MSFE_clean)
+    #   }
+    # ),
+    # classical_MSFE_clean = pmap_dbl(
+    #   list(classical_oos, roams_oos, y_oos),
+    #   function(classical_oos, roams_oos, y_oos) {
+    #     clean_timepoints = which(roams_oos$outliers_flagged == 0)
+    #     SFEs = rowSums((y_oos - classical_oos$predicted_observations)^2)
+    #     MSFE_clean = mean(SFEs[clean_timepoints], na.rm = TRUE)
+    #     return(MSFE_clean)
+    #   }
+    # )
     
     
     # roams_MedSFE = map2_dbl(
@@ -832,9 +869,8 @@ results |>
     
     )  |> 
   select(name, frequency, n, n_complete, n_oos, n_oos_complete, lambda,
-         in_sample_detected, oos_detected, roams_phi, classical_phi,
-         roams_MSFE:classical_MSFE_clean) |> 
-  knitr::kable()
+         in_sample_detected, oos_detected, roams_phi, classical_phi) |> 
+  knitr::kable(digits = 3)
 ```
 
 ### Plot out-of-sample squared forecast errors
@@ -851,9 +887,9 @@ results |>
       }
     ),
     roams_SFEs = map2(
-      roams_oos, y_oos, 
-      function(roams_oos, y_oos) {
-        SFEs = rowSums((y_oos - roams_oos$predicted_observations)^2)
+      roams_fut_oos, y_oos, 
+      function(roams_fut_oos, y_oos) {
+        SFEs = rowSums((y_oos - roams_fut_oos$predicted_observations)^2)
         SFEs = na.omit(SFEs)
         return(SFEs)
       }
@@ -888,13 +924,13 @@ for (i in 1:length(data_sets)) {
     slice(i)
   
   fitted_paths = tibble(
-    x_roams = result$roams[[1]]$smoothed_observations[,1],
-    y_roams = result$roams[[1]]$smoothed_observations[,2],
-    x_classical = result$classical[[1]]$smoothed_observations[,1],
-    y_classical = result$classical[[1]]$smoothed_observations[,2]
+    x_roams = result$roams_model[[1]]$smoothed_observations[,1],
+    y_roams = result$roams_model[[1]]$smoothed_observations[,2],
+    x_classical = result$classical_model[[1]]$smoothed_observations[,1],
+    y_classical = result$classical_model[[1]]$smoothed_observations[,2]
   )
 
-  detected_outliers = which(rowSums(abs(result$roams[[1]]$gamma)) != 0)
+  detected_outliers = which(rowSums(abs(result$roams_model[[1]]$gamma)) != 0)
   
   plots[[i]] = data_sets[[i]] |> 
     # Retain in-sample data points
@@ -951,13 +987,13 @@ for (i in 1:length(data_sets)) {
     slice(i)
   
   oos_paths = tibble(
-    x_roams = result$roams_oos[[1]]$predicted_observations[,1],
-    y_roams = result$roams_oos[[1]]$predicted_observations[,2],
+    x_roams = result$roams_fut_oos[[1]]$predicted_observations[,1],
+    y_roams = result$roams_fut_oos[[1]]$predicted_observations[,2],
     x_classical = result$classical_oos[[1]]$predicted_observations[,1],
     y_classical = result$classical_oos[[1]]$predicted_observations[,2]
   )
   
-  detected_outliers = which(result$roams_oos[[1]]$outliers_flagged == 1)
+  detected_outliers = which(result$roams_fut_oos[[1]]$outliers_flagged == 1)
   
   plots[[i]] = data_sets[[i]] |> 
     # Retain out-of-sample data points only
