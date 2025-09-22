@@ -7,19 +7,19 @@
 best_BIC_model(model_list)
 }
 \arguments{
-\item{model_list}{An object of class \code{robularized_SSM_list}}
+\item{model_list}{An object of class \code{roams_SSM_list}}
 }
 \value{
-A single \code{robularized_SSM} object corresponding to the model with the smallest BIC
+A single \code{roams_SSM} object corresponding to the model with the smallest BIC
 among those with fewer than 50\% outlying observations.
 }
 \description{
-Extracts the best-fitting model from a \code{robularized_SSM_list} object according to
+Extracts the best-fitting model from a \code{roams_SSM_list} object according to
 the Bayesian Information Criterion (BIC), while excluding models with more than 50\% outlying observations.
 }
 \examples{
 \dontrun{
-# Assuming `models` is a robularized_SSM_list:
+# Assuming `models` is a roams_SSM_list:
 best_model <- best_BIC_model(models)
 }
 

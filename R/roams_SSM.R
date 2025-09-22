@@ -13,9 +13,9 @@
 #' @param upper Optional numeric vector of upper bounds for optimization. If \code{NA}, defaults to \code{Inf} for all parameters. Must be of same length as \code{init_par}.
 #' @param control A named list of control options to pass to \code{optim} via \code{dlm::dlmMLE()}. Default is \code{list(parscale = init_par)}, which can help the optimizer if parameters are on vastly different scales.
 #'
-#' @return If more than one \eqn{\lambda} values are used, returns an object of class \code{robularized_SSM_list} — a list containing a \code{robularized_SSM} model for each \eqn{\lambda}. If only one \eqn{\lambda} value is used (i.e. \code{custom_lambdas} is manually specified as a single value), returns a single \code{robularized_SSM} object.
+#' @return If more than one \eqn{\lambda} values are used, returns an object of class \code{roams_SSM_list} — a list containing a \code{roams_SSM} model for each \eqn{\lambda}. If only one \eqn{\lambda} value is used (i.e. \code{custom_lambdas} is manually specified as a single value), returns a single \code{roams_SSM} object.
 #'
-#' Each \code{robularized_SSM} object includes:
+#' Each \code{roams_SSM} object includes:
 #' \itemize{
 #'   \item \code{lambda} - The \eqn{\lambda} value used.
 #'   \item \code{prop_outlying} - Proportion of non-missing time points identified as outliers.
@@ -39,12 +39,12 @@
 #'
 #' The algorithm stops when the change in parameters and outlier estimates is sufficiently small or if too many outliers are detected (more than 50\% of complete observations).
 #'
-#' @seealso \code{\link[dlm]{dlmMLE}}, \code{\link{best_BIC_model}}, \code{\link{outlier_target_model}}, \code{\link{get_attribute}}, \code{\link{autoplot.robularized_SSM_list}}, \code{\link{attach_insample_info}}, \code{\link{oos_filter}}, \code{\link{specify_SSM}}
+#' @seealso \code{\link[dlm]{dlmMLE}}, \code{\link{best_BIC_model}}, \code{\link{outlier_target_model}}, \code{\link{get_attribute}}, \code{\link{autoplot.roams_SSM_list}}, \code{\link{attach_insample_info}}, \code{\link{oos_filter}}, \code{\link{specify_SSM}}
 #'
 #' @references She, Y., & Owen, A. B. (2011). Outlier Detection Using Nonconvex Penalized Regression. *Journal of the American Statistical Association, 106*(494), 626–639. https://doi.org/10.1198/jasa.2011.tm10390
 #'
 #' @export
-robularized_SSM = function(
+roams_SSM = function(
     y,
     init_par,
     build,
@@ -158,25 +158,7 @@ lambda_grid = function(
     future::plan(future::sequential)
   }
 
-  #   cl = parallel::makeCluster(cores)
-  #   doParallel::registerDoParallel(cl)
-  #                                  #export = list(run_IPOD = run_IPOD))
-  #   model_list = foreach::foreach(
-  #     i = 1:length(lambdas)) %dopar% {
-  #                   model = run_IPOD(y,
-  #                                    lambdas[i],
-  #                                    init_par,
-  #                                    build,
-  #                                    B,
-  #                                    lower,
-  #                                    upper,
-  #                                    control)
-  #                   return(model)
-  #                   }
-  #   parallel::stopCluster(cl)
-  # }
-
-  class(model_list) = "robularized_SSM_list"
+  class(model_list) = "roams_SSM_list"
   return(model_list)
 }
 
@@ -262,7 +244,7 @@ run_IPOD = function(
     list(build = build)
     )
 
-  class(model) = "robularized_SSM"
+  class(model) = "roams_SSM"
   return(model)
 }
 
@@ -345,7 +327,7 @@ IPOD_oos_robust_filter = function(y, par, build, threshold, multiplier = 1) {
 }
 
 # A simpler version of attach_insample_info for internal use only.
-# Mainly used for getting residuals and predictions from robularized models.
+# Mainly used for getting residuals and predictions from ROAMS SSMs.
 dlmInfo = function(y, adj_y, model, build) {
 
   filter_output = dlm::dlmFilter(adj_y, mod = build(model$par))
@@ -358,7 +340,7 @@ dlmInfo = function(y, adj_y, model, build) {
   mahalanobis_residuals = purrr::map2_dbl(
     apply(y - filter_output$f, 1, c, simplify = FALSE),
     inv_S,
-    ~ drop(t(.x) %*% .y %*% .x)) %>% sqrt()
+    ~ drop(t(.x) %*% .y %*% .x)) |> sqrt()
 
   mahalanobis_residuals = ifelse(is.na(mahalanobis_residuals), 0, mahalanobis_residuals)
 
@@ -376,7 +358,7 @@ dlmInfo = function(y, adj_y, model, build) {
 #' Attaches detailed in-sample information—such as predicted, filtered, and smoothed states and observations—to a model object fitted using any of the package’s supported SSM estimation methods.
 #' These quantities are not stored by default in model objects due to their potentially large memory footprint.
 #'
-#' @param model A fitted model object of class \code{robularized_SSM}, \code{classical_SSM}, \code{oracle_SSM}, \code{huber_robust_SSM}, or \code{trimmed_robust_SSM}.
+#' @param model A fitted model object of class \code{roams_SSM}, \code{classical_SSM}, \code{oracle_SSM}, \code{huber_robust_SSM}, or \code{trimmed_robust_SSM}.
 #'
 #' @return A modified version of the input model object, with an additional class \code{insample_info}, and the following in-sample elements appended:
 #' \describe{
@@ -390,7 +372,7 @@ dlmInfo = function(y, adj_y, model, build) {
 #'   \item{\code{mahalanobis_residuals}}{Vector of Mahalanobis distances of residuals from predicted observations.}
 #' }
 #'
-#' For models of class \code{robularized_SSM}, \code{classical_SSM}, or \code{oracle_SSM}, the following additional elements are also attached:
+#' For models of class \code{roams_SSM}, \code{classical_SSM}, or \code{oracle_SSM}, the following additional elements are also attached:
 #' \describe{
 #'   \item{\code{smoothed_states}}{Posterior means of hidden states using all data.}
 #'   \item{\code{smoothed_observations}}{Posterior mean of the observed series based on smoothed states.}
@@ -403,8 +385,6 @@ dlmInfo = function(y, adj_y, model, build) {
 #' This function should only be applied once to a model object.
 #'
 #' @seealso \code{\link{oos_filter}}
-#'
-#' @import tidyverse
 #'
 #' @export
 attach_insample_info = function(model) {
@@ -426,7 +406,7 @@ attach_insample_info = function(model) {
     class(output) = c("trimmed_robust_SSM", "insample_info")
     return(output)
 
-  } else if (inherits(model, "robularized_SSM")){
+  } else if (inherits(model, "roams_SSM")){
     adj_y = y
     adj_y[which(rowSums(abs(model$gamma)) != 0),] = NA
   } else if (inherits(model, "classical_SSM")) {
@@ -435,7 +415,7 @@ attach_insample_info = function(model) {
     adj_y = y
     adj_y[model$outlier_locs != 0,] = NA
   } else {
-    stop("Invalid model class. Expected 'robularized_SSM' or 'classical_SSM' or 'oracle_SSM' or 'huber_robust_SSM' or 'trimmed_robust_SSM'.")
+    stop("Invalid model class. Expected 'roams_SSM' or 'classical_SSM' or 'oracle_SSM' or 'huber_robust_SSM' or 'trimmed_robust_SSM'.")
   }
 
   filter_output = dlm::dlmFilter(adj_y, mod = model$build(model$par))
@@ -451,7 +431,7 @@ attach_insample_info = function(model) {
   mahalanobis_residuals = purrr::map2_dbl(
     apply(y - filter_output$f, 1, c, simplify = FALSE),
     inv_S,
-    ~ drop(t(.x) %*% .y %*% .x)) %>% sqrt()
+    ~ drop(t(.x) %*% .y %*% .x)) |> sqrt()
 
   mahalanobis_residuals = ifelse(is.na(mahalanobis_residuals), 0, mahalanobis_residuals)
 
@@ -470,8 +450,8 @@ attach_insample_info = function(model) {
     mahalanobis_residuals = mahalanobis_residuals
   ))
 
-  if (inherits(model, "robularized_SSM")) {
-    class(output) = c("robularized_SSM", "insample_info")
+  if (inherits(model, "roams_SSM")) {
+    class(output) = c("roams_SSM", "insample_info")
   } else if (inherits(model, "classical_SSM")) {
     class(output) = c("classical_SSM", "insample_info")
   } else if (inherits(model, "oracle_SSM")) {
@@ -486,11 +466,11 @@ attach_insample_info = function(model) {
 #' Applies the fitted model parameters to a user-supplied out-of-sample dataset to compute predicted and filtered states and observations. Robust and classical inference procedures are supported depending on the class of the input model.
 #'
 #' @param y_oos A numeric matrix containing out-of-sample observations. Each row corresponds to a time point.
-#' @param model A fitted model object of class \code{robularized_SSM}, \code{classical_SSM}, \code{oracle_SSM}, \code{huber_robust_SSM}, or \code{trimmed_robust_SSM}.
+#' @param model A fitted model object of class \code{roams_SSM}, \code{classical_SSM}, \code{oracle_SSM}, \code{huber_robust_SSM}, or \code{trimmed_robust_SSM}.
 #' @param build A function that maps a numeric parameter vector to a corresponding \code{dlm} model object. The \code{specify_SSM} function can be used to create this \code{build} function.
 #' @param outlier_locs A logical or binary vector of the same length as \code{nrow(y)}, indicating time points to be treated as missing (i.e., time points that are known to be outliers). Used only with \code{oracle_SSM} models.
-#' @param threshold Mahalanobis distance threshold for identifying outliers in \code{robularized_SSM} models. Default is \code{sqrt(qchisq(0.99, ncol(y)))}.
-#' @param multiplier Multiplier for how quickly the filter grows its filtered state variance (uncertainty) after detecting an outlier in \code{robularized_SSM} models. Default is \code{2}.
+#' @param threshold Mahalanobis distance threshold for identifying outliers in \code{roams_SSM} models. Default is \code{sqrt(qchisq(0.99, ncol(y)))}.
+#' @param multiplier Multiplier for how quickly the filter grows its filtered state variance (uncertainty) after detecting an outlier in \code{roams_SSM} models. Default is \code{2}.
 #'
 #' @return A named list containing out-of-sample inference results:
 #' \describe{
@@ -502,15 +482,13 @@ attach_insample_info = function(model) {
 #'   \item{\code{predicted_states_var}}{List of one-step-ahead state prediction variances.}
 #'   \item{\code{predicted_observations_var}}{List of one-step-ahead observation forecast variances.}
 #'   \item{\code{mahalanobis_residuals}}{Vector of Mahalanobis distances of residuals from predicted observations.}
-#'   \item{\code{outliers_flagged}}{Vector of 1's and 0's indicating whether timepoints are flagged as outlying or not based on the \code{threshold} supplied (only available if \code{model} is of class \code{robularized_SSM}).}
+#'   \item{\code{outliers_flagged}}{Vector of 1's and 0's indicating whether timepoints are flagged as outlying or not based on the \code{threshold} supplied (only available if \code{model} is of class \code{roams_SSM}).}
 #' }
 #'
 #' @details
 #' The function reuses the model's fitted parameters to generate inference on new data \code{y_oos}. Robust variants use appropriate robust filters, while the classical and oracle models use standard Kalman filtering. For \code{oracle_SSM} models, observations flagged in \code{outlier_locs} are treated as missing during filtering.
 #'
 #' @seealso \code{\link{attach_insample_info}}, \code{\link{specify_SSM}}
-#'
-#' @import tidyverse
 #'
 #' @export
 oos_filter = function(y_oos, model, build,
@@ -527,7 +505,7 @@ oos_filter = function(y_oos, model, build,
     oos_output = ruben_filter(model$par, y, build, obj_type = "trimmed")
     return(oos_output)
 
-  } else if (inherits(model, "robularized_SSM")){
+  } else if (inherits(model, "roams_SSM")){
 
     # Robust threshold filter
     oos_output = IPOD_oos_robust_filter(
@@ -546,7 +524,7 @@ oos_filter = function(y_oos, model, build,
     adj_y = y
     adj_y[outlier_locs != 0,] = NA
   } else {
-    stop("Invalid model class. Expected 'robularized_SSM' or 'classical_SSM' or 'oracle_SSM' or 'huber_robust_SSM' or 'trimmed_robust_SSM'.")
+    stop("Invalid model class. Expected 'roams_SSM' or 'classical_SSM' or 'oracle_SSM' or 'huber_robust_SSM' or 'trimmed_robust_SSM'.")
   }
 
   filter_output = dlm::dlmFilter(adj_y, mod = build(model$par))
@@ -560,7 +538,7 @@ oos_filter = function(y_oos, model, build,
   mahalanobis_residuals = purrr::map2_dbl(
     apply(y - filter_output$f, 1, c, simplify = FALSE),
     inv_S,
-    ~ drop(t(.x) %*% .y %*% .x)) %>% sqrt()
+    ~ drop(t(.x) %*% .y %*% .x)) |> sqrt()
 
   mahalanobis_residuals = ifelse(is.na(mahalanobis_residuals), 0, mahalanobis_residuals)
 

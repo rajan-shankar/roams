@@ -33,5 +33,5 @@ An object of class \code{classical_SSM} containing the optimization result, the 
 Fits a state space model using classical maximum likelihood estimation with no attempt to detect or account for outliers. This serves as a baseline model for comparison.
 }
 \seealso{
-\code{\link[dlm]{dlmMLE}}, \code{\link{robularized_SSM}}, \code{\link{attach_insample_info}}, \code{\link{oos_filter}}, \code{\link{specify_SSM}}
+\code{\link[dlm]{dlmMLE}}, \code{\link{roams_SSM}}, \code{\link{attach_insample_info}}, \code{\link{oos_filter}}, \code{\link{specify_SSM}}
 }

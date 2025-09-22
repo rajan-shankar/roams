@@ -547,7 +547,7 @@ for (i in 1:length(data_sets)) {
     upper = c(1, rep(Inf, 4)),
   )
   
-  roams_model_list = robularized_SSM(
+  roams_model_list = roams_SSM(
     y = y_train,
     init_par = c(0.5, var_est, var_est),
     build = build_fn,
@@ -717,12 +717,12 @@ results = read_rds("data/results.rds")
 Evaluation metrics
 
 ```{r}
-results %>% 
+results |> 
   select(name, y_oos, oos_outliers_flagged, 
-         classical_oos:trimmed_oos) %>% 
-  rename(y_test = y_oos) %>% 
+         classical_oos:trimmed_oos) |> 
+  rename(y_test = y_oos) |> 
   pivot_longer(cols = ends_with("_oos"), 
-               names_to = "method", values_to = "oos_output") %>% 
+               names_to = "method", values_to = "oos_output") |> 
   mutate(
     MSFE = map2_dbl(
       oos_output, y_test,
@@ -744,12 +744,12 @@ results %>%
         return(MSFE)
       }
     ),
-  ) %>% 
-  select(name, method, MSFE, MSFE_clean) %>% 
-  group_by(name) %>% 
+  ) |> 
+  select(name, method, MSFE, MSFE_clean) |> 
+  group_by(name) |> 
   mutate(
     MSFE = MSFE / MSFE[which(method == "classical_oos")],
-    MSFE_clean = MSFE_clean / MSFE_clean[which(method == "classical_oos")]) %>% 
+    MSFE_clean = MSFE_clean / MSFE_clean[which(method == "classical_oos")]) |> 
   knitr::kable(digits = 3)
 ```
 

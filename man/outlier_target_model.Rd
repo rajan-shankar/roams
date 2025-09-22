@@ -7,15 +7,15 @@
 outlier_target_model(model_list, target)
 }
 \arguments{
-\item{model_list}{An object of class \code{robularized_SSM_list}.}
+\item{model_list}{An object of class \code{roams_SSM_list}.}
 
 \item{target}{A numeric value between 0 and 1 indicating the desired proportion of outlying observations.}
 }
 \value{
-A single \code{robularized_SSM} object whose estimated outlier proportion is closest to \code{target}.
+A single \code{roams_SSM} object whose estimated outlier proportion is closest to \code{target}.
 }
 \description{
-Extracts the model from a \code{robularized_SSM_list} object whose estimated outlier proportion
+Extracts the model from a \code{roams_SSM_list} object whose estimated outlier proportion
 is closest to a user-specified target.
 }
 \examples{

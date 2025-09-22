@@ -43,7 +43,7 @@
 #'   )
 #' }
 #'
-#' @seealso \code{\link{robularized_SSM}}, \code{\link{oos_filter}}
+#' @seealso \code{\link{roams_SSM}}, \code{\link{oos_filter}}
 #'
 #' @export
 specify_SSM = function(

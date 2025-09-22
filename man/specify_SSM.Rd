@@ -66,5 +66,5 @@ build_function = function(par) {
 
 }
 \seealso{
-\code{\link{robularized_SSM}}, \code{\link{oos_filter}}
+\code{\link{roams_SSM}}, \code{\link{oos_filter}}
 }

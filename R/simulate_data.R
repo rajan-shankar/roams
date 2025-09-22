@@ -26,8 +26,6 @@
 #'
 #' @seealso \code{\link{simulate_data_study2}}
 #'
-#' @import tidyverse
-#'
 #' @export
 simulate_data_study1 = function(
   sample_sizes = c(100, 200, 500, 1000),
@@ -68,7 +66,7 @@ simulate_data_study1 = function(
     set.seed(seed)
   }
 
-  data_sets = tibble(
+  data_sets = tibble::tibble(
     sample = numeric(),
     n = numeric(),
     setting = character(),
@@ -133,7 +131,7 @@ simulate_data_study1 = function(
             angles = runif(n, max = 2*pi)
             outlier_unit_vecs = do.call(
               rbind,
-              map(angles, ~ c(cos(.), sin(.)))
+              purrr::map(angles, ~ c(cos(.), sin(.)))
             )
 
             if (setting == "fixed distance") {
@@ -183,8 +181,8 @@ simulate_data_study1 = function(
           }
         }
 
-        data_sets = data_sets %>%
-          add_row(
+        data_sets = data_sets |>
+          tibble::add_row(
             sample = sample_number,
             n = n,
             setting = setting,
@@ -201,8 +199,8 @@ simulate_data_study1 = function(
     }
   }
 
-  data_sets = data_sets %>%
-    select(sample, n, setting, y, x, y_oos, x_oos, y_clean, outlier_locs, outlier_levels)
+  data_sets = data_sets |>
+    dplyr::select(sample, n, setting, y, x, y_oos, x_oos, y_clean, outlier_locs, outlier_levels)
 
   return(data_sets)
 }
@@ -240,8 +238,6 @@ simulate_data_study1 = function(
 #'
 #' @seealso \code{\link{simulate_data_study1}}
 #'
-#' @import tidyverse
-#'
 #' @export
 simulate_data_study2 = function(
   samples = 100,
@@ -271,7 +267,7 @@ simulate_data_study2 = function(
     set.seed(seed)
   }
 
-  data_sets = tibble(
+  data_sets = tibble::tibble(
     sample = numeric(),
     contamination = numeric(),
     distance = numeric(),
@@ -340,8 +336,8 @@ simulate_data_study2 = function(
             y[t,] = y_clean[t,] + outlier_locs[t]*c(cos(angles[t]),
                                                     sin(angles[t]))*distance
           }
-          data_sets = data_sets %>%
-            add_row(
+          data_sets = data_sets |>
+            tibble::add_row(
               sample = i,
               contamination = contaminations[6+1-counter],
               distance = distance,
@@ -361,8 +357,8 @@ simulate_data_study2 = function(
           y[t,] = y_clean[t,] + outlier_locs[t]*c(cos(angles[t]),
                                                   sin(angles[t]))*distance
         }
-        data_sets = data_sets %>%
-          add_row(
+        data_sets = data_sets |>
+          tibble::add_row(
             sample = i,
             contamination = contaminations[6+1-counter],
             distance = distance,
@@ -379,8 +375,8 @@ simulate_data_study2 = function(
 
   }
 
-  data_sets = data_sets %>%
-    select(sample, contamination, distance, y, x, y_oos, x_oos, y_clean, outlier_locs)
+  data_sets = data_sets |>
+    dplyr::select(sample, contamination, distance, y, x, y_oos, x_oos, y_clean, outlier_locs)
 
   return(data_sets)
 }

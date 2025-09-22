@@ -1,8 +1,8 @@
-#' Extract Attributes from a Robularized SSM List
+#' Extract Attributes from a ROAMS SSM List
 #'
-#' Retrieves a specified attribute from each model within a \code{robularized_SSM_list} object. Also works if a single model of class \code{robularized_SSM} is provided.
+#' Retrieves a specified attribute from each model within a \code{roams_SSM_list} object. Also works if a single model of class \code{roams_SSM} is provided.
 #'
-#' @param model_list An object of class \code{robularized_SSM_list} or a single \code{robularized_SSM} model. May optionally include in-sample information added via \code{attach_insample_info}.
+#' @param model_list An object of class \code{roams_SSM_list} or a single \code{roams_SSM} model. May optionally include in-sample information added via \code{attach_insample_info}.
 #' @param attribute A character string specifying the name of the attribute to extract. Must be one of the available scalar attributes (e.g. \code{BIC}, \code{lambda}) or list/vector attributes (e.g. \code{filtered_states}, \code{smoothed_states}).
 #'
 #' @return
@@ -39,20 +39,18 @@
 #'   \item \code{mahalanobis_residuals}
 #' }
 #'
-#' Note that these 'in-sample info' attributes are typically only available if \code{model_list} is a single \code{robularized_SSM} with in-sample information already attached using \code{attach_insample_info()}. If \code{model_list} is a \code{robularized_SSM_list}, these attributes will not be available unless all models in the list have in-sample information attached.
+#' Note that these 'in-sample info' attributes are typically only available if \code{model_list} is a single \code{roams_SSM} with in-sample information already attached using \code{attach_insample_info()}. If \code{model_list} is a \code{roams_SSM_list}, these attributes will not be available unless all models in the list have in-sample information attached.
 #'
-#' @seealso \code{\link{attach_insample_info}}, \code{\link{robularized_SSM}}
-#'
-#' @import tidyverse
+#' @seealso \code{\link{attach_insample_info}}, \code{\link{roams_SSM}}
 #'
 #' @export
 get_attribute = function(model_list, attribute) {
 
-  if (inherits(model_list, "robularized_SSM")) {
+  if (inherits(model_list, "roams_SSM")) {
     model_list = list(model_list)
-    class(model_list) = "robularized_SSM_list"
-  } else if (!inherits(model_list, "robularized_SSM_list")) {
-    stop("'model_list' is not a 'robularized_SSM' or 'robularized_SSM_list'.")
+    class(model_list) = "roams_SSM_list"
+  } else if (!inherits(model_list, "roams_SSM_list")) {
+    stop("'model_list' is not a 'roams_SSM' or 'roams_SSM_list'.")
   }
 
   if (inherits(model_list[[1]], "insample_info")) {

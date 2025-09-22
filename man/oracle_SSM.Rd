@@ -36,5 +36,5 @@ An object of class \code{oracle_SSM} containing the optimization result, the pro
 Fits a state space model by treating a known set of outliers as missing data. This benchmark model assumes prior knowledge of outlier locations and is intended for comparison with automatic outlier detection procedures.
 }
 \seealso{
-\code{\link[dlm]{dlmMLE}}, \code{\link{robularized_SSM}}, \code{\link{attach_insample_info}}, \code{\link{oos_filter}}, \code{\link{specify_SSM}}
+\code{\link[dlm]{dlmMLE}}, \code{\link{roams_SSM}}, \code{\link{attach_insample_info}}, \code{\link{oos_filter}}, \code{\link{specify_SSM}}
 }

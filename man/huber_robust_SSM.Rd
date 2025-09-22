@@ -38,5 +38,5 @@ Crevits R. and Croux C. (2018). Robust Estimation of Linear State Space Models. 
 Cipra, T., Romera, R. (1997). Kalman filter with outliers and missing observations. *Test* 6, 379–395. https://doi.org/10.1007/BF02564705
 }
 \seealso{
-\code{\link{trimmed_robust_SSM}}, \code{\link{robularized_SSM}}, \code{\link[stats]{optim}}, \code{\link{attach_insample_info}}, \code{\link{oos_filter}}, \code{\link{specify_SSM}}
+\code{\link{trimmed_robust_SSM}}, \code{\link{roams_SSM}}, \code{\link[stats]{optim}}, \code{\link{attach_insample_info}}, \code{\link{oos_filter}}, \code{\link{specify_SSM}}
 }

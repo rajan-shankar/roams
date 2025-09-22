@@ -12,7 +12,7 @@
 #'
 #' @return An object of class \code{oracle_SSM} containing the optimization result, the provided outlier locations, the original data, and the original build function.
 #'
-#' @seealso \code{\link[dlm]{dlmMLE}}, \code{\link{robularized_SSM}}, \code{\link{attach_insample_info}}, \code{\link{oos_filter}}, \code{\link{specify_SSM}}
+#' @seealso \code{\link[dlm]{dlmMLE}}, \code{\link{roams_SSM}}, \code{\link{attach_insample_info}}, \code{\link{oos_filter}}, \code{\link{specify_SSM}}
 #'
 #' @export
 oracle_SSM = function(
@@ -59,7 +59,7 @@ oracle_SSM = function(
 #'
 #' @return An object of class \code{classical_SSM} containing the optimization result, the original data, and the original build function.
 #'
-#' @seealso \code{\link[dlm]{dlmMLE}}, \code{\link{robularized_SSM}}, \code{\link{attach_insample_info}}, \code{\link{oos_filter}}, \code{\link{specify_SSM}}
+#' @seealso \code{\link[dlm]{dlmMLE}}, \code{\link{roams_SSM}}, \code{\link{attach_insample_info}}, \code{\link{oos_filter}}, \code{\link{specify_SSM}}
 #'
 #' @export
 classical_SSM = function(
@@ -105,7 +105,7 @@ classical_SSM = function(
 #'
 #' @return An object of class \code{huber_robust_SSM} containing the optimization result, the original data, and the original build function.
 #'
-#' @seealso \code{\link{trimmed_robust_SSM}}, \code{\link{robularized_SSM}}, \code{\link[stats]{optim}}, \code{\link{attach_insample_info}}, \code{\link{oos_filter}}, \code{\link{specify_SSM}}
+#' @seealso \code{\link{trimmed_robust_SSM}}, \code{\link{roams_SSM}}, \code{\link[stats]{optim}}, \code{\link{attach_insample_info}}, \code{\link{oos_filter}}, \code{\link{specify_SSM}}
 #'
 #' @references Crevits R. and Croux C. (2018). Robust Estimation of Linear State Space Models. *Communications in Statistics: Simulation and Computation*
 #' @references Cipra, T., Romera, R. (1997). Kalman filter with outliers and missing observations. *Test* 6, 379–395. https://doi.org/10.1007/BF02564705
@@ -155,7 +155,7 @@ huber_robust_SSM = function(
 #'
 #' @return An object of class \code{trimmed_robust_SSM} containing the optimization result, trimming level \eqn{\alpha}, the original data, and the original build function.
 #'
-#' @seealso \code{\link{huber_robust_SSM}}, \code{\link{robularized_SSM}}, \code{\link[stats]{optim}}, \code{\link{attach_insample_info}}, \code{\link{oos_filter}}, \code{\link{specify_SSM}}
+#' @seealso \code{\link{huber_robust_SSM}}, \code{\link{roams_SSM}}, \code{\link[stats]{optim}}, \code{\link{attach_insample_info}}, \code{\link{oos_filter}}, \code{\link{specify_SSM}}
 #'
 #' @references Crevits R. and Croux C. (2018). Robust Estimation of Linear State Space Models. *Communications in Statistics: Simulation and Computation*
 #' @references Cipra, T., Romera, R. (1997). Kalman filter with outliers and missing observations. *Test* 6, 379–395. https://doi.org/10.1007/BF02564705
