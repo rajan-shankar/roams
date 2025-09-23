@@ -44,7 +44,7 @@ multi_level_distances = c(3,5,7)
 
 data_study1 = simulate_data_study1(
   sample_sizes = c(100, 200, 500, 1000),
-  samples = 2,
+  samples = 200,
   n_oos = 20,
   contamination = 0.1,
   distance = 5,
