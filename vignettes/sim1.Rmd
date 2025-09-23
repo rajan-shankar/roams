@@ -25,18 +25,17 @@ library(tidyverse)
 library(roams)
 library(future)
 
-# Number of cores to use
-num_cores = 7
-Sys.time()
+## Number of cores to use
+num_cores = 8
 study = "study1"
 seed = paste0("seed", 1303)
 data_path = "data/"
 scripts_path = "scripts/"
 ```
 
-# Simulate data for Study 1
+## Simulate data for Study 1
 
-Simulated data is generated using the `simulate_data_study1()` function. We set it to generate B = 300 data sets for each combination of sample size (100, 200, 500, 100) and outlier configuration (clean data, fixed distance, multi-level, cluster). Seed is set to 1303.
+Simulated data is generated using the `simulate_data_study1()` function. We set it to generate `B = 200` data sets for each combination of sample size (100, 200, 500, 1000) and outlier configuration (clean data, fixed distance, multi-level, cluster). Seed is set to 1303.
 
 ```{r settings, message = FALSE, eval = FALSE}
 true_par = c(0.8, 0.1, 0.1, 0.4, 0.4)
@@ -44,7 +43,7 @@ multi_level_distances = c(3,5,7)
 
 data_study1 = simulate_data_study1(
   sample_sizes = c(100, 200, 500, 1000),
-  samples = 300,
+  samples = 200,
   n_oos = 20,
   contamination = 0.1,
   distance = 5,
@@ -65,11 +64,11 @@ readr::write_rds(data_study1,
                  compress = "gz")
 ```
 
-# Fit models for Study 1
+## Fit models for Study 1  {.tabset}
 
 5 models are fit to each data set: classical, oracle, ROAMS, Huber, and trimmed. Each data frame of models is up to a gigabyte in size and takes days to fit, so they are saved in 5 separate `.rds` files.
 
-## Classical SSM fit
+### Classical SSM fit
 
 ```{r classical_model, message = FALSE, eval = FALSE}
 plan(multisession, workers = num_cores)
@@ -119,10 +118,10 @@ readr::write_rds(model_fits_classical_study1,
                  paste0(data_path, "classical_", study, "_", seed, ".rds"), 
                  compress = "gz")
 plan(sequential)
-rm(model_fits_classical_study1)  # free up memory
+rm(model_fits_classical_study1)  ## free up memory
 ```
 
-## Oracle model
+### Oracle model
 
 ```{r oracle_model, message = FALSE, eval = FALSE}
 plan(multisession, workers = num_cores)
@@ -173,10 +172,10 @@ readr::write_rds(model_fits_oracle_study1,
                  paste0(data_path, "oracle_", study, "_", seed, ".rds"),
                  compress = "gz")
 plan(sequential)
-rm(model_fits_oracle_study1)  # free up memory
+rm(model_fits_oracle_study1)  ## free up memory
 ```
 
-## ROAMS
+### ROAMS
 
 ```{r robust_ipod, message = FALSE, eval = FALSE}
 plan(multisession, workers = num_cores)
@@ -231,11 +230,11 @@ readr::write_rds(model_fits_roams_study1,
                  paste0(data_path, "roams_", study, "_", seed, ".rds"), 
                  compress = "gz")
 plan(sequential)
-rm(model_list)  # free up memory
-rm(model_fits_roams_study1)  # free up memory
+rm(model_list)  ## free up memory
+rm(model_fits_roams_study1)  ## free up memory
 ```
 
-## Huber model
+### Huber model
 
 ```{r huber_model, message = FALSE, eval = FALSE}
 plan(multisession, workers = num_cores)
@@ -285,10 +284,10 @@ readr::write_rds(model_fits_huber_study1,
                  paste0(data_path, "huber_", study, "_", seed, ".rds"), 
                  compress = "gz")
 plan(sequential)
-rm(model_fits_huber_study1)  # free up memory
+rm(model_fits_huber_study1)  ## free up memory
 ```
 
-## Trimmed model
+### Trimmed model
 
 ```{r trimmed_model, message = FALSE, eval = FALSE}
 plan(multisession, workers = num_cores)
@@ -339,10 +338,10 @@ readr::write_rds(model_fits_trimmed_study1,
                  paste0(data_path, "trimmed_", study, "_", seed, ".rds"),
                  compress = "gz")
 plan(sequential)
-rm(model_fits_trimmed_study1)  # free up memory
+rm(model_fits_trimmed_study1)  ## free up memory
 ```
 
-# Compute evaluation metrics for fitted models
+## Compute evaluation metrics for fitted models
 
 Using the model fits, in-sample and out-of-sample evaluation metrics (sensitivity, specificity, estimation RMSE, one-step-ahead MSFE) are computed. Functions to compute these metrics are sourced from the `evaluation_functions.R` script file. This process takes a few minutes to run, so the output is saved to the file `eval_metrics_study1.rds`. 
 
@@ -401,7 +400,7 @@ eval_metrics_study1 = model_fits_study1 |>
     ) |> 
   select(-c(model, 
             y_oos, x_oos, y, y_clean, x, 
-            outlier_locs, outlier_levels))  # reduce size of object by removing data set information
+            outlier_locs, outlier_levels))  ## reduce size of object by removing data set information
 
 eval_end = Sys.time()
 eval_end - eval_start
@@ -409,7 +408,7 @@ readr::write_rds(eval_metrics_study1,
                  paste0(data_path, "eval_metrics_study1.rds"))
 ```
 
-# Results
+## Results
 
 We illustrate the results of the `eval_metrics_study1.rds` object using plots and tables.
 
@@ -443,7 +442,7 @@ eval_metrics_study1 |>
   knitr::kable()
 ```
 
-## Mean sensitivity and specificity
+### Mean sensitivity and specificity
 
 Figure 3 of @shankar2025:
 
@@ -498,11 +497,11 @@ p2 = eval_metrics_study1 |>
 p1 + p2 + plot_layout(ncol = 2, widths = c(2,1), axes = "collect")
 ```
 
-## Raw sensitivity and specificity {.tabset}
+### Raw sensitivity and specificity {.tabset}
 
 Sensitivity and specificity of the ROAMS method for each data set are plotted. Each point corresponds to a data set: 
 
-### Sensitivity
+#### Sensitivity
 
 ```{r}
 eval_metrics_study1 |> 
@@ -518,7 +517,7 @@ eval_metrics_study1 |>
   scale_y_continuous(labels = scales::percent, limits = c(0,1))
 ```
 
-### Specificity
+#### Specificity
 
 ```{r}
 eval_metrics_study1 |> 
@@ -533,7 +532,7 @@ eval_metrics_study1 |>
   scale_y_continuous(labels = scales::percent, limits = c(0,1))
 ```
 
-### Multi-level sensitivity
+#### Multi-level sensitivity
 
 ```{r}
 eval_metrics_study1 |> 
@@ -558,11 +557,11 @@ eval_metrics_study1 |>
   scale_y_continuous(labels = scales::percent, limits = c(0,1))
 ```
 
-## Out-of-sample MSFE {.tabset}
+### Out-of-sample MSFE {.tabset}
 
 Mean-aggregated (Figure 4 of @shankar2025) and raw box plots of the one-step-ahead out-of-sample MSFE:
 
-### Mean MSFE
+#### Mean MSFE
 
 ```{r}
 eval_metrics_study1 |> 
@@ -618,7 +617,7 @@ eval_metrics_study1 |>
   )
 ```
 
-### Raw MSFE
+#### Raw MSFE
 
 ```{r}
 eval_metrics_study1 |> 
@@ -659,11 +658,11 @@ eval_metrics_study1 |>
   )
 ```
 
-## Phi: Parameter estimation error (RMSE) {.tabset}
+### Phi: Parameter estimation error (RMSE) {.tabset}
 
 Mean-aggregated and raw RMSE of each method's phi estimate from the true value of 0.8:
 
-### Mean RMSE
+#### Mean RMSE
 
 ```{r}
 eval_metrics_study1 |> 
@@ -715,7 +714,7 @@ eval_metrics_study1 |>
   )
 ```
 
-### Raw RMSE
+#### Raw RMSE
 
 ```{r}
 eval_metrics_study1 |> 
@@ -753,11 +752,11 @@ eval_metrics_study1 |>
   )
 ```
 
-## State error variances: Parameter estimation error (RMSE) {.tabset}
+### State error variances: Parameter estimation error (RMSE) {.tabset}
 
 Mean-aggregated and raw RMSE of each method's state error variances estimates from the true value of (0.1, 0.1):
 
-### Mean RMSE
+#### Mean RMSE
 
 ```{r}
 eval_metrics_study1 |> 
@@ -809,7 +808,7 @@ eval_metrics_study1 |>
   )
 ```
 
-### Raw RMSE
+#### Raw RMSE
 
 ```{r}
 eval_metrics_study1 |> 
@@ -847,11 +846,11 @@ eval_metrics_study1 |>
   )
 ```
 
-## Observation error variances: Parameter estimation error (RMSE) {.tabset}
+### Observation error variances: Parameter estimation error (RMSE) {.tabset}
 
 Mean-aggregated and raw RMSE of each method's observation error variances estimates from the true value of (0.4, 0.4):
 
-### Mean RMSE
+#### Mean RMSE
 
 ```{r}
 eval_metrics_study1 |> 
@@ -903,7 +902,7 @@ eval_metrics_study1 |>
   )
 ```
 
-### Raw RMSE
+#### Raw RMSE
 
 ```{r}
 eval_metrics_study1 |> 
@@ -941,7 +940,7 @@ eval_metrics_study1 |>
   )
 ```
 
-## Table of parameter estimation mean RMSEs for $n$ = 500
+### Table of parameter estimation mean RMSEs for $n$ = 500
 
 Table 2 of @shankar2025. For each outlier configuration, the mean parameter estimation RMSEs of each method is reported relative to the oracle benchmark method:
 
@@ -983,4 +982,4 @@ eval_metrics_study1 |>
   kable(digits = 2)
 ```
 
-#### References
+##### References

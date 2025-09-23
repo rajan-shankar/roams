@@ -6,12 +6,11 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>Simulation study 1 • roams</title>
-<!-- favicons --><link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
-<link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
-<link rel="apple-touch-icon" type="image/png" sizes="180x180" href="../apple-touch-icon.png">
-<link rel="apple-touch-icon" type="image/png" sizes="120x120" href="../apple-touch-icon-120x120.png">
-<link rel="apple-touch-icon" type="image/png" sizes="76x76" href="../apple-touch-icon-76x76.png">
-<link rel="apple-touch-icon" type="image/png" sizes="60x60" href="../apple-touch-icon-60x60.png">
+<!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png">
+<link rel="icon" type="”image/svg+xml”" href="../favicon.svg">
+<link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
+<link rel="icon" sizes="any" href="../favicon.ico">
+<link rel="manifest" href="../site.webmanifest">
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
@@ -78,13 +77,13 @@
 </blockquote>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyverse.tidyverse.org" class="external-link">tidyverse</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/rajan-shankar/roams">roams</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">roams</span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://future.futureverse.org" class="external-link">future</a></span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Number of cores to use</span></span>
+<span><span class="co">## Number of cores to use</span></span>
 <span><span class="va">num_cores</span> <span class="op">=</span> <span class="fl">7</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.time</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "2025-09-23 16:11:29 AEST"</span></span>
+<span><span class="co">#&gt; [1] "2025-09-23 17:33:34 AEST"</span></span>
 <span><span class="va">study</span> <span class="op">=</span> <span class="st">"study1"</span></span>
 <span><span class="va">seed</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"seed"</span>, <span class="fl">1303</span><span class="op">)</span></span>
 <span><span class="va">data_path</span> <span class="op">=</span> <span class="st">"data/"</span></span>
@@ -123,16 +122,28 @@ cluster). Seed is set to 1303.</p>
 <span>                 <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">data_path</span>, <span class="st">"data_"</span>, <span class="va">study</span>, <span class="st">"_"</span>, <span class="va">seed</span>, <span class="st">".rds"</span><span class="op">)</span>,</span>
 <span>                 compress <span class="op">=</span> <span class="st">"gz"</span><span class="op">)</span></span></code></pre></div>
 </div>
-<div class="section level2">
-<h2 id="fit-models-for-study-1">Fit models for Study 1<a class="anchor" aria-label="anchor" href="#fit-models-for-study-1"></a>
+<div class="section level2 tabset">
+<h2 class="tabset" id="fit-models-for-study-1">Fit models for Study 1<a class="anchor" aria-label="anchor" href="#fit-models-for-study-1"></a>
 </h2>
 <p>5 models are fit to each data set: classical, oracle, ROAMS, Huber,
 and trimmed. Each data frame of models is up to a gigabyte in size and
 takes days to fit, so they are saved in 5 separate <code>.rds</code>
 files.</p>
-<div class="section level3">
-<h3 id="classical-ssm-fit">Classical SSM fit<a class="anchor" aria-label="anchor" href="#classical-ssm-fit"></a>
-</h3>
+
+
+
+
+
+<ul class="nav nav-tabs" id="fit-models-for-study-1" role="tablist">
+<li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#classical-ssm-fit" id="classical-ssm-fit-tab" type="button" role="tab" aria-controls="classical-ssm-fit" aria-selected="true" class="active nav-link">Classical SSM fit</button></li>
+<li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#oracle-model" id="oracle-model-tab" type="button" role="tab" aria-controls="oracle-model" aria-selected="false" class="nav-link">Oracle model</button></li>
+<li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#roams" id="roams-tab" type="button" role="tab" aria-controls="roams" aria-selected="false" class="nav-link">ROAMS</button></li>
+<li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#huber-model" id="huber-model-tab" type="button" role="tab" aria-controls="huber-model" aria-selected="false" class="nav-link">Huber model</button></li>
+<li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#trimmed-model" id="trimmed-model-tab" type="button" role="tab" aria-controls="trimmed-model" aria-selected="false" class="nav-link">Trimmed model</button></li>
+</ul>
+<div class="tab-content">
+<div class="active  tab-pane" id="classical-ssm-fit" role="tabpanel" aria-labelledby="classical-ssm-fit-tab">
+
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://future.futureverse.org/reference/plan.html" class="external-link">plan</a></span><span class="op">(</span><span class="va">multisession</span>, workers <span class="op">=</span> <span class="va">num_cores</span><span class="op">)</span></span>
 <span><span class="va">classical_start</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.time</a></span><span class="op">(</span><span class="op">)</span></span>
@@ -181,11 +192,10 @@ files.</p>
 <span>                 <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">data_path</span>, <span class="st">"classical_"</span>, <span class="va">study</span>, <span class="st">"_"</span>, <span class="va">seed</span>, <span class="st">".rds"</span><span class="op">)</span>, </span>
 <span>                 compress <span class="op">=</span> <span class="st">"gz"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://future.futureverse.org/reference/plan.html" class="external-link">plan</a></span><span class="op">(</span><span class="va">sequential</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/rm.html" class="external-link">rm</a></span><span class="op">(</span><span class="va">model_fits_classical_study1</span><span class="op">)</span>  <span class="co"># free up memory</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/r/base/rm.html" class="external-link">rm</a></span><span class="op">(</span><span class="va">model_fits_classical_study1</span><span class="op">)</span>  <span class="co">## free up memory</span></span></code></pre></div>
 </div>
-<div class="section level3">
-<h3 id="oracle-model">Oracle model<a class="anchor" aria-label="anchor" href="#oracle-model"></a>
-</h3>
+<div class="tab-pane" id="oracle-model" role="tabpanel" aria-labelledby="oracle-model-tab">
+
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://future.futureverse.org/reference/plan.html" class="external-link">plan</a></span><span class="op">(</span><span class="va">multisession</span>, workers <span class="op">=</span> <span class="va">num_cores</span><span class="op">)</span></span>
 <span><span class="va">oracle_start</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.time</a></span><span class="op">(</span><span class="op">)</span></span>
@@ -235,11 +245,10 @@ files.</p>
 <span>                 <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">data_path</span>, <span class="st">"oracle_"</span>, <span class="va">study</span>, <span class="st">"_"</span>, <span class="va">seed</span>, <span class="st">".rds"</span><span class="op">)</span>,</span>
 <span>                 compress <span class="op">=</span> <span class="st">"gz"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://future.futureverse.org/reference/plan.html" class="external-link">plan</a></span><span class="op">(</span><span class="va">sequential</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/rm.html" class="external-link">rm</a></span><span class="op">(</span><span class="va">model_fits_oracle_study1</span><span class="op">)</span>  <span class="co"># free up memory</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/r/base/rm.html" class="external-link">rm</a></span><span class="op">(</span><span class="va">model_fits_oracle_study1</span><span class="op">)</span>  <span class="co">## free up memory</span></span></code></pre></div>
 </div>
-<div class="section level3">
-<h3 id="roams">ROAMS<a class="anchor" aria-label="anchor" href="#roams"></a>
-</h3>
+<div class="tab-pane" id="roams" role="tabpanel" aria-labelledby="roams-tab">
+
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://future.futureverse.org/reference/plan.html" class="external-link">plan</a></span><span class="op">(</span><span class="va">multisession</span>, workers <span class="op">=</span> <span class="va">num_cores</span><span class="op">)</span></span>
 <span></span>
@@ -293,12 +302,11 @@ files.</p>
 <span>                 <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">data_path</span>, <span class="st">"roams_"</span>, <span class="va">study</span>, <span class="st">"_"</span>, <span class="va">seed</span>, <span class="st">".rds"</span><span class="op">)</span>, </span>
 <span>                 compress <span class="op">=</span> <span class="st">"gz"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://future.futureverse.org/reference/plan.html" class="external-link">plan</a></span><span class="op">(</span><span class="va">sequential</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/rm.html" class="external-link">rm</a></span><span class="op">(</span><span class="va">model_list</span><span class="op">)</span>  <span class="co"># free up memory</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/rm.html" class="external-link">rm</a></span><span class="op">(</span><span class="va">model_fits_roams_study1</span><span class="op">)</span>  <span class="co"># free up memory</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/r/base/rm.html" class="external-link">rm</a></span><span class="op">(</span><span class="va">model_list</span><span class="op">)</span>  <span class="co">## free up memory</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/rm.html" class="external-link">rm</a></span><span class="op">(</span><span class="va">model_fits_roams_study1</span><span class="op">)</span>  <span class="co">## free up memory</span></span></code></pre></div>
 </div>
-<div class="section level3">
-<h3 id="huber-model">Huber model<a class="anchor" aria-label="anchor" href="#huber-model"></a>
-</h3>
+<div class="tab-pane" id="huber-model" role="tabpanel" aria-labelledby="huber-model-tab">
+
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://future.futureverse.org/reference/plan.html" class="external-link">plan</a></span><span class="op">(</span><span class="va">multisession</span>, workers <span class="op">=</span> <span class="va">num_cores</span><span class="op">)</span></span>
 <span><span class="va">huber_start</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.time</a></span><span class="op">(</span><span class="op">)</span></span>
@@ -347,11 +355,10 @@ files.</p>
 <span>                 <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">data_path</span>, <span class="st">"huber_"</span>, <span class="va">study</span>, <span class="st">"_"</span>, <span class="va">seed</span>, <span class="st">".rds"</span><span class="op">)</span>, </span>
 <span>                 compress <span class="op">=</span> <span class="st">"gz"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://future.futureverse.org/reference/plan.html" class="external-link">plan</a></span><span class="op">(</span><span class="va">sequential</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/rm.html" class="external-link">rm</a></span><span class="op">(</span><span class="va">model_fits_huber_study1</span><span class="op">)</span>  <span class="co"># free up memory</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/r/base/rm.html" class="external-link">rm</a></span><span class="op">(</span><span class="va">model_fits_huber_study1</span><span class="op">)</span>  <span class="co">## free up memory</span></span></code></pre></div>
 </div>
-<div class="section level3">
-<h3 id="trimmed-model">Trimmed model<a class="anchor" aria-label="anchor" href="#trimmed-model"></a>
-</h3>
+<div class="tab-pane" id="trimmed-model" role="tabpanel" aria-labelledby="trimmed-model-tab">
+
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://future.futureverse.org/reference/plan.html" class="external-link">plan</a></span><span class="op">(</span><span class="va">multisession</span>, workers <span class="op">=</span> <span class="va">num_cores</span><span class="op">)</span></span>
 <span><span class="va">trimmed_start</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.time</a></span><span class="op">(</span><span class="op">)</span></span>
@@ -401,7 +408,8 @@ files.</p>
 <span>                 <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">data_path</span>, <span class="st">"trimmed_"</span>, <span class="va">study</span>, <span class="st">"_"</span>, <span class="va">seed</span>, <span class="st">".rds"</span><span class="op">)</span>,</span>
 <span>                 compress <span class="op">=</span> <span class="st">"gz"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://future.futureverse.org/reference/plan.html" class="external-link">plan</a></span><span class="op">(</span><span class="va">sequential</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/rm.html" class="external-link">rm</a></span><span class="op">(</span><span class="va">model_fits_trimmed_study1</span><span class="op">)</span>  <span class="co"># free up memory</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/r/base/rm.html" class="external-link">rm</a></span><span class="op">(</span><span class="va">model_fits_trimmed_study1</span><span class="op">)</span>  <span class="co">## free up memory</span></span></code></pre></div>
+</div>
 </div>
 </div>
 <div class="section level2">
@@ -468,7 +476,7 @@ few minutes to run, so the output is saved to the file
 <span>    <span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">model</span>, </span>
 <span>            <span class="va">y_oos</span>, <span class="va">x_oos</span>, <span class="va">y</span>, <span class="va">y_clean</span>, <span class="va">x</span>, </span>
-<span>            <span class="va">outlier_locs</span>, <span class="va">outlier_levels</span><span class="op">)</span><span class="op">)</span>  <span class="co"># reduce size of object by removing data set information</span></span>
+<span>            <span class="va">outlier_locs</span>, <span class="va">outlier_levels</span><span class="op">)</span><span class="op">)</span>  <span class="co">## reduce size of object by removing data set information</span></span>
 <span></span>
 <span><span class="va">eval_end</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.time</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="va">eval_end</span> <span class="op">-</span> <span class="va">eval_start</span></span>
@@ -590,14 +598,22 @@ and outlier configuration:</p>
 <span><span class="va">p1</span> <span class="op">+</span> <span class="va">p2</span> <span class="op">+</span> <span class="fu"><a href="https://patchwork.data-imaginist.com/reference/plot_layout.html" class="external-link">plot_layout</a></span><span class="op">(</span>ncol <span class="op">=</span> <span class="fl">2</span>, widths <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>,<span class="fl">1</span><span class="op">)</span>, axes <span class="op">=</span> <span class="st">"collect"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="sim1_files/figure-html/unnamed-chunk-6-1.png" width="700"></p>
 </div>
-<div class="section level3">
+<div class="section level3 tabset">
 <h3 class="tabset" id="raw-sensitivity-and-specificity">Raw sensitivity and specificity<a class="anchor" aria-label="anchor" href="#raw-sensitivity-and-specificity"></a>
 </h3>
 <p>Sensitivity and specificity of the ROAMS method for each data set are
 plotted. Each point corresponds to a data set:</p>
-<div class="section level4">
-<h4 id="sensitivity">Sensitivity<a class="anchor" aria-label="anchor" href="#sensitivity"></a>
-</h4>
+
+
+
+<ul class="nav nav-tabs" id="raw-sensitivity-and-specificity" role="tablist">
+<li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#sensitivity" id="sensitivity-tab" type="button" role="tab" aria-controls="sensitivity" aria-selected="true" class="active nav-link">Sensitivity</button></li>
+<li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#specificity" id="specificity-tab" type="button" role="tab" aria-controls="specificity" aria-selected="false" class="nav-link">Specificity</button></li>
+<li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#multi-level-sensitivity" id="multi-level-sensitivity-tab" type="button" role="tab" aria-controls="multi-level-sensitivity" aria-selected="false" class="nav-link">Multi-level sensitivity</button></li>
+</ul>
+<div class="tab-content">
+<div class="active  tab-pane" id="sensitivity" role="tabpanel" aria-labelledby="sensitivity-tab">
+
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">eval_metrics_study1</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">method</span> <span class="op">==</span> <span class="st">"roams_fut_model"</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
@@ -612,9 +628,8 @@ plotted. Each point corresponds to a data set:</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_y_continuous</a></span><span class="op">(</span>labels <span class="op">=</span> <span class="fu">scales</span><span class="fu">::</span><span class="va"><a href="https://scales.r-lib.org/reference/percent_format.html" class="external-link">percent</a></span>, limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">1</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p><img src="sim1_files/figure-html/unnamed-chunk-7-1.png" width="700"></p>
 </div>
-<div class="section level4">
-<h4 id="specificity">Specificity<a class="anchor" aria-label="anchor" href="#specificity"></a>
-</h4>
+<div class="tab-pane" id="specificity" role="tabpanel" aria-labelledby="specificity-tab">
+
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">eval_metrics_study1</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">method</span> <span class="op">==</span> <span class="st">"roams_fut_model"</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
@@ -628,9 +643,8 @@ plotted. Each point corresponds to a data set:</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_y_continuous</a></span><span class="op">(</span>labels <span class="op">=</span> <span class="fu">scales</span><span class="fu">::</span><span class="va"><a href="https://scales.r-lib.org/reference/percent_format.html" class="external-link">percent</a></span>, limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">1</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p><img src="sim1_files/figure-html/unnamed-chunk-8-1.png" width="700"></p>
 </div>
-<div class="section level4">
-<h4 id="multi-level-sensitivity">Multi-level sensitivity<a class="anchor" aria-label="anchor" href="#multi-level-sensitivity"></a>
-</h4>
+<div class="tab-pane" id="multi-level-sensitivity" role="tabpanel" aria-labelledby="multi-level-sensitivity-tab">
+
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">eval_metrics_study1</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">method</span> <span class="op">==</span> <span class="st">"roams_fut_model"</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
@@ -655,15 +669,22 @@ plotted. Each point corresponds to a data set:</p>
 <p><img src="sim1_files/figure-html/unnamed-chunk-9-1.png" width="700"></p>
 </div>
 </div>
-<div class="section level3">
+</div>
+<div class="section level3 tabset">
 <h3 class="tabset" id="out-of-sample-msfe">Out-of-sample MSFE<a class="anchor" aria-label="anchor" href="#out-of-sample-msfe"></a>
 </h3>
 <p>Mean-aggregated (Figure 4 of <span class="citation">Shankar et al.
 (2025)</span>) and raw box plots of the one-step-ahead out-of-sample
 MSFE:</p>
-<div class="section level4">
-<h4 id="mean-msfe">Mean MSFE<a class="anchor" aria-label="anchor" href="#mean-msfe"></a>
-</h4>
+
+
+<ul class="nav nav-tabs" id="out-of-sample-msfe" role="tablist">
+<li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#mean-msfe" id="mean-msfe-tab" type="button" role="tab" aria-controls="mean-msfe" aria-selected="true" class="active nav-link">Mean MSFE</button></li>
+<li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#raw-msfe" id="raw-msfe-tab" type="button" role="tab" aria-controls="raw-msfe" aria-selected="false" class="nav-link">Raw MSFE</button></li>
+</ul>
+<div class="tab-content">
+<div class="active  tab-pane" id="mean-msfe" role="tabpanel" aria-labelledby="mean-msfe-tab">
+
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">eval_metrics_study1</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">sample</span>, <span class="va">n</span>, <span class="va">setting</span>, <span class="va">method</span>, <span class="va">MSFE</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
@@ -718,9 +739,8 @@ MSFE:</p>
 <span>  <span class="op">)</span></span></code></pre></div>
 <p><img src="sim1_files/figure-html/unnamed-chunk-10-1.png" width="700"></p>
 </div>
-<div class="section level4">
-<h4 id="raw-msfe">Raw MSFE<a class="anchor" aria-label="anchor" href="#raw-msfe"></a>
-</h4>
+<div class="tab-pane" id="raw-msfe" role="tabpanel" aria-labelledby="raw-msfe-tab">
+
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">eval_metrics_study1</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">sample</span>, <span class="va">n</span>, <span class="va">setting</span>, <span class="va">method</span>, <span class="va">MSFE</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
@@ -761,14 +781,21 @@ MSFE:</p>
 <p><img src="sim1_files/figure-html/unnamed-chunk-11-1.png" width="700"></p>
 </div>
 </div>
-<div class="section level3">
+</div>
+<div class="section level3 tabset">
 <h3 class="tabset" id="phi-parameter-estimation-error-rmse">Phi: Parameter estimation error (RMSE)<a class="anchor" aria-label="anchor" href="#phi-parameter-estimation-error-rmse"></a>
 </h3>
 <p>Mean-aggregated and raw RMSE of each method’s phi estimate from the
 true value of 0.8:</p>
-<div class="section level4">
-<h4 id="mean-rmse">Mean RMSE<a class="anchor" aria-label="anchor" href="#mean-rmse"></a>
-</h4>
+
+
+<ul class="nav nav-tabs" id="phi-parameter-estimation-error-rmse" role="tablist">
+<li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#mean-rmse" id="mean-rmse-tab" type="button" role="tab" aria-controls="mean-rmse" aria-selected="true" class="active nav-link">Mean RMSE</button></li>
+<li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#raw-rmse" id="raw-rmse-tab" type="button" role="tab" aria-controls="raw-rmse" aria-selected="false" class="nav-link">Raw RMSE</button></li>
+</ul>
+<div class="tab-content">
+<div class="active  tab-pane" id="mean-rmse" role="tabpanel" aria-labelledby="mean-rmse-tab">
+
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">eval_metrics_study1</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">method</span> <span class="op">!=</span> <span class="st">"roams_kalman_model"</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
@@ -819,9 +846,8 @@ true value of 0.8:</p>
 <span>  <span class="op">)</span></span></code></pre></div>
 <p><img src="sim1_files/figure-html/unnamed-chunk-12-1.png" width="700"></p>
 </div>
-<div class="section level4">
-<h4 id="raw-rmse">Raw RMSE<a class="anchor" aria-label="anchor" href="#raw-rmse"></a>
-</h4>
+<div class="tab-pane" id="raw-rmse" role="tabpanel" aria-labelledby="raw-rmse-tab">
+
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">eval_metrics_study1</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">method</span> <span class="op">!=</span> <span class="st">"roams_kalman_model"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
@@ -859,15 +885,22 @@ true value of 0.8:</p>
 <p><img src="sim1_files/figure-html/unnamed-chunk-13-1.png" width="700"></p>
 </div>
 </div>
-<div class="section level3">
+</div>
+<div class="section level3 tabset">
 <h3 class="tabset" id="state-error-variances-parameter-estimation-error-rmse">State error variances: Parameter estimation error
 (RMSE)<a class="anchor" aria-label="anchor" href="#state-error-variances-parameter-estimation-error-rmse"></a>
 </h3>
 <p>Mean-aggregated and raw RMSE of each method’s state error variances
 estimates from the true value of (0.1, 0.1):</p>
-<div class="section level4">
-<h4 id="mean-rmse-1">Mean RMSE<a class="anchor" aria-label="anchor" href="#mean-rmse-1"></a>
-</h4>
+
+
+<ul class="nav nav-tabs" id="state-error-variances-parameter-estimation-error-rmse" role="tablist">
+<li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#mean-rmse-1" id="mean-rmse-1-tab" type="button" role="tab" aria-controls="mean-rmse-1" aria-selected="true" class="active nav-link">Mean RMSE</button></li>
+<li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#raw-rmse-1" id="raw-rmse-1-tab" type="button" role="tab" aria-controls="raw-rmse-1" aria-selected="false" class="nav-link">Raw RMSE</button></li>
+</ul>
+<div class="tab-content">
+<div class="active  tab-pane" id="mean-rmse-1" role="tabpanel" aria-labelledby="mean-rmse-1-tab">
+
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">eval_metrics_study1</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">method</span> <span class="op">!=</span> <span class="st">"roams_kalman_model"</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
@@ -918,9 +951,8 @@ estimates from the true value of (0.1, 0.1):</p>
 <span>  <span class="op">)</span></span></code></pre></div>
 <p><img src="sim1_files/figure-html/unnamed-chunk-14-1.png" width="700"></p>
 </div>
-<div class="section level4">
-<h4 id="raw-rmse-1">Raw RMSE<a class="anchor" aria-label="anchor" href="#raw-rmse-1"></a>
-</h4>
+<div class="tab-pane" id="raw-rmse-1" role="tabpanel" aria-labelledby="raw-rmse-1-tab">
+
 <div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">eval_metrics_study1</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">method</span> <span class="op">!=</span> <span class="st">"roams_kalman_model"</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
@@ -958,15 +990,22 @@ estimates from the true value of (0.1, 0.1):</p>
 <p><img src="sim1_files/figure-html/unnamed-chunk-15-1.png" width="700"></p>
 </div>
 </div>
-<div class="section level3">
+</div>
+<div class="section level3 tabset">
 <h3 class="tabset" id="observation-error-variances-parameter-estimation-error-rmse">Observation error variances: Parameter estimation
 error (RMSE)<a class="anchor" aria-label="anchor" href="#observation-error-variances-parameter-estimation-error-rmse"></a>
 </h3>
 <p>Mean-aggregated and raw RMSE of each method’s observation error
 variances estimates from the true value of (0.4, 0.4):</p>
-<div class="section level4">
-<h4 id="mean-rmse-2">Mean RMSE<a class="anchor" aria-label="anchor" href="#mean-rmse-2"></a>
-</h4>
+
+
+<ul class="nav nav-tabs" id="observation-error-variances-parameter-estimation-error-rmse" role="tablist">
+<li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#mean-rmse-2" id="mean-rmse-2-tab" type="button" role="tab" aria-controls="mean-rmse-2" aria-selected="true" class="active nav-link">Mean RMSE</button></li>
+<li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#raw-rmse-2" id="raw-rmse-2-tab" type="button" role="tab" aria-controls="raw-rmse-2" aria-selected="false" class="nav-link">Raw RMSE</button></li>
+</ul>
+<div class="tab-content">
+<div class="active  tab-pane" id="mean-rmse-2" role="tabpanel" aria-labelledby="mean-rmse-2-tab">
+
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">eval_metrics_study1</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">method</span> <span class="op">!=</span> <span class="st">"roams_kalman_model"</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
@@ -1017,9 +1056,8 @@ variances estimates from the true value of (0.4, 0.4):</p>
 <span>  <span class="op">)</span></span></code></pre></div>
 <p><img src="sim1_files/figure-html/unnamed-chunk-16-1.png" width="700"></p>
 </div>
-<div class="section level4">
-<h4 id="raw-rmse-2">Raw RMSE<a class="anchor" aria-label="anchor" href="#raw-rmse-2"></a>
-</h4>
+<div class="tab-pane" id="raw-rmse-2" role="tabpanel" aria-labelledby="raw-rmse-2-tab">
+
 <div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">eval_metrics_study1</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">method</span> <span class="op">!=</span> <span class="st">"roams_kalman_model"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
@@ -1055,6 +1093,7 @@ variances estimates from the true value of (0.4, 0.4):</p>
 <span>    legend.text <span class="op">=</span> <span class="fu"><a href="https://wilkelab.org/ggtext/reference/element_markdown.html" class="external-link">element_markdown</a></span><span class="op">(</span><span class="op">)</span></span>
 <span>  <span class="op">)</span></span></code></pre></div>
 <p><img src="sim1_files/figure-html/unnamed-chunk-17-1.png" width="700"></p>
+</div>
 </div>
 </div>
 <div class="section level3">
@@ -1230,10 +1269,10 @@ method is reported relative to the oracle benchmark method:</p>
 </tr>
 </tbody>
 </table>
-<div class="section level5">
+<div class="section level5 unnumbered">
 <h5 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h5>
-<div id="refs" class="references csl-bib-body hanging-indent" line-spacing="2">
+<div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0" line-spacing="2">
 <div id="ref-shankar2025" class="csl-entry">
 Shankar, R., Wilms, I., Raymaekers, J., &amp; Tarr, G. (2025). Robust
 outlier-adjusted mean-shift estimation of state-space models. <a href="https://arxiv.org/abs/????.?????" class="external-link">https://arxiv.org/abs/????.?????</a>
@@ -1253,7 +1292,7 @@ outlier-adjusted mean-shift estimation of state-space models. <a href="https://a
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
 </div>
 
     </footer>
