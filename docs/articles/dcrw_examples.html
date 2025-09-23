@@ -839,6 +839,7 @@ for the state error variance matrix
 <h2 id="results">Results<a class="anchor" aria-label="anchor" href="#results"></a>
 </h2>
 <p>Evaluation metrics</p>
+<p>The MSFEs are reported relative to the classical method.</p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">results</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">name</span>, <span class="va">y_oos</span>, <span class="va">oos_outliers_flagged</span>, </span>
@@ -872,7 +873,7 @@ for the state error variance matrix
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">name</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
 <span>    MSFE <span class="op">=</span> <span class="va">MSFE</span> <span class="op">/</span> <span class="va">MSFE</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="va">method</span> <span class="op">==</span> <span class="st">"classical_oos"</span><span class="op">)</span><span class="op">]</span>,</span>
-<span>    MSFE_clean <span class="op">=</span> <span class="va">MSFE_clean</span> <span class="op">/</span> <span class="va">MSFE_clean</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="va">method</span> <span class="op">==</span> <span class="st">"classical_oos"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>    MSFE_clean <span class="op">=</span> <span class="va">MSFE_clean</span> <span class="op">/</span> <span class="va">MSFE_clean</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="va">method</span> <span class="op">==</span> <span class="st">"classical_oos"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span>digits <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
 <thead><tr class="header">

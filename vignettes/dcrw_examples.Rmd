@@ -716,6 +716,8 @@ results = read_rds("data/results.rds")
 
 Evaluation metrics
 
+The MSFEs are reported relative to the classical method.
+
 ```{r}
 results |> 
   select(name, y_oos, oos_outliers_flagged, 
@@ -749,7 +751,7 @@ results |>
   group_by(name) |> 
   mutate(
     MSFE = MSFE / MSFE[which(method == "classical_oos")],
-    MSFE_clean = MSFE_clean / MSFE_clean[which(method == "classical_oos")]) |> 
+    MSFE_clean = MSFE_clean / MSFE_clean[which(method == "classical_oos")]) |>
   knitr::kable(digits = 3)
 ```
 
