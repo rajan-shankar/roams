@@ -22,28 +22,29 @@ knitr::opts_chunk$set(
 
 ```{r packages}
 library(tidyverse)
-library(roams)
+library(roams) # version 0.5.1
 library(future)
 
 ## Number of cores to use
 num_cores = 8
 study = "study1"
-seed = paste0("seed", 1303)
+seed = paste0("seed", 2025)
 data_path = "data/"
 scripts_path = "scripts/"
+run_sim = FALSE
 ```
 
 ## Simulate data for Study 1
 
-Simulated data is generated using the `simulate_data_study1()` function. We set it to generate `B = 200` data sets for each combination of sample size (100, 200, 500, 1000) and outlier configuration (clean data, fixed distance, multi-level, cluster). Seed is set to 1303.
+Simulated data is generated using the `simulate_data_study1()` function. We set it to generate `B = 200` data sets for each combination of sample size (100, 200, 500, 1000) and outlier configuration (clean data, fixed distance, multi-level, cluster). Seed is set to 2025.
 
-```{r settings, message = FALSE, eval = FALSE}
+```{r settings, message = FALSE, eval = run_sim}
 true_par = c(0.8, 0.1, 0.1, 0.4, 0.4)
 multi_level_distances = c(3,5,7)
 
 data_study1 = simulate_data_study1(
   sample_sizes = c(100, 200, 500, 1000),
-  samples = 200,
+  samples = 2,
   n_oos = 20,
   contamination = 0.1,
   distance = 5,
@@ -56,7 +57,7 @@ data_study1 = simulate_data_study1(
   sigma2_v_lon = true_par[4],
   sigma2_v_lat = true_par[5],
   initial_state = c(0, 0, 0, 0),
-  seed = 1303
+  seed = 2025
 )
 
 readr::write_rds(data_study1, 
@@ -70,7 +71,7 @@ readr::write_rds(data_study1,
 
 ### Classical SSM fit
 
-```{r classical_model, message = FALSE, eval = FALSE}
+```{r classical_model, message = FALSE, eval = run_sim}
 plan(multisession, workers = num_cores)
 classical_start = Sys.time()
 model_fits_classical_study1 = data_study1 |> 
@@ -123,7 +124,7 @@ rm(model_fits_classical_study1)  ## free up memory
 
 ### Oracle model
 
-```{r oracle_model, message = FALSE, eval = FALSE}
+```{r oracle_model, message = FALSE, eval = run_sim}
 plan(multisession, workers = num_cores)
 oracle_start = Sys.time()
 model_fits_oracle_study1 = data_study1 |> 
@@ -177,7 +178,7 @@ rm(model_fits_oracle_study1)  ## free up memory
 
 ### ROAMS
 
-```{r robust_ipod, message = FALSE, eval = FALSE}
+```{r robust_ipod, message = FALSE, eval = run_sim}
 plan(multisession, workers = num_cores)
 
 roams_start = Sys.time()
@@ -236,7 +237,7 @@ rm(model_fits_roams_study1)  ## free up memory
 
 ### Huber model
 
-```{r huber_model, message = FALSE, eval = FALSE}
+```{r huber_model, message = FALSE, eval = run_sim}
 plan(multisession, workers = num_cores)
 huber_start = Sys.time()
 model_fits_huber_study1 = data_study1 |>
@@ -289,7 +290,7 @@ rm(model_fits_huber_study1)  ## free up memory
 
 ### Trimmed model
 
-```{r trimmed_model, message = FALSE, eval = FALSE}
+```{r trimmed_model, message = FALSE, eval = run_sim}
 plan(multisession, workers = num_cores)
 trimmed_start = Sys.time()
 model_fits_trimmed_study1 = data_study1 |>
@@ -345,14 +346,14 @@ rm(model_fits_trimmed_study1)  ## free up memory
 
 Using the model fits, in-sample and out-of-sample evaluation metrics (sensitivity, specificity, estimation RMSE, one-step-ahead MSFE) are computed. Functions to compute these metrics are sourced from the `evaluation_functions.R` script file. This process takes a few minutes to run, so the output is saved to the file `eval_metrics_study1.rds`. 
 
-```{r eval = FALSE}
-classical_study1 = read_rds(paste0(data_path, "classical_study1_seed1303.rds"))
-roams_study1 = read_rds(paste0(data_path, "roams_study1_seed1303.rds"))
-oracle_study1 = read_rds(paste0(data_path, "oracle_study1_seed1303.rds"))
-huber_study1 = read_rds(paste0(data_path, "huber_study1_seed1303.rds"))
-trimmed_study1 = read_rds(paste0(data_path, "trimmed_study1_seed1303.rds"))
+```{r eval = run_sim}
+classical_study1 = read_rds(paste0(data_path, "classical_study1_seed2025.rds"))
+roams_study1 = read_rds(paste0(data_path, "roams_study1_seed2025.rds"))
+oracle_study1 = read_rds(paste0(data_path, "oracle_study1_seed2025.rds"))
+huber_study1 = read_rds(paste0(data_path, "huber_study1_seed2025.rds"))
+trimmed_study1 = read_rds(paste0(data_path, "trimmed_study1_seed2025.rds"))
 
-data_study1 = read_rds(paste0(data_path, "data_study1_seed1303.rds"))
+data_study1 = read_rds(paste0(data_path, "data_study1_seed2025.rds"))
 model_fits_study1 = data_study1 |> 
   bind_cols(classical_study1) |> 
   bind_cols(roams_study1) |> 
@@ -416,7 +417,7 @@ Load packages for plots and tables:
 
 ```{r}
 library(patchwork)
-library(tidyplots)
+# library(tidyplots) #hard coded the two instances this was needed
 library(ggtext)
 library(knitr)
 library(kableExtra)
@@ -429,7 +430,7 @@ theme_set(
 
 Load `eval_metrics_study1.rds`:
 
-```{r}
+```{r load_eval_metrics}
 eval_metrics_study1 = read_rds(paste0(data_path, "eval_metrics_study1.rds"))
 ```
 
@@ -465,7 +466,8 @@ p1 = eval_metrics_study1 |>
                "Specificity" = "Mean Specificity"))) +
   labs(x = "n", y = NULL, colour = NULL, linetype = NULL) +
   scale_y_continuous(labels = scales::percent, limits = c(0.5,1)) +
-  scale_colour_manual(values = colors_discrete_friendly[1:4]) +
+  # colors_discrete_friendly[1:4]
+  scale_colour_manual(values = c("#0072B2","#56B4E9","#009E73","#F5C710")) +
   theme(legend.position = "bottom")
 
 p2 = eval_metrics_study1 |> 
@@ -486,9 +488,8 @@ p2 = eval_metrics_study1 |>
   geom_line() +
   geom_point() +
   facet_wrap(~ facet_label) +
-  scale_colour_manual(values = c(colors_continuous_inferno[80],
-                                 colors_continuous_inferno[150],
-                                 colors_continuous_inferno[220])) +
+  # colors_continuous_inferno[c(70,150,230)]
+  scale_colour_manual(values = c("#5B126EFF","#D24644FF","#FAC62DFF")) +
   labs(x = "n", y = NULL, 
        colour = NULL, linetype = NULL) +
   scale_y_continuous(labels = scales::percent, limits = c(0.5,1)) +
@@ -549,9 +550,8 @@ eval_metrics_study1 |>
   geom_beeswarm(corral = "random", corral.width = 0.9, alpha = 0.5,
                 cex = 0.5) +
   facet_wrap(~ level) +
-  scale_colour_manual(values = c(colors_continuous_inferno[70],
-                                 colors_continuous_inferno[150],
-                                 colors_continuous_inferno[230])) +
+  # colors_continuous_inferno[c(70,150,230)]
+  scale_colour_manual(values = c("#5B126EFF","#D24644FF","#FAC62DFF")) +
   labs(x = "n", y = "True positive rate \n (multi-level outliers)") +
   theme(legend.position = "none") +
   scale_y_continuous(labels = scales::percent, limits = c(0,1))
