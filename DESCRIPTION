@@ -46,7 +46,8 @@ Imports:
   future,
   furrr
 Depends:
-  ggplot2
+  ggplot2,
+  R (>= 4.1.0)
 Suggests: 
     knitr,
     rmarkdown
