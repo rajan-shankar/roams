@@ -231,7 +231,6 @@ readr::write_rds(model_fits_roams_study1,
                  paste0(data_path, "roams_", study, "_", seed, ".rds"), 
                  compress = "gz")
 plan(sequential)
-rm(model_list)  ## free up memory
 rm(model_fits_roams_study1)  ## free up memory
 ```
 
@@ -417,7 +416,6 @@ Load packages for plots and tables:
 
 ```{r}
 library(patchwork)
-# library(tidyplots) #hard coded the two instances this was needed
 library(ggtext)
 library(knitr)
 library(kableExtra)
@@ -940,7 +938,7 @@ eval_metrics_study1 |>
   )
 ```
 
-### Table of parameter estimation mean RMSEs for $n$ = 500
+### Table of parameter estimation mean RMSEs for n = 500
 
 Table 2 of @shankar2025. For each outlier configuration, the mean parameter estimation RMSEs of each method is reported relative to the oracle benchmark method:
 
@@ -982,4 +980,4 @@ eval_metrics_study1 |>
   kable(digits = 2)
 ```
 
-##### References
+#### References

@@ -459,6 +459,7 @@ results = tibble(
   
   classical_model = list(),
   roams_model = list(),
+  roams_model_list = list(),
   huber_model = list(),
   trimmed_model = list(),
   
@@ -684,6 +685,7 @@ for (i in 1:length(data_sets)) {
       
       classical_model = list(classical_model),
       roams_model = list(roams_model),
+      roams_model_list = list(roams_model_list),
       huber_model = list(huber_model),
       trimmed_model = list(trimmed_model),
       
@@ -720,11 +722,20 @@ The MSFEs are reported relative to the classical method.
 
 ```{r}
 results |> 
-  select(name, y_oos, oos_outliers_flagged, 
-         classical_oos:trimmed_oos) |> 
+  select(-roams_model_list) |> 
+  mutate(roams_kalman_model = roams_model,
+         roams_fut_model = roams_model) |> 
+  select(-data_set, -y_train, -frequency, -roams_model) |> 
   rename(y_test = y_oos) |> 
   pivot_longer(cols = ends_with("_oos"), 
-               names_to = "method", values_to = "oos_output") |> 
+               names_to = "method_oos", values_to = "oos_output") |> 
+  pivot_longer(cols = ends_with("_model"), 
+               names_to = "method_insample", values_to = "insample_output") |> 
+  mutate(method_oos = str_remove(method_oos, "_oos"),
+         method_insample = str_remove(method_insample, "_model")) |> 
+  filter(method_oos == method_insample) |> 
+  rename(method = method_oos) |> 
+  select(-method_insample) |> 
   mutate(
     MSFE = map2_dbl(
       oos_output, y_test,
@@ -746,19 +757,42 @@ results |>
         return(MSFE)
       }
     ),
+    phi_estimate = map_dbl(insample_output, ~ .$par[1])
   ) |> 
-  select(name, method, MSFE, MSFE_clean) |> 
+  select(name, method, phi_estimate, MSFE, MSFE_clean) |> 
   group_by(name) |> 
   mutate(
-    MSFE = MSFE / MSFE[which(method == "classical_oos")],
-    MSFE_clean = MSFE_clean / MSFE_clean[which(method == "classical_oos")]) |>
-  knitr::kable(digits = 3)
+    MSFE = MSFE / MSFE[which(method == "classical")],
+    MSFE_clean = MSFE_clean / MSFE_clean[which(method == "classical")]) |>
+  # for paper
+  filter(method %in% c("classical", "roams_fut", "roams_kalman")) |>  
+  group_by(name) |>
+  mutate(name = ifelse(row_number() == 1,
+                            paste0("\\midrule
+                                   \\multirow{3}{*}{", name, "}"),
+                            "")) |>
+  ungroup() |> 
+  mutate(
+    phi_estimate = as.character(
+      format(round(phi_estimate, 2), nsmall = 2)),
+    phi_estimate = case_when(
+    method == "roams_fut" ~ paste0("\\multirow{2}{*}{", phi_estimate, "}"),
+    method == "roams_kalman" ~ "",
+    TRUE ~ phi_estimate
+  )) |> 
+  kable("latex", booktabs = TRUE, escape = FALSE,
+        linesep = "", digits = 2,
+        align = c("l", "l|", rep("c", 3)))
+  
+  # for vignette
+  knitr::kable(digits = 2)
 ```
 
 Other results
 
 ```{r}
 results |> 
+  select(-roams_model_list) |> 
   mutate(
     n = map_dbl(y_train, ~ nrow(.)),
     n_complete = map_dbl(y_train, ~ sum(!is.na(.[,1]))),
@@ -772,7 +806,7 @@ results |>
                            ~ sum(.$outliers_flagged)),
     
     roams_phi = map_dbl(roams_model, ~ .$par[1]),
-    classical_phi = map_dbl(classical_model, ~ .$par[1]),
+    classical_phi = map_dbl(classical_model, ~ .$par[1])
     
     # roams_MSFE = map2_dbl(
     #   roams_oos, y_oos,
@@ -870,15 +904,53 @@ results |>
     # )
     
     )  |> 
-  select(name, frequency, n, n_complete, n_oos, n_oos_complete, lambda,
-         in_sample_detected, oos_detected, roams_phi, classical_phi) |> 
+  select(name, frequency,
+         n, n_complete, in_sample_detected,
+         n_oos, n_oos_complete, oos_detected) |> 
+  # for paper
+  kable("latex", booktabs = TRUE, escape = FALSE,
+        linesep = "",
+        align = c("l", "l|", 
+                  "c", "c", "c|",
+                  "c", "c", "c"
+                  ))
+  
+  # for vignette
   knitr::kable(digits = 3)
 ```
+
+### Plot outlier diagnostics {.tabset}
+
+#### Cat
+
+```{r}
+a = results |> 
+  filter(name == "cat_mia") |> 
+  pull(roams_model_list) |> 
+  pluck(1)
+  autoplot(a)
+```
+
+#### Cow
+
+
+
+#### Polar bear
+
+
+
+#### Seal
+
+
+
+#### Blue whale
+
 
 ### Plot out-of-sample squared forecast errors
 
 ```{r oos-sfe-boxplots}
 results |> 
+  select(-roams_model_list) |> 
   mutate(
     classical_SFEs = map2(
       classical_oos, y_oos, 
