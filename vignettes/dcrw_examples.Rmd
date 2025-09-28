@@ -924,27 +924,52 @@ results |>
 #### Cat
 
 ```{r}
-a = results |> 
+results |> 
   filter(name == "cat_mia") |> 
   pull(roams_model_list) |> 
-  pluck(1)
-  autoplot(a)
+  pluck(1) |> 
+  autoplot()
 ```
 
 #### Cow
 
-
+```{r}
+results |> 
+  filter(name == "cow_11") |> 
+  pull(roams_model_list) |> 
+  pluck(1) |> 
+  autoplot()
+```
 
 #### Polar bear
 
-
+```{r}
+results |> 
+  filter(name == "polar_low_freq") |> 
+  pull(roams_model_list) |> 
+  pluck(1) |> 
+  autoplot()
+```
 
 #### Seal
 
-
+```{r}
+results |> 
+  filter(name == "seal") |> 
+  pull(roams_model_list) |> 
+  pluck(1) |> 
+  autoplot()
+```
 
 #### Blue whale
 
+```{r}
+results |> 
+  filter(name == "whale_2008") |> 
+  pull(roams_model_list) |> 
+  pluck(1) |> 
+  autoplot()
+```
 
 ### Plot out-of-sample squared forecast errors
 

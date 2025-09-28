@@ -78,6 +78,10 @@ roams_SSM = function(
     highest_lambda = max(dlmInfo(y, y, classical, build)$mahalanobis_residuals)
     lowest_lambda = 2
 
+    if (lowest_lambda >= highest_lambda) {
+      stop("Automatic lambda selection failed. Lowest lambda = 2 is too large. Your data set may not have outliers. Try providing a custom lambda sequence via the 'custom_lambdas' argument.")
+    }
+
     # Lambda grid
     lambdas = seq(lowest_lambda,
                   highest_lambda,
