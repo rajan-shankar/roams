@@ -57,7 +57,7 @@ data_study1 = simulate_data_study1(
   sigma2_v_lon = true_par[4],
   sigma2_v_lat = true_par[5],
   initial_state = c(0, 0, 0, 0),
-  seed = 2025
+  seed = as.numeric(str_remove(seed, "seed"))
 )
 
 readr::write_rds(data_study1, 
@@ -67,7 +67,7 @@ readr::write_rds(data_study1,
 
 ## Fit models for Study 1  {.tabset}
 
-5 models are fit to each data set: classical, oracle, ROAMS, Huber, and trimmed. Each data frame of models is up to a gigabyte in size and takes days to fit, so they are saved in 5 separate `.rds` files.
+5 models are fit to each data set: classical, oracle, ROAMS, Huber, and trimmed. Each data frame of models can be large in size and takes days to fit, so they are saved in 5 separate `.rds` files.
 
 ### Classical SSM fit
 
@@ -94,13 +94,13 @@ model_fits_classical_study1 = data_study1 |>
         x0 = c(y[1,], y[1,])
         P0 = diag(rep(0, 4))
         
-        return(list(
-          m0 = x0,
-          C0 = P0,
-          FF = A,
-          GG = Phi,
-          V = R,
-          W = Q))
+        specify_SSM(
+          state_transition_matrix = Phi,
+          state_noise_var = Q,
+          observation_matrix = A,
+          observation_noise_var = R,
+          init_state_mean = x0,
+          init_state_var = P0)
       }
       
       classical_SSM(
@@ -108,8 +108,8 @@ model_fits_classical_study1 = data_study1 |>
         init_par = c(0.5, rep(c(mad(diff(y[,1]), na.rm = TRUE)^2, 
                                 mad(diff(y[,2]), na.rm = TRUE)^2), 2)),
         build = build, 
-        lower = c(0, 1e-12, 1e-12, 1e-12, 1e-12), 
-        upper = c(1, Inf, Inf, Inf, Inf)
+        lower = c(0, rep(1e-12, 4)), 
+        upper = c(1, rep(Inf, 4))
       )}, 
     .progress = TRUE),
     .keep = "none")
@@ -147,13 +147,13 @@ model_fits_oracle_study1 = data_study1 |>
         x0 = c(y[1,], y[1,])
         P0 = diag(rep(0, 4))
         
-        return(list(
-          m0 = x0,
-          C0 = P0,
-          FF = A,
-          GG = Phi,
-          V = R,
-          W = Q))
+        specify_SSM(
+          state_transition_matrix = Phi,
+          state_noise_var = Q,
+          observation_matrix = A,
+          observation_noise_var = R,
+          init_state_mean = x0,
+          init_state_var = P0)
       }
       
       oracle_SSM(
@@ -162,8 +162,8 @@ model_fits_oracle_study1 = data_study1 |>
                                 mad(diff(y[,2]), na.rm = TRUE)^2), 2)),
         build = build, 
         outlier_locs = outlier_locs,
-        lower = c(0, 1e-12, 1e-12, 1e-12, 1e-12), 
-        upper = c(1, Inf, Inf, Inf, Inf)
+        lower = c(0, rep(1e-12, 4)), 
+        upper = c(1, rep(Inf, 4))
       )}, 
     .progress = TRUE),
     .keep = "none")
@@ -202,13 +202,13 @@ model_fits_roams_study1 = data_study1 |>
         x0 = c(y[1,], y[1,])
         P0 = diag(rep(0, 4))
         
-        return(list(
-          m0 = x0,
-          C0 = P0,
-          FF = A,
-          GG = Phi,
-          V = R,
-          W = Q))
+        specify_SSM(
+          state_transition_matrix = Phi,
+          state_noise_var = Q,
+          observation_matrix = A,
+          observation_noise_var = R,
+          init_state_mean = x0,
+          init_state_var = P0)
       }
       
       roams_SSM(
@@ -218,8 +218,8 @@ model_fits_roams_study1 = data_study1 |>
         build = build, 
         num_lambdas = 50, 
         cores = 1,
-        lower = c(0, 1e-12, 1e-12, 1e-12, 1e-12), 
-        upper = c(1, Inf, Inf, Inf, Inf),
+        lower = c(0, rep(1e-12, 4)), 
+        upper = c(1, rep(Inf, 4)),
         B = 50
       )}, 
     .progress = TRUE),
@@ -231,7 +231,6 @@ readr::write_rds(model_fits_roams_study1,
                  paste0(data_path, "roams_", study, "_", seed, ".rds"), 
                  compress = "gz")
 plan(sequential)
-rm(model_list)  ## free up memory
 rm(model_fits_roams_study1)  ## free up memory
 ```
 
@@ -274,8 +273,8 @@ model_fits_huber_study1 = data_study1 |>
         init_par = c(0.5, rep(c(mad(diff(y[,1]), na.rm = TRUE)^2, 
                                 mad(diff(y[,2]), na.rm = TRUE)^2), 2)),
         build = build_huber_trimmed,
-        lower = c(0.001, 1e-12, 1e-12, 1e-12, 1e-12),
-        upper = c(0.999, Inf, Inf, Inf, Inf)
+        lower = c(0.001, rep(1e-12, 4)),
+        upper = c(0.999, rep(Inf, 4))
       )},
     .progress = TRUE),
     .keep = "none")
@@ -328,8 +327,8 @@ model_fits_trimmed_study1 = data_study1 |>
                                 mad(diff(y[,2]), na.rm = TRUE)^2), 2)),
         build = build_huber_trimmed,
         alpha = 0.1,
-        lower = c(0.001, 1e-12, 1e-12, 1e-12, 1e-12),
-        upper = c(0.999, Inf, Inf, Inf, Inf)
+        lower = c(0.001, rep(1e-12, 4)),
+        upper = c(0.999, rep(Inf, 4))
       )},
     .progress = TRUE),
     .keep = "none")
@@ -344,16 +343,22 @@ rm(model_fits_trimmed_study1)  ## free up memory
 
 ## Compute evaluation metrics for fitted models
 
-Using the model fits, in-sample and out-of-sample evaluation metrics (sensitivity, specificity, estimation RMSE, one-step-ahead MSFE) are computed. Functions to compute these metrics are sourced from the `evaluation_functions.R` script file. This process takes a few minutes to run, so the output is saved to the file `eval_metrics_study1.rds`. 
+Using the model fits, in-sample and out-of-sample evaluation metrics (sensitivity, specificity, estimation RMSE, one-step-ahead MSFE) are computed. Functions to compute these metrics are sourced from the `scripts/evaluation_functions.R` script file. This process takes a few minutes to run, so the output is saved to the file `data/eval_metrics_study1.rds`. 
 
 ```{r eval = run_sim}
-classical_study1 = read_rds(paste0(data_path, "classical_study1_seed2025.rds"))
-roams_study1 = read_rds(paste0(data_path, "roams_study1_seed2025.rds"))
-oracle_study1 = read_rds(paste0(data_path, "oracle_study1_seed2025.rds"))
-huber_study1 = read_rds(paste0(data_path, "huber_study1_seed2025.rds"))
-trimmed_study1 = read_rds(paste0(data_path, "trimmed_study1_seed2025.rds"))
+classical_study1 = read_rds(paste0(
+  data_path, "classical_", study, "_", seed, ".rds"))
+roams_study1 = read_rds(paste0(
+  data_path, "roams_", study, "_", seed, ".rds"))
+oracle_study1 = read_rds(paste0(
+  data_path, "oracle_", study, "_", seed, ".rds"))
+huber_study1 = read_rds(paste0(
+  data_path, "huber_", study, "_", seed, ".rds"))
+trimmed_study1 = read_rds(paste0(
+  data_path, "trimmed_", study, "_", seed, ".rds"))
 
-data_study1 = read_rds(paste0(data_path, "data_study1_seed2025.rds"))
+data_study1 = read_rds(paste0(
+  data_path, "data_", study, "_", seed, ".rds"))
 model_fits_study1 = data_study1 |> 
   bind_cols(classical_study1) |> 
   bind_cols(roams_study1) |> 
@@ -367,10 +372,7 @@ model_fits_study1 = model_fits_study1 |>
   mutate(roams_kalman_model = roams_fut_model) 
 
 source(paste0(scripts_path, "evaluation_functions.R"))
-
 eval_start = Sys.time()
-true_par = c(0.8, 0.1, 0.1, 0.4, 0.4)
-multi_level_distances = c(3,5,7)
 
 eval_metrics_study1 = model_fits_study1 |>
   pivot_longer(ends_with("_model"),
@@ -411,13 +413,12 @@ readr::write_rds(eval_metrics_study1,
 
 ## Results
 
-We illustrate the results of the `eval_metrics_study1.rds` object using plots and tables.
+We illustrate the results contained in `eval_metrics_study1.rds` using plots and tables.
 
 Load packages for plots and tables:
 
 ```{r}
 library(patchwork)
-# library(tidyplots) #hard coded the two instances this was needed
 library(ggtext)
 library(knitr)
 library(kableExtra)
@@ -426,6 +427,9 @@ library(ggbeeswarm)
 theme_set(
   theme_bw(base_size = 16) + theme(legend.position = "bottom")
 )
+
+LW = 0.8  # linewidths
+PS = 2.0  # point sizes
 ```
 
 Load `eval_metrics_study1.rds`:
@@ -434,7 +438,7 @@ Load `eval_metrics_study1.rds`:
 eval_metrics_study1 = read_rds(paste0(data_path, "eval_metrics_study1.rds"))
 ```
 
-Check number of replicates per sample size $n$ and outlier configuration:
+Check number of replicates per sample size $n$ and configuration:
 
 ```{r}
 eval_metrics_study1 |> 
@@ -445,9 +449,12 @@ eval_metrics_study1 |>
 
 ### Mean sensitivity and specificity
 
-Figure 3 of @shankar2025:
+Figure 2 of @shankar2025:
 
 ```{r}
+settings = c("clean data", "cluster", "fixed distance", "multi-level")
+labels_settings = c("Clean data", "Cluster", "Fixed distance", "Multi-level")
+
 p1 = eval_metrics_study1 |> 
   filter(method == "roams_fut_model") |> 
   group_by(n, setting) |> 
@@ -458,49 +465,52 @@ p1 = eval_metrics_study1 |>
   ggplot() +
   aes(x = factor(n), y = value, 
       colour = setting, group = setting, linetype = setting) +
-  geom_line() +
-  geom_point() +
+  geom_line(linewidth = LW) +
+  geom_point(size = PS) +
   facet_wrap(~ metric, nrow = 1, scales = "fixed", 
              labeller = labeller(metric = c(
                "Sensitivity" = "Mean Sensitivity", 
                "Specificity" = "Mean Specificity"))) +
   labs(x = "n", y = NULL, colour = NULL, linetype = NULL) +
   scale_y_continuous(labels = scales::percent, limits = c(0.5,1)) +
-  # colors_discrete_friendly[1:4]
-  scale_colour_manual(values = c("#0072B2","#56B4E9","#009E73","#F5C710")) +
-  theme(legend.position = "bottom")
+  scale_colour_manual(
+    values = setNames(c("#0072B2","#56B4E9","#009E73","#F5C710"), settings),
+    labels = setNames(labels_settings, settings)) +
+  scale_linetype_manual(
+    values = setNames(c("solid", "dashed", "dotted", "dotdash"), settings),
+    labels = setNames(labels_settings, settings)) +
+  guides(color = guide_legend(ncol = 2, byrow = TRUE))
 
 p2 = eval_metrics_study1 |> 
   filter(setting == "multi-level") |>
   filter(method == "roams_fut_model") |> 
   pivot_longer(starts_with("TPR_"), names_to = "level", values_to = "rate") |>
   mutate(level = case_when(
-                           level == "TPR_large" ~ "large",
-                           level == "TPR_medium" ~ "medium",
-                           level == "TPR_small" ~ "small",
+                           level == "TPR_large" ~ "Large",
+                           level == "TPR_medium" ~ "Medium",
+                           level == "TPR_small" ~ "Small",
                            )) |> 
   group_by(n, level) |> 
   summarise(TPR = mean(rate)) |> 
-  mutate(facet_label = "Mean Sensitivity (multi-level outliers)") |> 
+  mutate(facet_label = "Mean Sensitivity \n(multi-level outliers)") |> 
   ggplot() +
   aes(x = factor(n), y = TPR, 
       colour = level, group = level, linetype = level) +
-  geom_line() +
-  geom_point() +
+  geom_line(linewidth = LW) +
+  geom_point(size = PS) +
   facet_wrap(~ facet_label) +
-  # colors_continuous_inferno[c(70,150,230)]
   scale_colour_manual(values = c("#5B126EFF","#D24644FF","#FAC62DFF")) +
   labs(x = "n", y = NULL, 
        colour = NULL, linetype = NULL) +
   scale_y_continuous(labels = scales::percent, limits = c(0.5,1)) +
-  theme(legend.position = "bottom")
+  guides(color = guide_legend(ncol = 2, byrow = TRUE))
 
 p1 + p2 + plot_layout(ncol = 2, widths = c(2,1), axes = "collect")
 ```
 
 ### Raw sensitivity and specificity {.tabset}
 
-Sensitivity and specificity of the ROAMS method for each data set are plotted. Each point corresponds to a data set: 
+Sensitivity and specificity of the ROAMS method for each replicate are plotted. Each point corresponds to a replicate: 
 
 #### Sensitivity
 
@@ -512,8 +522,8 @@ eval_metrics_study1 |>
   aes(x = factor(n), y = TPR) +
   geom_beeswarm(corral = "random", corral.width = 0.9, alpha = 0.5,
                 cex = 0.5) +
-  facet_wrap(~ setting, nrow = 1,
-             scales = "fixed") +
+  facet_wrap(~ setting, nrow = 1, scales = "fixed", 
+             labeller = as_labeller(setNames(labels_settings, settings))) +
   labs(x = "n", y = "True positive rate") +
   scale_y_continuous(labels = scales::percent, limits = c(0,1))
 ```
@@ -527,8 +537,8 @@ eval_metrics_study1 |>
   aes(x = factor(n), y = TNR) +
   geom_beeswarm(corral = "random", corral.width = 0.9, alpha = 0.5,
                 cex = 0.5) +
-  facet_wrap(~ setting, nrow = 2,
-             scales = "fixed") +
+  facet_wrap(~ setting, nrow = 2, scales = "fixed",
+             labeller = as_labeller(setNames(labels_settings, settings))) +
   labs(x = "n", y = "True negative rate") +
   scale_y_continuous(labels = scales::percent, limits = c(0,1))
 ```
@@ -541,16 +551,15 @@ eval_metrics_study1 |>
   filter(setting == "multi-level") |>
   pivot_longer(starts_with("TPR_"), names_to = "level", values_to = "rate") |>
   mutate(level = case_when(
-                           level == "TPR_large" ~ "large",
-                           level == "TPR_medium" ~ "medium",
-                           level == "TPR_small" ~ "small",
+                           level == "TPR_large" ~ "Large",
+                           level == "TPR_medium" ~ "Medium",
+                           level == "TPR_small" ~ "Small",
                            )) |> 
   ggplot() +
   aes(x = factor(n), y = rate, colour = level) +
   geom_beeswarm(corral = "random", corral.width = 0.9, alpha = 0.5,
                 cex = 0.5) +
   facet_wrap(~ level) +
-  # colors_continuous_inferno[c(70,150,230)]
   scale_colour_manual(values = c("#5B126EFF","#D24644FF","#FAC62DFF")) +
   labs(x = "n", y = "True positive rate \n (multi-level outliers)") +
   theme(legend.position = "none") +
@@ -559,62 +568,34 @@ eval_metrics_study1 |>
 
 ### Out-of-sample MSFE {.tabset}
 
-Mean-aggregated (Figure 4 of @shankar2025) and raw box plots of the one-step-ahead out-of-sample MSFE:
+Mean-aggregated (Figure 3 of @shankar2025) and raw box plots of the one-step-ahead out-of-sample MSFE:
 
 #### Mean MSFE
 
 ```{r}
+methods = c("roams_fut_model", "roams_kalman_model", "classical_model", "huber_model", "trimmed_model", "oracle_model")
+labels = c("**ROAMS-FUT**", "**ROAMS-Kalman**", "Classical", "Huber", "Trimmed", "Oracle")
+colours = c("orange", "gold", "royalblue", "brown3", "purple3", "green4")
+linetypes = c("solid", "solid", "dotted", "dashed", "dashed", "dotdash")
+
 eval_metrics_study1 |> 
   select(sample, n, setting, method, MSFE) |> 
   group_by(n, setting, method) |> 
   summarise(MSFE = mean(MSFE)) |> 
-  mutate(method = factor(method, 
-                         levels = c(
-                           "roams_fut_model",
-                           "roams_kalman_model",
-                           "classical_model",
-                           "huber_model",
-                           "trimmed_model",
-                           "oracle_model"
-                         ))) |> 
+  mutate(method = factor(method, levels = methods)) |> 
   ggplot() +
   aes(x = factor(n), y = MSFE, colour = method, linetype = method,
       group = method) +
-  geom_line() +
-  geom_point() +
-  facet_wrap(~ setting, scales = "free_y") +
-  scale_colour_manual(values = c(
-    "orange", 
-    "gold", 
-    "royalblue",
-    "brown3",
-    "purple3",
-    "green4"
-    ),
-    labels = c(
-      "**ROAMS-FUT**",
-      "**ROAMS-Kalman**",
-      "classical",
-      "huber",
-      "trimmed",
-      "oracle"
-    )) +
-  scale_linetype_manual(values = c(
-    "solid", "solid", "dotted", "dashed", "dashed", "dotdash" 
-  ),
-  labels = c(
-      "**ROAMS-FUT**",
-      "**ROAMS-Kalman**",
-      "classical",
-      "huber",
-      "trimmed",
-      "oracle"
-    )) +
-  labs(x = "n", y = "Mean MSFE", 
-       colour = NULL, linetype = NULL) +
-  theme(
-    legend.text = element_markdown()
-  )
+  geom_line(linewidth = LW) +
+  geom_point(size = PS) +
+  facet_wrap(~ setting, scales = "free_y",
+             labeller = as_labeller(setNames(labels_settings, settings))) +
+  scale_colour_manual(values = setNames(colours, methods),
+                      labels = setNames(labels, methods)) +
+  scale_linetype_manual(values = setNames(linetypes, methods),
+                        labels = setNames(labels, methods)) +
+  labs(x = "n", y = "Mean MSFE", colour = NULL, linetype = NULL) +
+  theme(legend.text = element_markdown())
 ```
 
 #### Raw MSFE
@@ -622,40 +603,16 @@ eval_metrics_study1 |>
 ```{r}
 eval_metrics_study1 |> 
   select(sample, n, setting, method, MSFE) |> 
-  mutate(method = factor(method, 
-                         levels = c(
-                           "roams_fut_model",
-                           "roams_kalman_model",
-                           "classical_model",
-                           "huber_model",
-                           "trimmed_model",
-                           "oracle_model"
-                         ))) |> 
+  mutate(method = factor(method, levels = methods)) |> 
   ggplot() +
   aes(x = factor(n), y = MSFE, colour = method) +
   geom_boxplot() +
-  facet_wrap(~ setting, scales = "free_y") +
-  scale_colour_manual(values = c(
-    "orange", 
-    "gold", 
-    "royalblue",
-    "brown3",
-    "purple3",
-    "green4"
-    ),
-    labels = c(
-      "**ROAMS-FUT**",
-      "**ROAMS-Kalman**",
-      "classical",
-      "huber",
-      "trimmed",
-      "oracle"
-    )) +
-  labs(x = "n", y = "MSFE", 
-       colour = NULL, linetype = NULL) +
-  theme(
-    legend.text = element_markdown()
-  )
+  facet_wrap(~ setting, scales = "free_y",
+             labeller = as_labeller(setNames(labels_settings, settings))) +
+  scale_colour_manual(values = setNames(colours, methods),
+    labels = setNames(labels, methods)) +
+  labs(x = "n", y = "MSFE", colour = NULL, linetype = NULL) +
+  theme(legend.text = element_markdown())
 ```
 
 ### Phi: Parameter estimation error (RMSE) {.tabset}
@@ -665,53 +622,30 @@ Mean-aggregated and raw RMSE of each method's phi estimate from the true value o
 #### Mean RMSE
 
 ```{r}
+methods = c("roams_fut_model", "classical_model", "huber_model", "trimmed_model", "oracle_model")
+labels = c("**ROAMS**", "Classical", "Huber", "Trimmed", "Oracle")
+colours = c("orange", "royalblue", "brown3", "purple3", "green4")
+linetypes = c("solid", "dotted", "dashed", "dashed", "dotdash")
+
 eval_metrics_study1 |> 
   filter(method != "roams_kalman_model") |> 
   group_by(n, setting, method) |> 
   summarise(RMSE = mean(sqrt(par_dist_phi))) |> 
-  mutate(method = factor(method, 
-                         levels = c(
-                           "roams_fut_model",
-                           "classical_model",
-                           "huber_model",
-                           "trimmed_model",
-                           "oracle_model"
-                         ))) |> 
+  mutate(method = factor(method, levels = methods)) |> 
   ggplot() +
   aes(x = factor(n), y = RMSE, colour = method, linetype = method,
       group = method) +
-  geom_line() +
-  geom_point() +
-  facet_wrap(~ setting, scales = "free_y") +
-  scale_colour_manual(values = c(
-    "orange", 
-    "royalblue",
-    "brown3",
-    "purple3",
-    "green4"
-    ),
-    labels = c(
-      "**ROAMS**",
-      "classical",
-      "huber",
-      "trimmed",
-      "oracle"
-    )) +
-  scale_linetype_manual(values = c(
-    "solid", "dotted", "dashed", "dashed", "dotdash" 
-  ),
-  labels = c(
-      "**ROAMS**",
-      "classical",
-      "huber",
-      "trimmed",
-      "oracle"
-    )) +
-  labs(x = "n", y = "Mean RMSE", 
+  geom_line(linewidth = LW) +
+  geom_point(size = PS) +
+  facet_wrap(~ setting, scales = "free_y", 
+             labeller = as_labeller(setNames(labels_settings, settings))) +
+  scale_colour_manual(values = setNames(colours, methods),
+                      labels = setNames(labels, methods)) +
+  scale_linetype_manual(values = setNames(linetypes, methods),
+                        labels = setNames(labels, methods)) +
+  labs(x = "n", y = "Mean RMSE (phi)", 
        colour = NULL, linetype = NULL) +
-  theme(
-    legend.text = element_markdown()
-  )
+  theme(legend.text = element_markdown())
 ```
 
 #### Raw RMSE
@@ -719,37 +653,17 @@ eval_metrics_study1 |>
 ```{r}
 eval_metrics_study1 |> 
   filter(method != "roams_kalman_model") |>
-  mutate(method = factor(method, 
-                         levels = c(
-                           "roams_fut_model",
-                           "classical_model",
-                           "huber_model",
-                           "trimmed_model",
-                           "oracle_model"
-                         ))) |> 
+  mutate(method = factor(method, levels = methods)) |> 
   ggplot() +
   aes(x = factor(n), y = sqrt(par_dist_phi), colour = method) +
   geom_boxplot() +
-  facet_wrap(~ setting, scales = "free_y") +
-  scale_colour_manual(values = c(
-    "orange", 
-    "royalblue",
-    "brown3",
-    "purple3",
-    "green4"
-    ),
-    labels = c(
-      "**ROAMS**",
-      "classical",
-      "huber",
-      "trimmed",
-      "oracle"
-    )) +
-  labs(x = "n", y = "RMSE", 
+  facet_wrap(~ setting, scales = "free_y",
+             labeller = as_labeller(setNames(labels_settings, settings))) +
+  scale_colour_manual(values = setNames(colours, methods),
+    labels = setNames(labels, methods)) +
+  labs(x = "n", y = "RMSE (phi)", 
        colour = NULL, linetype = NULL) +
-  theme(
-    legend.text = element_markdown()
-  )
+  theme(legend.text = element_markdown())
 ```
 
 ### State error variances: Parameter estimation error (RMSE) {.tabset}
@@ -763,49 +677,21 @@ eval_metrics_study1 |>
   filter(method != "roams_kalman_model") |> 
   group_by(n, setting, method) |> 
   summarise(RMSE = mean(sqrt(par_dist_state_var))) |> 
-  mutate(method = factor(method, 
-                         levels = c(
-                           "roams_fut_model",
-                           "classical_model",
-                           "huber_model",
-                           "trimmed_model",
-                           "oracle_model"
-                         ))) |> 
+  mutate(method = factor(method, levels = methods)) |> 
   ggplot() +
   aes(x = factor(n), y = RMSE, colour = method, linetype = method,
       group = method) +
-  geom_line() +
-  geom_point() +
-  facet_wrap(~ setting, scales = "free_y") +
-  scale_colour_manual(values = c(
-    "orange", 
-    "royalblue",
-    "brown3",
-    "purple3",
-    "green4"
-    ),
-    labels = c(
-      "**ROAMS**",
-      "classical",
-      "huber",
-      "trimmed",
-      "oracle"
-    )) +
-  scale_linetype_manual(values = c(
-    "solid", "dotted", "dashed", "dashed", "dotdash" 
-  ),
-  labels = c(
-      "**ROAMS**",
-      "classical",
-      "huber",
-      "trimmed",
-      "oracle"
-    )) +
-  labs(x = "n", y = "Mean RMSE", 
+  geom_line(linewidth = LW) +
+  geom_point(size = PS) +
+  facet_wrap(~ setting, scales = "free_y",
+             labeller = as_labeller(setNames(labels_settings, settings))) +
+  scale_colour_manual(values = setNames(colours, methods),
+                      labels = setNames(labels, methods)) +
+  scale_linetype_manual(values = setNames(linetypes, methods),
+                        labels = setNames(labels, methods)) +
+  labs(x = "n", y = "Mean RMSE (state error vars)", 
        colour = NULL, linetype = NULL) +
-  theme(
-    legend.text = element_markdown()
-  )
+  theme(legend.text = element_markdown())
 ```
 
 #### Raw RMSE
@@ -813,37 +699,17 @@ eval_metrics_study1 |>
 ```{r}
 eval_metrics_study1 |> 
   filter(method != "roams_kalman_model") |> 
-  mutate(method = factor(method, 
-                         levels = c(
-                           "roams_fut_model",
-                           "classical_model",
-                           "huber_model",
-                           "trimmed_model",
-                           "oracle_model"
-                         ))) |> 
+  mutate(method = factor(method, levels = methods)) |> 
   ggplot() +
   aes(x = factor(n), y = sqrt(par_dist_state_var), colour = method) +
   geom_boxplot() +
-  facet_wrap(~ setting, scales = "free_y") +
-  scale_colour_manual(values = c(
-    "orange", 
-    "royalblue",
-    "brown3",
-    "purple3",
-    "green4"
-    ),
-    labels = c(
-      "**ROAMS**",
-      "classical",
-      "huber",
-      "trimmed",
-      "oracle"
-    )) +
-  labs(x = "n", y = "RMSE", 
+  facet_wrap(~ setting, scales = "free_y",
+             labeller = as_labeller(setNames(labels_settings, settings))) +
+  scale_colour_manual(values = setNames(colours, methods),
+                      labels = setNames(labels, methods)) +
+  labs(x = "n", y = "RMSE (state error vars)", 
        colour = NULL, linetype = NULL) +
-  theme(
-    legend.text = element_markdown()
-  )
+  theme(legend.text = element_markdown())
 ```
 
 ### Observation error variances: Parameter estimation error (RMSE) {.tabset}
@@ -857,49 +723,21 @@ eval_metrics_study1 |>
   filter(method != "roams_kalman_model") |> 
   group_by(n, setting, method) |> 
   summarise(RMSE = mean(sqrt(par_dist_obs_var))) |> 
-  mutate(method = factor(method, 
-                         levels = c(
-                           "roams_fut_model",
-                           "classical_model",
-                           "huber_model",
-                           "trimmed_model",
-                           "oracle_model"
-                         ))) |> 
+  mutate(method = factor(method, levels = methods)) |> 
   ggplot() +
   aes(x = factor(n), y = RMSE, colour = method, linetype = method,
       group = method) +
-  geom_line() +
-  geom_point() +
-  facet_wrap(~ setting, scales = "free_y") +
-  scale_colour_manual(values = c(
-    "orange", 
-    "royalblue",
-    "brown3",
-    "purple3",
-    "green4"
-    ),
-    labels = c(
-      "**ROAMS**",
-      "classical",
-      "huber",
-      "trimmed",
-      "oracle"
-    )) +
-  scale_linetype_manual(values = c(
-    "solid", "dotted", "dashed", "dashed", "dotdash" 
-  ),
-  labels = c(
-      "**ROAMS**",
-      "classical",
-      "huber",
-      "trimmed",
-      "oracle"
-    )) +
-  labs(x = "n", y = "Mean RMSE", 
+  geom_line(linewidth = LW) +
+  geom_point(size = PS) +
+  facet_wrap(~ setting, scales = "free_y",
+             labeller = as_labeller(setNames(labels_settings, settings))) +
+  scale_colour_manual(values = setNames(colours, methods),
+    labels = setNames(labels, methods)) +
+  scale_linetype_manual(values = setNames(linetypes, methods),
+  labels = setNames(labels, methods)) +
+  labs(x = "n", y = "Mean RMSE (obs error vars)", 
        colour = NULL, linetype = NULL) +
-  theme(
-    legend.text = element_markdown()
-  )
+  theme(legend.text = element_markdown())
 ```
 
 #### Raw RMSE
@@ -907,40 +745,20 @@ eval_metrics_study1 |>
 ```{r}
 eval_metrics_study1 |> 
   filter(method != "roams_kalman_model") |>
-  mutate(method = factor(method, 
-                         levels = c(
-                           "roams_fut_model",
-                           "classical_model",
-                           "huber_model",
-                           "trimmed_model",
-                           "oracle_model"
-                         ))) |> 
+  mutate(method = factor(method, levels = methods)) |> 
   ggplot() +
   aes(x = factor(n), y = sqrt(par_dist_obs_var), colour = method) +
   geom_boxplot() +
-  facet_wrap(~ setting, scales = "free_y") +
-  scale_colour_manual(values = c(
-    "orange", 
-    "royalblue",
-    "brown3",
-    "purple3",
-    "green4"
-    ),
-    labels = c(
-      "**ROAMS**",
-      "classical",
-      "huber",
-      "trimmed",
-      "oracle"
-    )) +
-  labs(x = "n", y = "RMSE", 
+  facet_wrap(~ setting, scales = "free_y",
+             labeller = as_labeller(setNames(labels_settings, settings))) +
+  scale_colour_manual(values = setNames(colours, methods),
+    labels = setNames(labels, methods)) +
+  labs(x = "n", y = "RMSE (obs error vars)", 
        colour = NULL, linetype = NULL) +
-  theme(
-    legend.text = element_markdown()
-  )
+  theme(legend.text = element_markdown())
 ```
 
-### Table of parameter estimation mean RMSEs for $n$ = 500
+### Table of parameter estimation mean RMSEs for n = 500
 
 Table 2 of @shankar2025. For each outlier configuration, the mean parameter estimation RMSEs of each method is reported relative to the oracle benchmark method:
 
@@ -982,4 +800,4 @@ eval_metrics_study1 |>
   kable(digits = 2)
 ```
 
-##### References
+### References

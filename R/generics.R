@@ -98,9 +98,9 @@ print.trimmed_robust_SSM = function(x, ...) {
 #' @method autoplot roams_SSM_list
 
 autoplot.roams_SSM_list = function(object,
-                                         attribute1 = "BIC",
-                                         attribute2 = "prop_outlying",
-                                         ...) {
+                                   attribute1 = "BIC",
+                                   attribute2 = "prop_outlying",
+                                   ...) {
 
   model_list = object
 
@@ -131,7 +131,7 @@ autoplot.roams_SSM_list = function(object,
     ggplot() +
     aes(x = lambda, y = attribute1) +
     geom_line(linewidth = 1) +
-    geom_vline(data = . |>
+    geom_vline(data = data |>
                  dplyr::filter(prop_outlying < 0.5) |>
                  dplyr::slice(which.min(BIC)),
                aes(xintercept = lambda),
@@ -144,7 +144,7 @@ autoplot.roams_SSM_list = function(object,
     ggplot() +
     aes(x = lambda, y = attribute2) +
     geom_line(linewidth = 1) +
-    geom_vline(data = . |>
+    geom_vline(data = data |>
                  dplyr::filter(prop_outlying < 0.5) |>
                  dplyr::slice(which.min(BIC)),
                aes(xintercept = lambda),
