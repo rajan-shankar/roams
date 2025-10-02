@@ -29,6 +29,8 @@ library(patchwork)
 library(rnaturalearth)
 library(rnaturalearthdata)
 library(sf)
+library(knitr)
+
 # Get country boundaries as an sf object for later use
 world <- rnaturalearth::ne_countries(scale = "medium", returnclass = "sf")
 ```
@@ -563,8 +565,8 @@ for (i in 1:length(data_sets)) {
     y = y_train,
     init_par = c(0.5, var_est, var_est),
     build = build_fn_huber_trimmed,
-    lower = c(0.001, 1e-12, 1e-12, 1e-12, 1e-12),
-    upper = c(0.999, Inf, Inf, Inf, Inf)
+    lower = c(0.001, rep(1e-12, 4)),
+    upper = c(0.999, rep(Inf, 4))
   )
   
   trimmed_model = trimmed_robust_SSM(
@@ -572,8 +574,8 @@ for (i in 1:length(data_sets)) {
     init_par = c(0.5, var_est, var_est),
     build = build_fn_huber_trimmed,
     alpha = 0.05,  # assume a low level of 5% contamination
-    lower = c(0.001, 1e-12, 1e-12, 1e-12, 1e-12),
-    upper = c(0.999, Inf, Inf, Inf, Inf)
+    lower = c(0.001, rep(1e-12, 4)),
+    upper = c(0.999, rep(Inf, 4))
   )
   
   classical_model = attach_insample_info(classical_model)
@@ -765,24 +767,24 @@ results |>
     MSFE = MSFE / MSFE[which(method == "classical")],
     MSFE_clean = MSFE_clean / MSFE_clean[which(method == "classical")]) |>
   # for paper
-  filter(method %in% c("classical", "roams_fut", "roams_kalman")) |>  
-  group_by(name) |>
-  mutate(name = ifelse(row_number() == 1,
-                            paste0("\\midrule
-                                   \\multirow{3}{*}{", name, "}"),
-                            "")) |>
-  ungroup() |> 
-  mutate(
-    phi_estimate = as.character(
-      format(round(phi_estimate, 2), nsmall = 2)),
-    phi_estimate = case_when(
-    method == "roams_fut" ~ paste0("\\multirow{2}{*}{", phi_estimate, "}"),
-    method == "roams_kalman" ~ "",
-    TRUE ~ phi_estimate
-  )) |> 
-  kable("latex", booktabs = TRUE, escape = FALSE,
-        linesep = "", digits = 2,
-        align = c("l", "l|", rep("c", 3)))
+  # filter(method %in% c("classical", "roams_fut", "roams_kalman")) |>  
+  # group_by(name) |>
+  # mutate(name = ifelse(row_number() == 1,
+  #                           paste0("\\midrule
+  #                                  \\multirow{3}{*}{", name, "}"),
+  #                           "")) |>
+  # ungroup() |> 
+  # mutate(
+  #   phi_estimate = as.character(
+  #     format(round(phi_estimate, 2), nsmall = 2)),
+  #   phi_estimate = case_when(
+  #   method == "roams_fut" ~ paste0("\\multirow{2}{*}{", phi_estimate, "}"),
+  #   method == "roams_kalman" ~ "",
+  #   TRUE ~ phi_estimate
+  # )) |> 
+  # kable("latex", booktabs = TRUE, escape = FALSE,
+  #       linesep = "", digits = 2,
+  #       align = c("l", "l|", rep("c", 3)))
   
   # for vignette
   knitr::kable(digits = 2)
@@ -908,12 +910,12 @@ results |>
          n, n_complete, in_sample_detected,
          n_oos, n_oos_complete, oos_detected) |> 
   # for paper
-  kable("latex", booktabs = TRUE, escape = FALSE,
-        linesep = "",
-        align = c("l", "l|", 
-                  "c", "c", "c|",
-                  "c", "c", "c"
-                  ))
+  # kable("latex", booktabs = TRUE, escape = FALSE,
+  #       linesep = "",
+  #       align = c("l", "l|", 
+  #                 "c", "c", "c|",
+  #                 "c", "c", "c"
+  #                 ))
   
   # for vignette
   knitr::kable(digits = 3)
