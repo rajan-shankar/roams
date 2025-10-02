@@ -18,6 +18,7 @@ knitr::opts_chunk$set(
 
 ```{r setup}
 library(roams)
+library(tidyverse)
 ```
 
 Overview of the functions, including a simulated data set.
@@ -50,7 +51,7 @@ whale_2008 = read_csv("data/Blue whales Eastern North Pacific 1993-2008 - Argos 
 
 # Paper whale
 
-```{r}
+```{r eval = FALSE}
 y = whale_2008 %>% 
   select(x, y) %>% 
   as.matrix()
@@ -122,7 +123,7 @@ readr::write_rds(plot_data, "data/whale_plot_data.rds")
 Load `whale_plot_data.rds`:
 
 ```{r}
-plot_data = readr::read_rds(plot_data, "data/whale_plot_data.rds")
+plot_data = readr::read_rds("data/whale_plot_data.rds")
 ```
 
 
@@ -174,10 +175,10 @@ ggplot(plot_data) +
   theme(legend.position = "bottom",
         legend.text = element_markdown())
 
-ggsave("whale_map.pdf")
+# ggsave("whale_map.pdf")
 ```
 
-```{r}
+```{r eval = FALSE}
 p2 = model_robust_list %>% autoplot()
 p21 = p2[[1]]
 p22 = p2[[2]]
