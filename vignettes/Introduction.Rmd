@@ -187,7 +187,7 @@ p1 = ggplot(plot_data) +
 p1
 ```
 
-```{r fig.width = 10, fig.height = 7}
+```{r fig.width = 9}
 p2 = roams_model_list %>% autoplot()
 
 # Extract individual plots for editing
