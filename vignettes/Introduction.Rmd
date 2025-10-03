@@ -118,12 +118,14 @@ plot_data = tibble(
 )
 
 readr::write_rds(plot_data, "data/whale_plot_data.rds")
+readr::write_rds(roams_model_list, "data/whale_roams_model_list.rds")
 ```
 
-Load `whale_plot_data.rds`:
+Load `whale_plot_data.rds` and `whale_roams_model_list.rds`:
 
 ```{r}
 plot_data = readr::read_rds("data/whale_plot_data.rds")
+roams_model_list = readr::read_rds("data/whale_roams_model_list.rds")
 ```
 
 
@@ -131,22 +133,30 @@ plot_data = readr::read_rds("data/whale_plot_data.rds")
 library(rnaturalearth)
 library(rnaturalearthdata)
 library(sf)
-library(ggtext)
+library(patchwork)
 
+theme_set(
+  theme_bw(base_size = 16) + 
+    theme(legend.position = "bottom",
+          legend.key.width = unit(1.2, "cm"))
+)
+```
+
+```{r}
 world <- ne_countries(scale = "medium", returnclass = "sf")
 
-# States/Provinces (Admin-1 level)
-states <- ne_download(scale = "medium", type = "admin_1_states_provinces", category = "cultural", returnclass = "sf")
+# States/Provinces
+states = ne_states(country = "United States of America")
 
-plot_features = c("observations", "detected outliers", "roams path", "classical path")
-colours = c("black", "orange", "orange", "royalblue")
-labels = c("Observations", "Detected outliers", "**ROAMS** path", "Classical path")
+plot_features = c("observations", "detected outliers", "classical path", "roams path")
+colours = c("black", "orange", "royalblue", "orange")
+labels = c("Observations", "Detected outliers", "Classical path", "ROAMS path")
 
-ggplot(plot_data) +
-  geom_sf(data = world, fill = "#fafaf8", color = "grey", linewidth = 0.3) +
+p1 = ggplot(plot_data) +
+  geom_sf(data = world, fill = "white", color = "grey", linewidth = 0.3) +
 
   # State/province labels
-  geom_sf_text(data = states, aes(label = str_to_upper(name)), size = 2,
+  geom_sf_text(data = states, aes(label = str_to_upper(name)), size = 3,
                color = "darkgrey", fontface = "bold") +
   geom_sf(data = states, fill = NA, color = "grey", linewidth = 0.3) +
 
@@ -166,32 +176,31 @@ ggplot(plot_data) +
            ylim = c(min(plot_data$y_data, na.rm = TRUE) - 2,
                     max(plot_data$y_data, na.rm = TRUE) + 2),
            expand = FALSE) +
-  theme_bw(base_size = 16) +
   theme(panel.grid.major = element_blank(),
-        panel.background = element_rect(fill = "#d4dadc")) +
+        panel.background = element_rect(fill = "#ddecf0")) +
   labs(x = NULL, y = NULL, colour = NULL) +
   scale_colour_manual(values = setNames(colours, plot_features),
-                      labels = setNames(labels, plot_features)) +
-  theme(legend.position = "bottom",
-        legend.text = element_markdown())
+                      labels = setNames(labels, plot_features),
+                      breaks = plot_features) +
+  guides(colour = guide_legend(ncol = 2, byrow = TRUE))
 
-# ggsave("whale_map.pdf")
+p1
 ```
 
-```{r eval = FALSE}
-p2 = model_robust_list %>% autoplot()
+```{r fig.width = 10, fig.height = 7}
+p2 = roams_model_list %>% autoplot()
+
+# Extract individual plots for editing
 p21 = p2[[1]]
-p22 = p2[[2]]
+p22 = p2[[2]] +
+  labs(y = "Detected outliers") +
+  scale_y_continuous(labels = scales::percent)
 
-p3 = (p21 + 
-  theme_bw(base_size = 12)) +
-  (p22 + 
-     theme_bw(base_size = 12) +
-     labs(y = "Outliers detected") +
-     scale_y_continuous(labels = scales::percent, limits = c(0,1))) +
-  plot_layout(nrow = 2, axes = "collect")
+# Re-combine plots
+p2 = p21 + p22 + plot_layout(nrow = 2, axes = "collect")
 
-p1 + p3
+# Final plot
+p1 + p2
 ```
 
 

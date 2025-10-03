@@ -408,7 +408,9 @@ library(kableExtra)
 library(ggbeeswarm)
 
 theme_set(
-  theme_bw(base_size = 16) + theme(legend.position = "bottom")
+  theme_bw(base_size = 16) + 
+    theme(legend.position = "bottom",
+          legend.key.width = unit(1.2, "cm"))
 )
 
 LW = 0.8  # linewidths

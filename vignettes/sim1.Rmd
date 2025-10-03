@@ -14,6 +14,7 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   message = FALSE,
   warning = FALSE,
+  fig.height = 6,
   comment = "#>"
 )
 ```
@@ -425,7 +426,9 @@ library(kableExtra)
 library(ggbeeswarm)
 
 theme_set(
-  theme_bw(base_size = 16) + theme(legend.position = "bottom")
+  theme_bw(base_size = 16) + 
+    theme(legend.position = "bottom",
+          legend.key.width = unit(1.2, "cm"))
 )
 
 LW = 0.8  # linewidths
@@ -435,7 +438,7 @@ PS = 2.0  # point sizes
 Load `eval_metrics_study1.rds`:
 
 ```{r load_eval_metrics}
-eval_metrics_study1 = read_rds(paste0(data_path, "eval_metrics_study1.rds"))
+eval_metrics_study1 = read_rds(paste0(data_path, "eval_metrics_study1_full.rds"))  # change back to not _full
 ```
 
 Check number of replicates per sample size $n$ and configuration:
@@ -451,7 +454,7 @@ eval_metrics_study1 |>
 
 Figure 2 of @shankar2025:
 
-```{r}
+```{r fig.height = 5}
 settings = c("clean data", "cluster", "fixed distance", "multi-level")
 labels_settings = c("Clean data", "Cluster", "Fixed distance", "Multi-level")
 
@@ -479,7 +482,7 @@ p1 = eval_metrics_study1 |>
   scale_linetype_manual(
     values = setNames(c("solid", "dashed", "dotted", "dotdash"), settings),
     labels = setNames(labels_settings, settings)) +
-  guides(color = guide_legend(ncol = 2, byrow = TRUE))
+  guides(colour = guide_legend(ncol = 2, byrow = TRUE))
 
 p2 = eval_metrics_study1 |> 
   filter(setting == "multi-level") |>
@@ -499,11 +502,11 @@ p2 = eval_metrics_study1 |>
   geom_line(linewidth = LW) +
   geom_point(size = PS) +
   facet_wrap(~ facet_label) +
-  scale_colour_manual(values = c("#5B126EFF","#D24644FF","#FAC62DFF")) +
+  scale_colour_manual(values = c("#5B126EFF","#D24644FF","#FCA108FF")) +
   labs(x = "n", y = NULL, 
        colour = NULL, linetype = NULL) +
   scale_y_continuous(labels = scales::percent, limits = c(0.5,1)) +
-  guides(color = guide_legend(ncol = 2, byrow = TRUE))
+  guides(colour = guide_legend(ncol = 2, byrow = TRUE))
 
 p1 + p2 + plot_layout(ncol = 2, widths = c(2,1), axes = "collect")
 ```
@@ -514,7 +517,7 @@ Sensitivity and specificity of the ROAMS method for each replicate are plotted. 
 
 #### Sensitivity
 
-```{r}
+```{r fig.height = 5}
 eval_metrics_study1 |> 
   filter(method == "roams_fut_model") |> 
   filter(setting != "clean data") |> 
@@ -530,7 +533,7 @@ eval_metrics_study1 |>
 
 #### Specificity
 
-```{r}
+```{r fig.height = 5}
 eval_metrics_study1 |> 
   filter(method == "roams_fut_model") |> 
   ggplot() +
@@ -545,7 +548,7 @@ eval_metrics_study1 |>
 
 #### Multi-level sensitivity
 
-```{r}
+```{r fig.height = 5}
 eval_metrics_study1 |> 
   filter(method == "roams_fut_model") |> 
   filter(setting == "multi-level") |>
@@ -560,7 +563,7 @@ eval_metrics_study1 |>
   geom_beeswarm(corral = "random", corral.width = 0.9, alpha = 0.5,
                 cex = 0.5) +
   facet_wrap(~ level) +
-  scale_colour_manual(values = c("#5B126EFF","#D24644FF","#FAC62DFF")) +
+  scale_colour_manual(values = c("#5B126EFF","#D24644FF","#FCA108FF")) +
   labs(x = "n", y = "True positive rate \n (multi-level outliers)") +
   theme(legend.position = "none") +
   scale_y_continuous(labels = scales::percent, limits = c(0,1))
@@ -572,7 +575,7 @@ Mean-aggregated (Figure 3 of @shankar2025) and raw box plots of the one-step-ahe
 
 #### Mean MSFE
 
-```{r}
+```{r fig.height=6}
 methods = c("roams_fut_model", "roams_kalman_model", "classical_model", "huber_model", "trimmed_model", "oracle_model")
 labels = c("**ROAMS-FUT**", "**ROAMS-Kalman**", "Classical", "Huber", "Trimmed", "Oracle")
 colours = c("orange", "gold", "royalblue", "brown3", "purple3", "green4")
