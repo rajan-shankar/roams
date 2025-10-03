@@ -136,7 +136,7 @@ library(sf)
 library(patchwork)
 
 theme_set(
-  theme_bw(base_size = 16) + 
+  theme_bw(base_size = 14) + 
     theme(legend.position = "bottom",
           legend.key.width = unit(1.2, "cm"))
 )
