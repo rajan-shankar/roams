@@ -76,7 +76,7 @@ roams_SSM = function(
 
     # Highest lambda is the supremum norm of mahalanobis residuals of classical fit
     highest_lambda = max(dlmInfo(y, y, classical, build)$mahalanobis_residuals)
-    lowest_lambda = 2
+    lowest_lambda = 1.5
 
     if (lowest_lambda >= highest_lambda) {
       stop("Automatic lambda selection failed. Lowest lambda = 2 is too large. Your data set may not have outliers. Try providing a custom lambda sequence via the 'custom_lambdas' argument.")
@@ -202,28 +202,36 @@ run_IPOD = function(
       control = control
       )
 
-    par = init_par
-
     # Update gammas
     info_output = dlmInfo(y, adj_y, fit, build)
     r = y - info_output$predicted_observations
     gamma_old = gamma
     gamma = matrix(0, nrow = n, ncol = dim_obs)
-    gamma[info_output$mahalanobis_residuals > lambda,] = r[info_output$mahalanobis_residuals > lambda,]
+    objective_increase = info_output$mahalanobis_residuals^2 + log(info_output$det_S)
+    objective_increase = ifelse(info_output$mahalanobis_residuals == 0,
+                                min(min(objective_increase), lambda) - 1,
+                                objective_increase)  # NA values should have lowest contribution
+    gamma[objective_increase > lambda^2,] = r[objective_increase > lambda^2,]
+    which_nz = which(rowSums(abs(gamma)) != 0)
+
+    # Too many outliers detected will cause instability
+    if (length(which_nz) / n_complete >= 0.5) {
+      # Re-update gamma to only keep best nz timepoints
+      keep_threshold = n_complete / 2 + (n - n_complete)
+      which_nz = which(rank(objective_increase) > keep_threshold)
+      gamma = matrix(0, nrow = n, ncol = dim_obs)
+      gamma[which_nz,] = r[which_nz,]
+    }
+
     adj_y = y
-    adj_y[which(rowSums(abs(gamma)) != 0),] = NA
+    adj_y[which_nz,] = NA
     gap_gamma = max(abs(gamma - gamma_old))
     gap_theta = max(abs(fit$par - theta_old))
 
-    nz = sum(rowSums(abs(gamma_old)) != 0)
+    nz = sum(rowSums(abs(gamma_old)) != 0)  # compute based on k-1 iter of gamma
     prop_outlying = nz / n_complete
 
     if ((gap_gamma < 1e-4) && (gap_theta < 1e-4)) {
-      break
-    }
-
-    # Too many outliers detected will cause instability
-    if (prop_outlying >= 0.5) {
       break
     }
   }
@@ -340,19 +348,21 @@ dlmInfo = function(y, adj_y, model, build) {
 
   S = purrr::map(dlm::dlmSvd2var(filter_output$U.R, filter_output$D.R),
           ~ A %*% . %*% t(A) + filter_output$mod$V)
-  inv_S = purrr::map(S, ~ solve(.))
+  inv_S = purrr::map(S, .f = solve)
   mahalanobis_residuals = purrr::map2_dbl(
     apply(y - filter_output$f, 1, c, simplify = FALSE),
     inv_S,
     ~ drop(t(.x) %*% .y %*% .x)) |> sqrt()
 
+  det_S = purrr::map_dbl(S, .f = det)
   mahalanobis_residuals = ifelse(is.na(mahalanobis_residuals), 0, mahalanobis_residuals)
 
   return(list(
     smoothed_observations = (smoother_output$s %*% t(A))[2:(nrow(y) + 1),],
     filtered_observations = (filter_output$m %*% t(A))[2:(nrow(y) + 1),],
     predicted_observations = filter_output$f,
-    mahalanobis_residuals = mahalanobis_residuals
+    mahalanobis_residuals = mahalanobis_residuals,
+    det_S = det_S
   ))
 
 }
