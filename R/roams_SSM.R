@@ -1,4 +1,4 @@
-#' Robust Regularized Fitting of State Space Models
+#' Robust Outlier-Adjusted Mean-Shift Estimation of State Space Models
 #'
 #' Fits a robust state space model to multivariate time series data using iterative parameter estimation and outlier detection. This procedure is inspired by the Iterative Procedure for Outlier Detection (IPOD) algorithm of She and Owen (2011) and is applied over a sequence of regularization parameters (\eqn{\lambda}'s), identifying outliers via Mahalanobis residuals and re-fitting the model iteratively.
 #'
@@ -8,9 +8,10 @@
 #' @param num_lambdas Integer. The number of \eqn{\lambda} values to evaluate. Ignored if \code{custom_lambdas} is specified. Default is 20.
 #' @param custom_lambdas Optional numeric vector. If supplied, these are the exact \eqn{\lambda} values used for model fitting. If not provided or set to \code{NA}, then \code{num_lambdas} \eqn{\lambda}'s are automatically chosen.
 #' @param cores Integer. Number of CPU cores to use for parallel processing. Default is 1 (sequential execution).
-#' @param B Integer. Maximum number of IPOD iterations per \eqn{\lambda}. Default is 50.
+#' @param B Integer. Maximum number of iterations per \eqn{\lambda}. Default is 50.
 #' @param lower Optional numeric vector of lower bounds for optimization. If \code{NA}, defaults to \code{-Inf} for all parameters. Must be of same length as \code{init_par}.
 #' @param upper Optional numeric vector of upper bounds for optimization. If \code{NA}, defaults to \code{Inf} for all parameters. Must be of same length as \code{init_par}.
+#' @param tol Tolerance level for checking convergence of the ROAMS procedure. Default is \code{1e-4}.
 #' @param control A named list of control options to pass to \code{optim} via \code{dlm::dlmMLE()}. Default is \code{list(parscale = init_par)}, which can help the optimizer if parameters are on vastly different scales.
 #'
 #' @return If more than one \eqn{\lambda} values are used, returns an object of class \code{roams_SSM_list} — a list containing a \code{roams_SSM} model for each \eqn{\lambda}. If only one \eqn{\lambda} value is used (i.e. \code{custom_lambdas} is manually specified as a single value), returns a single \code{roams_SSM} object.
@@ -23,18 +24,18 @@
 #'   \item \code{loglik} - Log-likelihood of the fitted model.
 #'   \item \code{RSS} - Residual sum of squares.
 #'   \item \code{gamma} - Matrix of estimated outlier adjustments.
-#'   \item \code{iterations} - Number of IPOD iterations performed.
-#'   \item Optimization output from \code{dlm::dlmMLE()} from the final IPOD iteration.
+#'   \item \code{iterations} - Number of iterations performed.
+#'   \item Optimization output from \code{dlm::dlmMLE()} from the final iteration.
 #'   \item \code{y} - The original data matrix.
 #'   \item \code{build} - The original build function used to specify the model.
 #' }
 #'
 #' @details
-#' The IPOD procedure alternates between estimating model parameters via maximum likelihood and identifying outlying observations based on Mahalanobis residuals. For each iteration:
+#' The ROAMS procedure alternates between estimating model parameters via maximum likelihood and identifying outlying observations based on Mahalanobis distance of residuals. For each iteration:
 #' \enumerate{
 #'   \item A \code{dlm} model is fit using \code{dlm::dlmMLE()}.
-#'   \item Mahalanobis residuals are computed.
-#'   \item Observations with residuals above the current \eqn{\lambda} threshold are treated as missing in the next iteration.
+#'   \item Mahalanobis distance of residuals (Mahalanobis residuals) are computed.
+#'   \item Observations with Mahalanobis residual (plus a \eqn{\log(|\mathbf{S}_{t|t-1}|)} adjustment) above the current \eqn{\lambda} threshold are treated as missing in the next iteration.
 #' }
 #'
 #' The algorithm stops when the change in parameters and outlier estimates is sufficiently small or if too many outliers are detected (more than 50\% of complete observations).
@@ -54,6 +55,7 @@ roams_SSM = function(
     B = 50,
     lower = NA,
     upper = NA,
+    tol = 1e-4,
     control = list(parscale = init_par)
     ) {
 
@@ -72,14 +74,15 @@ roams_SSM = function(
                          B = B,
                          lower = lower,
                          upper = upper,
+                         tol = tol,
                          control = control)
 
     # Highest lambda is the supremum norm of mahalanobis residuals of classical fit
     highest_lambda = max(dlmInfo(y, y, classical, build)$mahalanobis_residuals)
-    lowest_lambda = 1.5
+    lowest_lambda = 1
 
     if (lowest_lambda >= highest_lambda) {
-      stop("Automatic lambda selection failed. Lowest lambda = 2 is too large. Your data set may not have outliers. Try providing a custom lambda sequence via the 'custom_lambdas' argument.")
+      stop("Automatic lambda selection failed. Lowest lambda = 1 is too large. Your data set may not have outliers. Try providing a custom lambda sequence via the 'custom_lambdas' argument.")
     }
 
     # Lambda grid
@@ -101,6 +104,7 @@ roams_SSM = function(
                        B = B,
                        lower = lower,
                        upper = upper,
+                       tol = tol,
                        control = control)
 
       return(model)
@@ -117,6 +121,7 @@ roams_SSM = function(
                            B = B,
                            lower = lower,
                            upper = upper,
+                           tol = tol,
                            control = control)
 
   return(model_list)
@@ -131,6 +136,7 @@ lambda_grid = function(
     B,
     lower,
     upper,
+    tol,
     control
     ) {
 
@@ -144,6 +150,7 @@ lambda_grid = function(
                                  B,
                                  lower,
                                  upper,
+                                 tol,
                                  control)
     }
   } else {
@@ -157,6 +164,7 @@ lambda_grid = function(
                                                        B,
                                                        lower,
                                                        upper,
+                                                       tol,
                                                        control))
 
     future::plan(future::sequential)
@@ -174,6 +182,7 @@ run_IPOD = function(
     B,
     lower,
     upper,
+    tol,
     control
 ) {
 
@@ -231,7 +240,7 @@ run_IPOD = function(
     nz = sum(rowSums(abs(gamma_old)) != 0)  # compute based on k-1 iter of gamma
     prop_outlying = nz / n_complete
 
-    if ((gap_gamma < 1e-4) && (gap_theta < 1e-4)) {
+    if ((gap_gamma < tol) && (gap_theta < tol)) {
       break
     }
   }

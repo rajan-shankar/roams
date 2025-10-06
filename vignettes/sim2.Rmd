@@ -22,13 +22,13 @@ knitr::opts_chunk$set(
 
 ```{r packages}
 library(tidyverse)
-library(roams) # version 0.5.3
+library(roams) # version 0.6.1
 library(future)
 
 ## Number of cores to use
 num_cores = 8
 study = "study2"
-seed = paste0("seed", 2025)  # change seed?
+seed = paste0("seed", 2025.2)
 data_path = "data/"
 scripts_path = "scripts/"
 run_sim = FALSE

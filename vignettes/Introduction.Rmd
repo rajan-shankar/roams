@@ -96,7 +96,7 @@ roams_model_list = roams_SSM(
   y,
   c(0.5, var_est, var_est),
   build_fn,
-  num_lambdas = 20,
+  num_lambdas = 50,
   cores = 4,
   lower = c(0, rep(1e-12, 4)),
   upper = c(1, rep(Inf, 4)),

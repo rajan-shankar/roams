@@ -554,7 +554,7 @@ for (i in 1:length(data_sets)) {
     y = y_train,
     init_par = c(0.5, var_est, var_est),
     build = build_fn,
-    num_lambdas = 20,
+    num_lambdas = 50,
     cores = 4,
     lower = c(0, rep(1e-12, 4)),
     upper = c(1, rep(Inf, 4)),
@@ -802,6 +802,8 @@ results |>
     n_oos_complete = map_dbl(y_oos, ~ sum(!is.na(.[,1]))),
     
     lambda = map_dbl(roams_model, ~ .$lambda),
+    iterations = map_dbl(roams_model, ~ .$iterations),
+    
     in_sample_detected = map2_dbl(roams_model, n_complete,
                                   ~ .x$prop_outlying * .y),
     oos_detected = map_dbl(roams_fut_oos,
@@ -906,7 +908,7 @@ results |>
     # )
     
     )  |> 
-  select(name, frequency,
+  select(name, frequency, lambda, iterations,
          n, n_complete, in_sample_detected,
          n_oos, n_oos_complete, oos_detected) |> 
   # for paper

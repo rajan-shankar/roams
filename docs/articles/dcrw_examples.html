@@ -26,7 +26,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">roams</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -682,7 +682,7 @@ for the state error variance matrix
 <span>    y <span class="op">=</span> <span class="va">y_train</span>,</span>
 <span>    init_par <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.5</span>, <span class="va">var_est</span>, <span class="va">var_est</span><span class="op">)</span>,</span>
 <span>    build <span class="op">=</span> <span class="va">build_fn</span>,</span>
-<span>    num_lambdas <span class="op">=</span> <span class="fl">20</span>,</span>
+<span>    num_lambdas <span class="op">=</span> <span class="fl">50</span>,</span>
 <span>    cores <span class="op">=</span> <span class="fl">4</span>,</span>
 <span>    lower <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1e-12</span>, <span class="fl">4</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>    upper <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="cn">Inf</span>, <span class="fl">4</span><span class="op">)</span><span class="op">)</span>,</span>
@@ -999,16 +999,16 @@ for the state error variance matrix
 <tr class="even">
 <td align="left">polar_low_freq</td>
 <td align="left">roams_fut</td>
-<td align="right">0.60</td>
+<td align="right">0.61</td>
 <td align="right">0.45</td>
 <td align="right">0.01</td>
 </tr>
 <tr class="odd">
 <td align="left">polar_low_freq</td>
 <td align="left">roams_kalman</td>
-<td align="right">0.60</td>
-<td align="right">1.25</td>
-<td align="right">1.44</td>
+<td align="right">0.61</td>
+<td align="right">1.12</td>
+<td align="right">1.21</td>
 </tr>
 <tr class="even">
 <td align="left">polar_low_freq</td>
@@ -1022,7 +1022,7 @@ for the state error variance matrix
 <td align="left">trimmed</td>
 <td align="right">0.65</td>
 <td align="right">0.47</td>
-<td align="right">0.02</td>
+<td align="right">0.03</td>
 </tr>
 <tr class="even">
 <td align="left">seal</td>
@@ -1078,7 +1078,7 @@ for the state error variance matrix
 <td align="left">roams_kalman</td>
 <td align="right">0.43</td>
 <td align="right">0.94</td>
-<td align="right">0.85</td>
+<td align="right">0.86</td>
 </tr>
 <tr class="even">
 <td align="left">whale_2008</td>
@@ -1107,6 +1107,8 @@ for the state error variance matrix
 <span>    n_oos_complete <span class="op">=</span> <span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map_dbl</a></span><span class="op">(</span><span class="va">y_oos</span>, <span class="op">~</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">.</span><span class="op">[</span>,<span class="fl">1</span><span class="op">]</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>    </span>
 <span>    lambda <span class="op">=</span> <span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map_dbl</a></span><span class="op">(</span><span class="va">roams_model</span>, <span class="op">~</span> <span class="va">.</span><span class="op">$</span><span class="va">lambda</span><span class="op">)</span>,</span>
+<span>    iterations <span class="op">=</span> <span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map_dbl</a></span><span class="op">(</span><span class="va">roams_model</span>, <span class="op">~</span> <span class="va">.</span><span class="op">$</span><span class="va">iterations</span><span class="op">)</span>,</span>
+<span>    </span>
 <span>    in_sample_detected <span class="op">=</span> <span class="fu"><a href="https://purrr.tidyverse.org/reference/map2.html" class="external-link">map2_dbl</a></span><span class="op">(</span><span class="va">roams_model</span>, <span class="va">n_complete</span>,</span>
 <span>                                  <span class="op">~</span> <span class="va">.x</span><span class="op">$</span><span class="va">prop_outlying</span> <span class="op">*</span> <span class="va">.y</span><span class="op">)</span>,</span>
 <span>    oos_detected <span class="op">=</span> <span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map_dbl</a></span><span class="op">(</span><span class="va">roams_fut_oos</span>,</span>
@@ -1211,7 +1213,7 @@ for the state error variance matrix
 <span>    <span class="co"># )</span></span>
 <span>    </span>
 <span>    <span class="op">)</span>  <span class="op">|&gt;</span> </span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">name</span>, <span class="va">frequency</span>,</span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">name</span>, <span class="va">frequency</span>, <span class="va">lambda</span>, <span class="va">iterations</span>,</span>
 <span>         <span class="va">n</span>, <span class="va">n_complete</span>, <span class="va">in_sample_detected</span>,</span>
 <span>         <span class="va">n_oos</span>, <span class="va">n_oos_complete</span>, <span class="va">oos_detected</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="co"># for paper</span></span>
@@ -1226,18 +1228,22 @@ for the state error variance matrix
 <span>  <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span>digits <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></code></pre></div>
 <table style="width:100%;" class="table">
 <colgroup>
-<col width="13%">
-<col width="23%">
-<col width="3%">
-<col width="10%">
-<col width="17%">
+<col width="11%">
+<col width="19%">
 <col width="5%">
-<col width="13%">
-<col width="12%">
+<col width="8%">
+<col width="3%">
+<col width="8%">
+<col width="15%">
+<col width="4%">
+<col width="11%">
+<col width="10%">
 </colgroup>
 <thead><tr class="header">
 <th align="left">name</th>
 <th align="left">frequency</th>
+<th align="right">lambda</th>
+<th align="right">iterations</th>
 <th align="right">n</th>
 <th align="right">n_complete</th>
 <th align="right">in_sample_detected</th>
@@ -1249,6 +1255,8 @@ for the state error variance matrix
 <tr class="odd">
 <td align="left">cat_mia</td>
 <td align="left">20 minutes</td>
+<td align="right">1.000</td>
+<td align="right">4</td>
 <td align="right">308</td>
 <td align="right">224</td>
 <td align="right">1</td>
@@ -1259,6 +1267,8 @@ for the state error variance matrix
 <tr class="even">
 <td align="left">cow_11</td>
 <td align="left">2 minutes and 23 seconds</td>
+<td align="right">6.301</td>
+<td align="right">3</td>
 <td align="right">544</td>
 <td align="right">500</td>
 <td align="right">2</td>
@@ -1269,16 +1279,20 @@ for the state error variance matrix
 <tr class="odd">
 <td align="left">polar_low_freq</td>
 <td align="left">1 day</td>
+<td align="right">3.102</td>
+<td align="right">5</td>
 <td align="right">329</td>
 <td align="right">304</td>
-<td align="right">26</td>
+<td align="right">12</td>
 <td align="right">37</td>
 <td align="right">28</td>
-<td align="right">3</td>
+<td align="right">1</td>
 </tr>
 <tr class="even">
 <td align="left">seal</td>
 <td align="left">1 day</td>
+<td align="right">3.446</td>
+<td align="right">4</td>
 <td align="right">211</td>
 <td align="right">190</td>
 <td align="right">1</td>
@@ -1289,9 +1303,11 @@ for the state error variance matrix
 <tr class="odd">
 <td align="left">whale_2008</td>
 <td align="left">12 hours</td>
+<td align="right">2.672</td>
+<td align="right">50</td>
 <td align="right">110</td>
 <td align="right">90</td>
-<td align="right">10</td>
+<td align="right">11</td>
 <td align="right">12</td>
 <td align="right">11</td>
 <td align="right">1</td>
