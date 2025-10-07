@@ -16,7 +16,7 @@ print.roams_SSM = function(x, ...) {
       " * Outliers Detected: ", round(model$prop_outlying*100, 2), "%\n",
       " * BIC: ", round(model$BIC, 3), "\n",
       " * Log-Likelihood: ", round(model$loglik, 3), "\n",
-      " * IPOD Iterations: ", model$iterations, "\n",
+      " * Iterations: ", model$iterations, "\n",
       ifelse(inherits(model, "insample_info"),
              "In-sample information attached. Use $ to see more attributes.\n",
              "Use $ to see more attributes.\n"),

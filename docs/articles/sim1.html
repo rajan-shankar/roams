@@ -508,7 +508,7 @@ takes a few minutes to run, so the output is saved to the file
 <span><span class="va">PS</span> <span class="op">=</span> <span class="fl">2.0</span>  <span class="co"># point sizes</span></span></code></pre></div>
 <p>Load <code>eval_metrics_study1.rds</code>:</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">eval_metrics_study1</span> <span class="op">=</span> <span class="fu"><a href="https://readr.tidyverse.org/reference/read_rds.html" class="external-link">read_rds</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">data_path</span>, <span class="st">"eval_metrics_study1_full.rds"</span><span class="op">)</span><span class="op">)</span>  <span class="co"># change back to not _full</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">eval_metrics_study1</span> <span class="op">=</span> <span class="fu"><a href="https://readr.tidyverse.org/reference/read_rds.html" class="external-link">read_rds</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">data_path</span>, <span class="st">"eval_metrics_study1.rds"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>Check number of replicates per sample size
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>n</mi><annotation encoding="application/x-tex">n</annotation></semantics></math>
 and configuration:</p>
@@ -528,24 +528,31 @@ and configuration:</p>
 <tbody>
 <tr class="odd">
 <td align="right">100</td>
-<td align="right">300</td>
-<td align="right">300</td>
-<td align="right">300</td>
-<td align="right">300</td>
+<td align="right">200</td>
+<td align="right">200</td>
+<td align="right">200</td>
+<td align="right">200</td>
 </tr>
 <tr class="even">
 <td align="right">200</td>
-<td align="right">300</td>
-<td align="right">300</td>
-<td align="right">300</td>
-<td align="right">300</td>
+<td align="right">200</td>
+<td align="right">200</td>
+<td align="right">200</td>
+<td align="right">200</td>
 </tr>
 <tr class="odd">
 <td align="right">500</td>
-<td align="right">300</td>
-<td align="right">300</td>
-<td align="right">300</td>
-<td align="right">300</td>
+<td align="right">200</td>
+<td align="right">200</td>
+<td align="right">200</td>
+<td align="right">200</td>
+</tr>
+<tr class="even">
+<td align="right">1000</td>
+<td align="right">200</td>
+<td align="right">200</td>
+<td align="right">200</td>
+<td align="right">200</td>
 </tr>
 </tbody>
 </table>
@@ -916,16 +923,15 @@ variances estimates from the true value of (0.4, 0.4):</p>
 </div>
 </div>
 <div class="section level3">
-<h3 id="table-of-parameter-estimation-mean-rmses-for-n-500">Table of parameter estimation mean RMSEs for n = 500<a class="anchor" aria-label="anchor" href="#table-of-parameter-estimation-mean-rmses-for-n-500"></a>
+<h3 id="table-of-parameter-estimation-mean-rmses-for-n-1000">Table of parameter estimation mean RMSEs for n = 1000<a class="anchor" aria-label="anchor" href="#table-of-parameter-estimation-mean-rmses-for-n-1000"></a>
 </h3>
 <p>Table 2 of <span class="citation">Shankar et al. (2025)</span>. For
 each outlier configuration, the mean parameter estimation RMSEs of each
 method is reported relative to the oracle benchmark method:</p>
-<p>((I want this to be n = 1000 in the final version))</p>
 <div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">eval_metrics_study1</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">method</span> <span class="op">!=</span> <span class="st">"roams_kalman_model"</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">n</span> <span class="op">==</span> <span class="fl">500</span><span class="op">)</span> <span class="op">|&gt;</span>  </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">n</span> <span class="op">==</span> <span class="fl">1000</span><span class="op">)</span> <span class="op">|&gt;</span>  </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">setting</span>, <span class="va">method</span>, <span class="va">par_dist_phi</span><span class="op">:</span><span class="va">par_dist_state_var</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">setting</span>, <span class="va">method</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarise</a></span><span class="op">(</span>phi <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">sqrt</a></span><span class="op">(</span><span class="va">par_dist_phi</span><span class="op">)</span><span class="op">)</span>,</span>
@@ -981,44 +987,44 @@ method is reported relative to the oracle benchmark method:</p>
 <td align="left">Clean data</td>
 <td align="right">1</td>
 <td align="right">1.00</td>
-<td align="right">1.21</td>
-<td align="right">1.39</td>
+<td align="right">1.28</td>
+<td align="right">1.53</td>
 <td align="right">1.00</td>
 </tr>
 <tr class="even">
 <td align="left">phi autocorrelation</td>
 <td align="left">Cluster</td>
 <td align="right">1</td>
-<td align="right">1.01</td>
-<td align="right">1.67</td>
-<td align="right">1.41</td>
-<td align="right">3.23</td>
+<td align="right">1.00</td>
+<td align="right">1.94</td>
+<td align="right">1.43</td>
+<td align="right">3.85</td>
 </tr>
 <tr class="odd">
 <td align="left">phi autocorrelation</td>
 <td align="left">Fixed distance</td>
 <td align="right">1</td>
-<td align="right">1.04</td>
 <td align="right">1.06</td>
-<td align="right">1.32</td>
 <td align="right">1.12</td>
+<td align="right">1.45</td>
+<td align="right">1.20</td>
 </tr>
 <tr class="even">
 <td align="left">phi autocorrelation</td>
 <td align="left">Multi-level</td>
 <td align="right">1</td>
-<td align="right">1.06</td>
-<td align="right">1.02</td>
-<td align="right">1.31</td>
-<td align="right">1.12</td>
+<td align="right">1.14</td>
+<td align="right">1.07</td>
+<td align="right">1.49</td>
+<td align="right">1.16</td>
 </tr>
 <tr class="odd">
 <td align="left">Observation error var</td>
 <td align="left">Clean data</td>
 <td align="right">1</td>
-<td align="right">1.06</td>
-<td align="right">2.42</td>
-<td align="right">1.85</td>
+<td align="right">1.05</td>
+<td align="right">2.86</td>
+<td align="right">2.17</td>
 <td align="right">1.00</td>
 </tr>
 <tr class="even">
@@ -1026,35 +1032,35 @@ method is reported relative to the oracle benchmark method:</p>
 <td align="left">Cluster</td>
 <td align="right">1</td>
 <td align="right">1.04</td>
-<td align="right">7.91</td>
-<td align="right">3.89</td>
-<td align="right">55.21</td>
+<td align="right">10.63</td>
+<td align="right">4.87</td>
+<td align="right">83.38</td>
 </tr>
 <tr class="odd">
 <td align="left">Observation error var</td>
 <td align="left">Fixed distance</td>
 <td align="right">1</td>
 <td align="right">1.16</td>
-<td align="right">2.28</td>
-<td align="right">2.65</td>
-<td align="right">6.66</td>
+<td align="right">2.63</td>
+<td align="right">3.11</td>
+<td align="right">7.70</td>
 </tr>
 <tr class="even">
 <td align="left">Observation error var</td>
 <td align="left">Multi-level</td>
 <td align="right">1</td>
-<td align="right">1.23</td>
-<td align="right">2.21</td>
-<td align="right">2.46</td>
-<td align="right">7.03</td>
+<td align="right">1.32</td>
+<td align="right">2.50</td>
+<td align="right">2.83</td>
+<td align="right">7.99</td>
 </tr>
 <tr class="odd">
 <td align="left">State error var</td>
 <td align="left">Clean data</td>
 <td align="right">1</td>
-<td align="right">1.01</td>
-<td align="right">1.26</td>
-<td align="right">1.95</td>
+<td align="right">1.00</td>
+<td align="right">1.33</td>
+<td align="right">2.23</td>
 <td align="right">1.00</td>
 </tr>
 <tr class="even">
@@ -1062,27 +1068,27 @@ method is reported relative to the oracle benchmark method:</p>
 <td align="left">Cluster</td>
 <td align="right">1</td>
 <td align="right">1.01</td>
-<td align="right">1.92</td>
-<td align="right">1.62</td>
-<td align="right">4.76</td>
+<td align="right">2.28</td>
+<td align="right">1.94</td>
+<td align="right">5.73</td>
 </tr>
 <tr class="odd">
 <td align="left">State error var</td>
 <td align="left">Fixed distance</td>
 <td align="right">1</td>
-<td align="right">1.08</td>
-<td align="right">1.06</td>
-<td align="right">1.57</td>
-<td align="right">1.18</td>
+<td align="right">1.11</td>
+<td align="right">1.07</td>
+<td align="right">1.80</td>
+<td align="right">1.23</td>
 </tr>
 <tr class="even">
 <td align="left">State error var</td>
 <td align="left">Multi-level</td>
 <td align="right">1</td>
-<td align="right">1.09</td>
-<td align="right">1.05</td>
-<td align="right">1.66</td>
-<td align="right">1.20</td>
+<td align="right">1.18</td>
+<td align="right">1.10</td>
+<td align="right">1.91</td>
+<td align="right">1.21</td>
 </tr>
 </tbody>
 </table>
