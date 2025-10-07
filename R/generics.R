@@ -89,10 +89,7 @@ print.trimmed_robust_SSM = function(x, ...) {
 #'
 #' @seealso \code{\link{roams_SSM}}, \code{\link{get_attribute}}
 #'
-#' @importFrom ggplot2 ggplot aes geom_line geom_vline labs theme_bw autoplot
-#' @importFrom dplyr filter slice
-#' @importFrom latex2exp TeX
-#' @importFrom patchwork plot_layout
+#' @importFrom ggplot2 autoplot
 #'
 #' @export
 #' @method autoplot roams_SSM_list
@@ -127,32 +124,39 @@ autoplot.roams_SSM_list = function(object,
     attribute2 = get_attribute(model_list, attribute2)
     )
 
-  p1 = data |>
-    ggplot() +
-    aes(x = lambda, y = attribute1) +
-    geom_line(linewidth = 1) +
-    geom_vline(data = data |>
-                 dplyr::filter(prop_outlying < 0.5) |>
-                 dplyr::slice(which.min(BIC)),
-               aes(xintercept = lambda),
-               colour = "red", linetype = "dashed") +
-    labs(x = latex2exp::TeX("$\\lambda$"),
-         y = attribute1) +
-    theme_bw(base_size = 16)
+  # Compute line position (same for both panels)
+  vline_data = dplyr::filter(data, prop_outlying < 0.5) |>
+    dplyr::slice(which.min(BIC))
 
-  p2 = data |>
-    ggplot() +
-    aes(x = lambda, y = attribute2) +
-    geom_line(linewidth = 1) +
-    geom_vline(data = data |>
-                 dplyr::filter(prop_outlying < 0.5) |>
-                 dplyr::slice(which.min(BIC)),
-               aes(xintercept = lambda),
-               colour = "red", linetype = "dashed") +
-    labs(x = latex2exp::TeX("$\\lambda$"),
-         y = attribute2) +
-    theme_bw(base_size = 16)
+  p1 = ggplot2::ggplot(data, ggplot2::aes(x = lambda, y = attribute1)) +
+    ggplot2::geom_line(linewidth = 1) +
+    ggplot2::geom_vline(
+      data = vline_data,
+      ggplot2::aes(xintercept = lambda),
+      colour = "red", linetype = "dashed"
+    ) +
+    ggplot2::labs(
+      x = latex2exp::TeX("$\\lambda$"),
+      y = attribute1
+    ) +
+    ggplot2::theme_bw(base_size = 16)
 
-  p1 + p2 + patchwork::plot_layout(nrow = 2, axes = "collect_x", axis_titles = "collect_x")
+  p2 = ggplot2::ggplot(data, ggplot2::aes(x = lambda, y = attribute2)) +
+    ggplot2::geom_line(linewidth = 1) +
+    ggplot2::geom_vline(
+      data = vline_data,
+      ggplot2::aes(xintercept = lambda),
+      colour = "red", linetype = "dashed"
+    ) +
+    ggplot2::labs(
+      x = latex2exp::TeX("$\\lambda$"),
+      y = attribute2
+    ) +
+    ggplot2::theme_bw(base_size = 16)
+
+
+  p1 + p2 + patchwork::plot_layout(
+    nrow = 2, axes = "collect_x", axis_titles = "collect_x"
+  )
 }
 
