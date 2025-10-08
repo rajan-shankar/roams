@@ -12,6 +12,8 @@
 #' @param lower Optional numeric vector of lower bounds for optimization. If \code{NA}, defaults to \code{-Inf} for all parameters. Must be of same length as \code{init_par}.
 #' @param upper Optional numeric vector of upper bounds for optimization. If \code{NA}, defaults to \code{Inf} for all parameters. Must be of same length as \code{init_par}.
 #' @param tol Tolerance level for checking convergence of the ROAMS procedure. Default is \code{1e-4}.
+#' @param lambda_min Minimum \eqn{\lambda} value to consider when constructing the sequence of \eqn{\lambda}'s. Ignored if \code{custom_lambdas} is specified. Default is 2.
+#' @param excessive_outliers_iter_limit Integer. Maximum number of iterations allowed where \eqn{\ge 50\%} of timepoints are flagged as outliers. This many outliers suggests \eqn{\lambda} is too low. Allows ROAMS to get through these \eqn{\lambda}'s quicker. Default is 5.
 #' @param control A named list of control options to pass to \code{optim} via \code{dlm::dlmMLE()}. Default is \code{list(parscale = init_par)}, which can help the optimizer if parameters are on vastly different scales.
 #'
 #' @return If more than one \eqn{\lambda} values are used, returns an object of class \code{roams_SSM_list} — a list containing a \code{roams_SSM} model for each \eqn{\lambda}. If only one \eqn{\lambda} value is used (i.e. \code{custom_lambdas} is manually specified as a single value), returns a single \code{roams_SSM} object.
@@ -56,6 +58,8 @@ roams_SSM = function(
     lower = NA,
     upper = NA,
     tol = 1e-4,
+    lambda_min = 2,
+    excessive_outliers_iter_limit = 5,
     control = list(parscale = init_par)
     ) {
 
@@ -75,11 +79,12 @@ roams_SSM = function(
                          lower = lower,
                          upper = upper,
                          tol = tol,
+                         excessive_outliers_iter_limit = excessive_outlier_iter_limit,
                          control = control)
 
     # Highest lambda is the supremum norm of mahalanobis residuals of classical fit
     highest_lambda = max(dlmInfo(y, y, classical, build)$mahalanobis_residuals)
-    lowest_lambda = 1
+    lowest_lambda = lambda_min
 
     if (lowest_lambda >= highest_lambda) {
       stop("Automatic lambda selection failed. Lowest lambda = 1 is too large. Your data set may not have outliers. Try providing a custom lambda sequence via the 'custom_lambdas' argument.")
@@ -105,6 +110,7 @@ roams_SSM = function(
                        lower = lower,
                        upper = upper,
                        tol = tol,
+                       excessive_outliers_iter_limit = excessive_outlier_iter_limit,
                        control = control)
 
       return(model)
@@ -122,6 +128,7 @@ roams_SSM = function(
                            lower = lower,
                            upper = upper,
                            tol = tol,
+                           excessive_outliers_iter_limit = excessive_outlier_iter_limit,
                            control = control)
 
   return(model_list)
@@ -137,6 +144,7 @@ lambda_grid = function(
     lower,
     upper,
     tol,
+    excessive_outliers_iter_limit = excessive_outlier_iter_limit,
     control
     ) {
 
@@ -151,6 +159,7 @@ lambda_grid = function(
                                  lower,
                                  upper,
                                  tol,
+                                 excessive_outliers_iter_limit,
                                  control)
     }
   } else {
@@ -165,6 +174,7 @@ lambda_grid = function(
                                                        lower,
                                                        upper,
                                                        tol,
+                                                       excessive_outliers_iter_limit,
                                                        control))
 
     future::plan(future::sequential)
@@ -183,6 +193,7 @@ run_IPOD = function(
     lower,
     upper,
     tol,
+    excessive_outliers_iter_limit,
     control
 ) {
 
@@ -197,9 +208,17 @@ run_IPOD = function(
   adj_y = y
   r = NA
   theta_old = par
+  prop_outlying = 0
+  excessive_outliers_offences = 0
 
   for (j in 1:B) {
     if (j != 1) {theta_old = fit$par}
+    if (prop_outlying >= 0.5) {
+      excessive_outliers_offences = excessive_outliers_offences + 1
+      if (excessive_outliers_offences >= excessive_outliers_iter_limit) {
+        break
+      }
+    }
 
     fit = dlm::dlmMLE(
       adj_y,

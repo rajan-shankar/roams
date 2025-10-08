@@ -490,9 +490,9 @@ for (i in 1:length(data_sets)) {
   var_est = c(mad(diff(y_train[,1]), na.rm = TRUE)^2,
               mad(diff(y_train[,2]), na.rm = TRUE)^2)
   
-  build_fn = function(parm) {
+  build_fn = function(par) {
     
-    phi_coef = parm[1]
+    phi_coef = par[1]
     Phi = diag(c(1+phi_coef, 1+phi_coef, 0, 0))
     Phi[1,3] = -phi_coef
     Phi[2,4] = -phi_coef
@@ -500,8 +500,8 @@ for (i in 1:length(data_sets)) {
     Phi[4,2] = 1
     
     A = diag(4)[1:2,]
-    Q = diag(c(parm[2], parm[3], 0, 0))
-    R = diag(c(parm[4], parm[5]))
+    Q = diag(c(par[2], par[3], 0, 0))
+    R = diag(c(par[4], par[5]))
     
     x0 = c(y_train[1,], y_train[1,])
     P0 = diag(rep(0, 4))
@@ -515,9 +515,9 @@ for (i in 1:length(data_sets)) {
       init_state_var = P0)
   }
   
-  build_fn_huber_trimmed = function(parm) {
+  build_fn_huber_trimmed = function(par) {
     
-    phi_coef = parm[1]
+    phi_coef = par[1]
     Phi = diag(c(1+phi_coef, 1+phi_coef, 0, 0))
     Phi[1,3] = -phi_coef
     Phi[2,4] = -phi_coef
@@ -525,8 +525,8 @@ for (i in 1:length(data_sets)) {
     Phi[4,2] = 1
     
     A = diag(4)[1:2,]
-    Q = diag(c(parm[2], parm[3], 0, 0))
-    R = diag(c(parm[4], parm[5]))
+    Q = diag(c(par[2], par[3], 0, 0))
+    R = diag(c(par[4], par[5]))
     
     second_complete_obs = which(!is.na(y_train[,1]))[2]
     diff = sum(abs(y_train[1,] - y_train[second_complete_obs,]))
