@@ -13,7 +13,7 @@
 #' @param upper Optional numeric vector of upper bounds for optimization. If \code{NA}, defaults to \code{Inf} for all parameters. Must be of same length as \code{init_par}.
 #' @param tol Tolerance level for checking convergence of the ROAMS procedure. Default is \code{1e-4}.
 #' @param lambda_min Minimum \eqn{\lambda} value to consider when constructing the sequence of \eqn{\lambda}'s. Ignored if \code{custom_lambdas} is specified. Default is 2.
-#' @param excessive_outliers_iter_limit Integer. Maximum number of iterations allowed where \eqn{\ge 50\%} of timepoints are flagged as outliers. This many outliers suggests \eqn{\lambda} is too low. Allows ROAMS to get through these \eqn{\lambda}'s quicker. Default is 5.
+#' @param excessive_outliers_iter_limit Integer. Maximum number of iterations allowed where \eqn{\ge 50\%} of timepoints are flagged as outliers. This many outliers suggests \eqn{\lambda} is too low. Allows ROAMS to get through these \eqn{\lambda}'s quicker. Default is 1.
 #' @param control A named list of control options to pass to \code{optim} via \code{dlm::dlmMLE()}. Default is \code{list(parscale = init_par)}, which can help the optimizer if parameters are on vastly different scales.
 #'
 #' @return If more than one \eqn{\lambda} values are used, returns an object of class \code{roams_SSM_list} — a list containing a \code{roams_SSM} model for each \eqn{\lambda}. If only one \eqn{\lambda} value is used (i.e. \code{custom_lambdas} is manually specified as a single value), returns a single \code{roams_SSM} object.
@@ -59,7 +59,7 @@ roams_SSM = function(
     upper = NA,
     tol = 1e-4,
     lambda_min = 2,
-    excessive_outliers_iter_limit = 5,
+    excessive_outliers_iter_limit = 1,
     control = list(parscale = init_par)
     ) {
 

@@ -176,7 +176,7 @@ rm(model_fits_oracle_study2)  ## free up memory
 plan(multisession, workers = num_cores)
 
 roams_start = Sys.time()
-model_fits_roams_study2 = data_study2 |> slice(1:4) |> 
+model_fits_roams_study2 = data_study2 |> 
   mutate(
     model_list = furrr::future_map(y, function(y) {
       
