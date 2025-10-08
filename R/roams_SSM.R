@@ -79,7 +79,7 @@ roams_SSM = function(
                          lower = lower,
                          upper = upper,
                          tol = tol,
-                         excessive_outliers_iter_limit = excessive_outlier_iter_limit,
+                         excessive_outliers_iter_limit = excessive_outliers_iter_limit,
                          control = control)
 
     # Highest lambda is the supremum norm of mahalanobis residuals of classical fit
@@ -110,7 +110,7 @@ roams_SSM = function(
                        lower = lower,
                        upper = upper,
                        tol = tol,
-                       excessive_outliers_iter_limit = excessive_outlier_iter_limit,
+                       excessive_outliers_iter_limit = excessive_outliers_iter_limit,
                        control = control)
 
       return(model)
@@ -128,7 +128,7 @@ roams_SSM = function(
                            lower = lower,
                            upper = upper,
                            tol = tol,
-                           excessive_outliers_iter_limit = excessive_outlier_iter_limit,
+                           excessive_outliers_iter_limit = excessive_outliers_iter_limit,
                            control = control)
 
   return(model_list)
@@ -144,7 +144,7 @@ lambda_grid = function(
     lower,
     upper,
     tol,
-    excessive_outliers_iter_limit = excessive_outlier_iter_limit,
+    excessive_outliers_iter_limit = excessive_outliers_iter_limit,
     control
     ) {
 
