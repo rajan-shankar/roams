@@ -1135,6 +1135,198 @@ for (i in 1:length(data_sets)) {
 wrap_plots(plots) + plot_layout(ncol = 3)
 ```
 
+## Blue whale plots
+
+This section creates Figure 6 in @shankar2025.
+
+### Map 
+
+Fit models to blue whale data:
+
+```{r eval = FALSE}
+y = whale_2008 %>% 
+  select(x, y) %>% 
+  as.matrix()
+
+var_est = c(mad(diff(y[,1]), na.rm = TRUE)^2,
+            mad(diff(y[,2]), na.rm = TRUE)^2)
+  
+build_fn = function(par) {
+  
+  phi_coef = par[1]
+  Phi = diag(c(1+phi_coef, 1+phi_coef, 0, 0))
+  Phi[1,3] = -phi_coef
+  Phi[2,4] = -phi_coef
+  Phi[3,1] = 1
+  Phi[4,2] = 1
+  
+  A = diag(4)[1:2,]
+  Q = diag(c(par[2], par[3], 0, 0))
+  R = diag(c(par[4], par[5]))
+  
+  x0 = c(y[1,], y[1,])
+  P0 = diag(rep(0, 4))
+  
+  specify_SSM(
+    state_transition_matrix = Phi,
+    state_noise_var = Q,
+    observation_matrix = A,
+    observation_noise_var = R,
+    init_state_mean = x0,
+    init_state_var = P0)
+}
+
+classical_model = classical_SSM(
+  y,
+  c(0.5, var_est, var_est),
+  build_fn,
+  lower = c(0, rep(1e-12, 4)),
+  upper = c(1, rep(Inf, 4)),
+  )
+
+roams_model_list = roams_SSM(
+  y,
+  c(0.5, var_est, var_est),
+  build_fn,
+  num_lambdas = 50,
+  cores = 4,
+  lower = c(0, rep(1e-12, 4)),
+  upper = c(1, rep(Inf, 4)),
+  B = 50
+  )
+
+classical_model = attach_insample_info(classical_model)
+roams_model = best_BIC_model(roams_model_list)
+roams_model = attach_insample_info(roams_model)
+
+plot_data = tibble(
+  x_data = y[,1],
+  y_data = y[,2],
+  x_roams = roams_model$smoothed_observations[,1],
+  y_roams = roams_model$smoothed_observations[,2],
+  x_classical = classical_model$smoothed_observations[,1],
+  y_classical = classical_model$smoothed_observations[,2],
+  outliers = (rowSums(abs(roams_model$gamma)) != 0),
+)
+
+readr::write_rds(plot_data, "data/whale_plot_data.rds")
+readr::write_rds(roams_model_list, "data/whale_roams_model_list.rds")
+```
+
+Load `whale_plot_data.rds` and `whale_roams_model_list.rds`:
+
+```{r}
+plot_data = readr::read_rds("data/whale_plot_data.rds")
+roams_model_list = readr::read_rds("data/whale_roams_model_list.rds")
+```
+
+```{r}
+theme_set(
+  theme_bw(base_size = 14) + 
+    theme(legend.position = "bottom",
+          legend.key.width = unit(1.2, "cm"))
+)
+```
+
+```{r}
+world = ne_countries(scale = "medium", returnclass = "sf")
+
+# States/Provinces
+states = ne_states(country = "United States of America")
+
+plot_features = c("observations", "detected outliers", "classical path", "roams path")
+colours = c("black", "orange", "royalblue", "orange")
+labels = c("Observations", "Detected outliers", "Classical path", "ROAMS path")
+
+p1 = ggplot(plot_data) +
+  geom_sf(data = world, fill = "white", color = "grey", linewidth = 0.3) +
+
+  # State/province labels
+  geom_sf_text(data = states, aes(label = str_to_upper(name)), size = 3,
+               color = "darkgrey", fontface = "bold") +
+  geom_sf(data = states, fill = NA, color = "grey", linewidth = 0.3) +
+
+  geom_point(aes(x = x_data, y = y_data, colour = "observations"), 
+             size = 2) +
+  
+  # geom_text(data = plot_data |> 
+  #             mutate(timepoint = 1:122) |> 
+  #             filter(timepoint %in% c(8, 106, 43, 63)),
+  #           aes(x = x_data, y = y_data, label = timepoint),
+  #           nudge_y = 1) +
+  
+  geom_point(data = plot_data |> filter(outliers), 
+             aes(x = x_data, y = y_data, colour = "detected outliers"),
+             size = 3, pch = 1, stroke = 1) +
+  geom_path(aes(x = x_roams, y = y_roams, 
+                colour = "roams path"),
+            linewidth = 0.8) +
+  geom_path(aes(x = x_classical, y = y_classical, 
+                colour = "classical path"), 
+            linewidth = 0.8) +
+  coord_sf(xlim = c(min(plot_data$x_data, na.rm = TRUE) - 3,
+                    max(plot_data$x_data, na.rm = TRUE) + 3),
+           ylim = c(min(plot_data$y_data, na.rm = TRUE) - 2,
+                    max(plot_data$y_data, na.rm = TRUE) + 2),
+           expand = FALSE) +
+  theme(panel.grid.major = element_blank(),
+        panel.background = element_rect(fill = "#ddecf0")) +
+  labs(x = NULL, y = NULL, colour = NULL) +
+  scale_colour_manual(values = setNames(colours, plot_features),
+                      labels = setNames(labels, plot_features),
+                      breaks = plot_features) +
+  guides(colour = guide_legend(ncol = 2, byrow = TRUE))
+
+p1
+```
+
+### Map + BIC and proportion outlying curves
+
+```{r fig.width = 9}
+p2 = roams_model_list %>% autoplot()
+
+# Extract individual plots for editing
+p21 = p2[[1]]
+p22 = p2[[2]] +
+  labs(y = "Detected outliers") +
+  scale_y_continuous(labels = scales::percent)
+
+# Re-combine plots
+p2 = p21 + p22 + plot_layout(nrow = 2, axes = "collect")
+
+# Final plot
+p1 + p2
+```
+
+### $\|\gamma\|_2$ path plot
+
+```{r}
+roams_model_list |> 
+  get_attribute("gamma") |> 
+  map(~ apply(., 1, function(gamma) {sqrt(sum(gamma^2))})) |> 
+  as.data.frame() |> 
+  setNames(paste0("lambda_", 1:50)) |>
+  tibble() |> 
+  mutate(timepoint = 1:122) |> 
+  pivot_longer(-timepoint, names_to = "lambda", values_to = "gamma_L2") |> 
+  mutate(lambda = as.numeric(str_remove(lambda, "lambda_"))) |> 
+  (\(df) 
+  ggplot(df) +
+  aes(x = lambda, y = gamma_L2, colour = factor(timepoint)) +
+  geom_line() +
+  geom_text(data = df |> 
+              group_by(timepoint) |> 
+              slice(1) |> 
+              ungroup() |> 
+              slice_max(gamma_L2, n = 4),
+            aes(label = timepoint)) +
+  theme(legend.position = "none"))()
+```
+
+
+
+
+
 #### References
 
 

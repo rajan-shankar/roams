@@ -44,7 +44,7 @@
 #'
 #' @seealso \code{\link[dlm]{dlmMLE}}, \code{\link{best_BIC_model}}, \code{\link{outlier_target_model}}, \code{\link{get_attribute}}, \code{\link{autoplot.roams_SSM_list}}, \code{\link{attach_insample_info}}, \code{\link{oos_filter}}, \code{\link{specify_SSM}}
 #'
-#' @references She, Y., & Owen, A. B. (2011). Outlier Detection Using Nonconvex Penalized Regression. *Journal of the American Statistical Association, 106*(494), 626–639. https://doi.org/10.1198/jasa.2011.tm10390
+#' @references She, Y., & Owen, A. B. (2011). Outlier Detection Using Nonconvex Penalized Regression. \emph{Journal of the American Statistical Association, 106}(494), 626–639. https://doi.org/10.1198/jasa.2011.tm10390
 #'
 #' @export
 roams_SSM = function(
@@ -421,10 +421,14 @@ dlmInfo = function(y, adj_y, model, build) {
 #'   \item{\code{smoothed_states_var}}{List of smoothed state variance matrices.}
 #' }
 #'
+#' These smoothed attributes are obtained using the RTS smoothing algorithm  (Rauch et al. 1965).
+#'
 #' @details
 #' The attached outputs enable richer diagnostics, outlier inspection, and plotting.
 #' For \code{huber_robust_SSM} and \code{trimmed_robust_SSM} models, in-sample information is computed using a custom robust filtering function, and smoothed quantities (\code{smoothed_states}, \code{smoothed_observations}, and \code{smoothed_states_var}) are \strong{not available}.
 #' This function should only be applied once to a model object.
+#'
+#' @references Rauch, H.E., Tung, F., Striebel, C.T. (1965). Maximum likelihood estimates of linear dynamic systems. \emph{AIAA Journal 3}(8), 1445–1450. https://doi.org/10.2514/3.3166
 #'
 #' @seealso \code{\link{oos_filter}}
 #'
@@ -511,8 +515,8 @@ attach_insample_info = function(model) {
 #' @param model A fitted model object of class \code{roams_SSM}, \code{classical_SSM}, \code{oracle_SSM}, \code{huber_robust_SSM}, or \code{trimmed_robust_SSM}.
 #' @param build A function that maps a numeric parameter vector to a corresponding \code{dlm} model object. The \code{specify_SSM} function can be used to create this \code{build} function.
 #' @param outlier_locs A logical or binary vector of the same length as \code{nrow(y)}, indicating time points to be treated as missing (i.e., time points that are known to be outliers). Used only with \code{oracle_SSM} models.
-#' @param threshold Mahalanobis distance threshold for identifying outliers in \code{roams_SSM} models. Default is \code{sqrt(qchisq(0.99, ncol(y)))}.
-#' @param multiplier Multiplier for how quickly the filter grows its filtered state variance (uncertainty) after detecting an outlier in \code{roams_SSM} models. Default is \code{2}.
+#' @param threshold Mahalanobis distance threshold for detecting out-of-sample outliers in \code{roams_SSM} models. Set to \code{Inf} to recover the usual Kalman filter. Default is \code{sqrt(qchisq(0.99, ncol(y)))}.
+#' @param multiplier Multiplier for how quickly the filter grows its filtered state variance (uncertainty) after detecting an outlier in \code{roams_SSM} models. It is the tuneable parameter \eqn{b} of the `fast-updating threshold' filter. Only works if \code{threshold} is not \code{Inf}. Default is \code{2}.
 #'
 #' @return A named list containing out-of-sample inference results:
 #' \describe{

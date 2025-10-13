@@ -16,7 +16,7 @@ roams_SSM(
   upper = NA,
   tol = 1e-04,
   lambda_min = 2,
-  excessive_outliers_iter_limit = 5,
+  excessive_outliers_iter_limit = 1,
   control = list(parscale = init_par)
 )
 }
@@ -43,7 +43,7 @@ roams_SSM(
 
 \item{lambda_min}{Minimum \eqn{\lambda} value to consider when constructing the sequence of \eqn{\lambda}'s. Ignored if \code{custom_lambdas} is specified. Default is 2.}
 
-\item{excessive_outliers_iter_limit}{Integer. Maximum number of iterations allowed where \eqn{\ge 50\%} of timepoints are flagged as outliers. This many outliers suggests \eqn{\lambda} is too low. Allows ROAMS to get through these \eqn{\lambda}'s quicker. Default is 5.}
+\item{excessive_outliers_iter_limit}{Integer. Maximum number of iterations allowed where \eqn{\ge 50\%} of timepoints are flagged as outliers. This many outliers suggests \eqn{\lambda} is too low. Allows ROAMS to get through these \eqn{\lambda}'s quicker. Default is 1.}
 
 \item{control}{A named list of control options to pass to \code{optim} via \code{dlm::dlmMLE()}. Default is \code{list(parscale = init_par)}, which can help the optimizer if parameters are on vastly different scales.}
 }
@@ -78,7 +78,7 @@ The ROAMS procedure alternates between estimating model parameters via maximum l
 The algorithm stops when the change in parameters and outlier estimates is sufficiently small or if too many outliers are detected (more than 50\% of complete observations).
 }
 \references{
-She, Y., & Owen, A. B. (2011). Outlier Detection Using Nonconvex Penalized Regression. *Journal of the American Statistical Association, 106*(494), 626–639. https://doi.org/10.1198/jasa.2011.tm10390
+She, Y., & Owen, A. B. (2011). Outlier Detection Using Nonconvex Penalized Regression. \emph{Journal of the American Statistical Association, 106}(494), 626–639. https://doi.org/10.1198/jasa.2011.tm10390
 }
 \seealso{
 \code{\link[dlm]{dlmMLE}}, \code{\link{best_BIC_model}}, \code{\link{outlier_target_model}}, \code{\link{get_attribute}}, \code{\link{autoplot.roams_SSM_list}}, \code{\link{attach_insample_info}}, \code{\link{oos_filter}}, \code{\link{specify_SSM}}
