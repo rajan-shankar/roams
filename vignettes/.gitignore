@@ -1,5 +1,7 @@
 *.DS_store
 *_seed2025.rds
+*_seed2025.2.rds
 *_seed1303.rds
+*_oldpenalty.rds
 *.html
 *.R

@@ -18,7 +18,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-> This page shows how the examples in section 3.1 of @shankar2025 are generated.
+> This page shows how the examples in Sections 5.1 and 5.2 of @shankar2025 are generated.
 
 ```{r setup, message=FALSE}
 library(roams)
@@ -44,115 +44,73 @@ These examples all use the first-differenced correlated random walk (DCRW) model
 \end{align}
 where $\mathbf{y}_t$ is the location observed by the satellite, $\mathbf{v}_t$ is the error from the satellite measurements, $\mathbf{z}_t$ is the true location of the whale, and $\mathbf{w}_t$ captures the randomness in the whale's movement. Both $\mathbf{y}_t$ and $\mathbf{z}_t$ are 2-dimensional vectors containing longitude and latitude coordinates. The DCRW model assumes that the whale's location depends on the previous location $\mathbf{z}_{t-1}$, and the previous direction and speed of movement $\mathbf{z}_{t-1} - \mathbf{z}_{t-2}$. The amount of dependence on $\mathbf{z}_{t-1} - \mathbf{z}_{t-2}$ is determined by the correlation parameter $\phi\in [0,1)$.
 
-Notice the use of $\mathbf{z}$ instead of $\mathbf{x}$ for the state process; the DCRW model above is not in state-space form since the state process depends on the previous \textit{two} states, $\mathbf{z}_{t-1}$ and $\mathbf{z}_{t-2}$. This presentation makes it easier to understand the model dynamics, but in order to estimate the parameters of the model, the model must be converted into state-space form.
-
-We use a diagonal structure for the observation error variance matrix, allowing for different variances to be estimated for the longitude and the latitude directions,
-\begin{align*}
-    \mathbf{\Sigma}_\mathbf{v} &= \left[\begin{matrix}\sigma^2_{\mathbf{v},\text{lon}} & 0 \\ 0 & \sigma^2_{\mathbf{v},\text{lat}} \end{matrix}\right].
-\end{align*}
-A similar matrix is used for the state error variance matrix $\mathbf{\Sigma}_\mathbf{w}$.
-$$
-\begin{align}
-\left[
-\begin{matrix}
-\mathbf z_t \\ \mathbf z_{t-1}
-\end{matrix}
-\right] &= 
-\left[
-\begin{matrix}
-1+\gamma&0&-\gamma&0 \\
-0&1+\gamma&0&-\gamma \\
-1&0&0&0 \\
-0&1&0&0 \\
-\end{matrix}
-\right]
-\left[
-\begin{matrix}
-\mathbf z_{t-1} \\ \mathbf z_{t-2}
-\end{matrix}
-\right] + \boldsymbol \epsilon_t, \ \ \boldsymbol \epsilon_t \sim N\left(\mathbf 0, \boldsymbol \Sigma \right), \\
-\boldsymbol\Sigma &= \left[
-\begin{matrix}
-\sigma^2_{\epsilon,lon}&0&0&0 \\
-0&\sigma^2_{\epsilon,lat}&0&0 \\
-0&0&0&0 \\
-0&0&0&0 \\
-\end{matrix}
-\right] \\
-\mathbf y_t &=
-\left[
-\begin{matrix}
-1&0&0&0 \\
-0&1&0&0
-\end{matrix}
-\right]
-\left[
-\begin{matrix}
-\mathbf z_t \\ \mathbf z_{t-1}
-\end{matrix}\right] + \boldsymbol \eta_t, \ \ \boldsymbol \eta_t \sim N\left(\mathbf 0, \mathbf R \right), \\
-\mathbf R &= \left[
-\begin{matrix}
-\sigma^2_{\eta,lon}&0 \\
-0&\sigma^2_{\eta,lat}  \\
-\end{matrix}
-\right] \\
-\text{initial state} &= (\mathbf y_1, \mathbf y_1) \\
-\text{initial state variance} &= \mathbf 0_{4\times 4}
-\end{align}
-$$
-
+Notice the use of $\mathbf{z}$ instead of $\mathbf{x}$ for the state process; the DCRW model above is not in state-space form since the state process depends on the previous \textit{two} states, $\mathbf{z}_{t-1}$ and $\mathbf{z}_{t-2}$. This presentation makes it easier to understand the model dynamics, but in order to estimate the parameters of the model, the model must be converted into state-space form. See the beginning of Section 4 of @shankar2025 for a summary on how this is done.
 
 ## Animals {.tabset}
 
 We illustrate our method on five example data sets.
 
-### Blue whale
+### Cats
 
-```{r whale-2008-import}
-whale_2008 = read_csv("data/Blue whales Eastern North Pacific 1993-2008 - Argos Data.csv") |>
-  # Standardise column names
-  janitor::clean_names() |>  
-  # Keep only rows for the whale with ID "2008CA-Bmu-10839"
-  filter(individual_local_identifier == "2008CA-Bmu-10839") |> 
-  # Replace missing values in 'manually_marked_outlier' with FALSE
-  mutate(manually_marked_outlier = tidyr::replace_na(manually_marked_outlier, FALSE)) |> 
-  # Round timestamps to the nearest 12 hours
-  mutate(timestamp = lubridate::round_date(timestamp, "12 hours")) |> 
-  # Within each group, keep only the last row (e.g. latest observation per 12-hour block)
-  group_by(timestamp) |> 
-  slice_tail(n = 1) |> 
-  # Convert the data to a tsibble object (time series tibble)
+```{r}
+cat_mia = read_csv("data/Feral cat (Felis catus) - Scotia, NSW.csv") |> 
+  clean_names() |> 
+  mutate(algorithm_marked_outlier = ifelse(is.na(algorithm_marked_outlier), 
+                                                 FALSE,
+                                                 algorithm_marked_outlier),
+         manually_marked_outlier = ifelse(is.na(manually_marked_outlier), 
+                                                 FALSE,
+                                                 manually_marked_outlier),
+         outlier = algorithm_marked_outlier | manually_marked_outlier) |> 
+  filter(individual_local_identifier == "Mia_FC642") |> 
+  mutate(timestamp = lubridate::round_date(timestamp, "20 minutes")) |> 
   tsibble::tsibble() |>
-  # Fill in missing time points in the series with explicit gaps
-  tsibble::fill_gaps() |>
-   # Convert back to a regular tibble
+  tsibble::fill_gaps() |> 
+  slice(-(1:19)) |> 
   as_tibble() |> 
-  # Rename longitude/latitude columns to x and y
+  rename(x = location_long,
+         y = location_lat)
+
+cat_max = read_csv("data/Feral cat (Felis catus) - Scotia, NSW.csv") |> 
+  clean_names() |> 
+  mutate(algorithm_marked_outlier = ifelse(is.na(algorithm_marked_outlier), 
+                                                 FALSE,
+                                                 algorithm_marked_outlier),
+         manually_marked_outlier = ifelse(is.na(manually_marked_outlier), 
+                                                 FALSE,
+                                                 manually_marked_outlier),
+         outlier = algorithm_marked_outlier | manually_marked_outlier) |> 
+  filter(individual_local_identifier == "Max_MC629") |> 
+  mutate(timestamp = lubridate::round_date(timestamp, "20 minutes")) |> 
+  tsibble::tsibble() |>
+  tsibble::fill_gaps() |> 
+  slice(-(1:24)) |> 
+  as_tibble() |> 
   rename(x = location_long,
          y = location_lat)
 ```
 
 Plot with world map data:
 
-```{r raw-data-vis-whale}
+```{r raw-data-vis-cat, fig.height=5}
 # Work out x/y ranges with some padding
-x_range <- range(whale_2008$x, na.rm = TRUE)
-y_range <- range(whale_2008$y, na.rm = TRUE)
+x_range <- range(cat_mia$x, na.rm = TRUE)
+y_range <- range(cat_mia$y, na.rm = TRUE)
 
 x_pad <- diff(x_range) * 0.05  # 5% padding
 y_pad <- diff(y_range) * 0.05 # 5% padding
 
-p1 = whale_2008 |> 
+p1 = cat_mia |> 
   ggplot() +
   # Country boundaries
   geom_sf(data = world, fill = "grey95", colour = "grey70", size = 0.3) +
-  # Whale track and points
+  # Animal track and points
   geom_path(aes(x = x, y = y, colour = timestamp), alpha = 0.2) +
   geom_point(aes(x = x, y = y, colour = timestamp)) +
   # Colour scale
   viridis::scale_color_viridis() +
   # Labels and theme
-  labs(x = "Longitude", y = "Latitude", title = "Blue whale") +
+  labs(x = "Longitude", y = "Latitude", title = "Cat") +
   theme_minimal() +
   theme(legend.position = "none") +
   # Focus map on whale’s range
@@ -162,6 +120,50 @@ p1 = whale_2008 |>
     expand = FALSE
   )
 p1
+```
+
+### Cows
+
+```{r}
+cow = read_csv("data/export_UQ_GPS.csv") |> 
+  clean_names() |> 
+  filter(partition_key == "70741400000EB036") |> 
+  # The cow data longitude and latitude are swapped! So we set x to be latitude and y to be longitude:
+  rename(x = latitude,
+         y = longitude) |> 
+  mutate(date = date(timestamp)) |> 
+  select(date, timestamp, x, y) |>
+  group_by(date) |> 
+  mutate(diff = c(2.38, diff(timestamp))) |>
+  mutate(missing_rows = map(diff, ~ seq_len(round(. / 2.38)))) |>
+  unnest(missing_rows) |>
+  mutate(x = ifelse(missing_rows > 1, NA, x),
+         y = ifelse(missing_rows > 1, NA, y)) |> 
+  ungroup() |> 
+  rename(x = x,
+         y = y)
+
+cow_11 = cow |> filter(date == "2024-11-11")
+```
+
+Plot with world map data:
+
+```{r raw-data-vis-cow, fig.height=5}
+# Work out x/y ranges with some padding
+x_range <- range(cow_11$x, na.rm = TRUE)
+y_range <- range(cow_11$y, na.rm = TRUE)
+
+x_pad <- diff(x_range) * 0.05  # 5% padding
+y_pad <- diff(y_range) * 0.05 # 5% padding
+
+p1 %+% cow_11 + 
+  # Focus map on s's range
+  coord_sf(
+    xlim = c(x_range[1] - x_pad, x_range[2] + x_pad),
+    ylim = c(y_range[1] - y_pad, y_range[2] + y_pad),
+    expand = FALSE
+  ) + 
+  labs(title = "Cow 11")
 ```
 
 ### Polar bear
@@ -260,110 +262,50 @@ p1 %+% seal +
   labs(title = "Seal")
 ```
 
-### Cats
+### Blue whale
 
-```{r}
-cat_mia = read_csv("data/Feral cat (Felis catus) - Scotia, NSW.csv") |> 
-  clean_names() |> 
-  mutate(algorithm_marked_outlier = ifelse(is.na(algorithm_marked_outlier), 
-                                                 FALSE,
-                                                 algorithm_marked_outlier),
-         manually_marked_outlier = ifelse(is.na(manually_marked_outlier), 
-                                                 FALSE,
-                                                 manually_marked_outlier),
-         outlier = algorithm_marked_outlier | manually_marked_outlier) |> 
-  filter(individual_local_identifier == "Mia_FC642") |> 
-  mutate(timestamp = lubridate::round_date(timestamp, "20 minutes")) |> 
+```{r whale-2008-import}
+whale_2008 = read_csv("data/Blue whales Eastern North Pacific 1993-2008 - Argos Data.csv") |>
+  # Standardise column names
+  janitor::clean_names() |>  
+  # Keep only rows for the whale with ID "2008CA-Bmu-10839"
+  filter(individual_local_identifier == "2008CA-Bmu-10839") |> 
+  # Replace missing values in 'manually_marked_outlier' with FALSE
+  mutate(manually_marked_outlier = tidyr::replace_na(manually_marked_outlier, FALSE)) |> 
+  # Round timestamps to the nearest 12 hours
+  mutate(timestamp = lubridate::round_date(timestamp, "12 hours")) |> 
+  # Within each group, keep only the last row (e.g. latest observation per 12-hour block)
+  group_by(timestamp) |> 
+  slice_tail(n = 1) |> 
+  # Convert the data to a tsibble object (time series tibble)
   tsibble::tsibble() |>
-  tsibble::fill_gaps() |> 
-  slice(-(1:19)) |> 
+  # Fill in missing time points in the series with explicit gaps
+  tsibble::fill_gaps() |>
+   # Convert back to a regular tibble
   as_tibble() |> 
-  rename(x = location_long,
-         y = location_lat)
-
-cat_max = read_csv("data/Feral cat (Felis catus) - Scotia, NSW.csv") |> 
-  clean_names() |> 
-  mutate(algorithm_marked_outlier = ifelse(is.na(algorithm_marked_outlier), 
-                                                 FALSE,
-                                                 algorithm_marked_outlier),
-         manually_marked_outlier = ifelse(is.na(manually_marked_outlier), 
-                                                 FALSE,
-                                                 manually_marked_outlier),
-         outlier = algorithm_marked_outlier | manually_marked_outlier) |> 
-  filter(individual_local_identifier == "Max_MC629") |> 
-  mutate(timestamp = lubridate::round_date(timestamp, "20 minutes")) |> 
-  tsibble::tsibble() |>
-  tsibble::fill_gaps() |> 
-  slice(-(1:24)) |> 
-  as_tibble() |> 
+  # Rename longitude/latitude columns to x and y
   rename(x = location_long,
          y = location_lat)
 ```
 
 Plot with world map data:
 
-```{r raw-data-vis-cat, fig.height=5}
+```{r raw-data-vis-whale}
 # Work out x/y ranges with some padding
-x_range <- range(cat_mia$x, na.rm = TRUE)
-y_range <- range(cat_mia$y, na.rm = TRUE)
+x_range <- range(whale_2008$x, na.rm = TRUE)
+y_range <- range(whale_2008$y, na.rm = TRUE)
 
 x_pad <- diff(x_range) * 0.05  # 5% padding
 y_pad <- diff(y_range) * 0.05 # 5% padding
 
-p1 %+% cat_mia + 
+p1 %+% whale_2008 + 
   # Focus map on s's range
   coord_sf(
     xlim = c(x_range[1] - x_pad, x_range[2] + x_pad),
     ylim = c(y_range[1] - y_pad, y_range[2] + y_pad),
     expand = FALSE
   ) + 
-  labs(title = "Cat Mia")
-```
-
-### Cows
-
-```{r}
-cow = read_csv("data/export_UQ_GPS.csv") |> 
-  clean_names() |> 
-  filter(partition_key == "70741400000EB036") |> 
-  # The cow data longitude and latitude are swapped! So we set x to be latitude and y to be longitude:
-  rename(x = latitude,
-         y = longitude) |> 
-  mutate(date = date(timestamp)) |> 
-  select(date, timestamp, x, y) |>
-  group_by(date) |> 
-  mutate(diff = c(2.38, diff(timestamp))) |>
-  mutate(missing_rows = map(diff, ~ seq_len(round(. / 2.38)))) |>
-  unnest(missing_rows) |>
-  mutate(x = ifelse(missing_rows > 1, NA, x),
-         y = ifelse(missing_rows > 1, NA, y)) |> 
-  ungroup() |> 
-  rename(x = x,
-         y = y)
-
-cow_10 = cow |> filter(date == "2024-11-10")
-cow_11 = cow |> filter(date == "2024-11-11")
-cow_12 = cow |> filter(date == "2024-11-12")
-```
-
-Plot with world map data:
-
-```{r raw-data-vis-cow, fig.height=5}
-# Work out x/y ranges with some padding
-x_range <- range(cow_11$x, na.rm = TRUE)
-y_range <- range(cow_11$y, na.rm = TRUE)
-
-x_pad <- diff(x_range) * 0.05  # 5% padding
-y_pad <- diff(y_range) * 0.05 # 5% padding
-
-p1 %+% cow_11 + 
-  # Focus map on s's range
-  coord_sf(
-    xlim = c(x_range[1] - x_pad, x_range[2] + x_pad),
-    ylim = c(y_range[1] - y_pad, y_range[2] + y_pad),
-    expand = FALSE
-  ) + 
-  labs(title = "Cow 11")
+  labs(title = "Blue whale")
 ```
 
 ## Data summary
@@ -372,11 +314,8 @@ Combine the data sets into a list:
 
 ```{r}
 data_sets = list(
-  # "cat_max" = cat_max,
   "cat_mia" = cat_mia,
-  # "cow_10" = cow_10,
   "cow_11" = cow_11,
-  # "cow_12" = cow_12,
   "polar_low_freq" = polar_low_freq,
   "seal" = seal,
   "whale_2008" = whale_2008
@@ -388,10 +327,7 @@ data_sets = list(
 ```{r}
 # Add column containing frequency of measurements for each data set
 frequencies = c("20 minutes", 
-                # "20 minutes", 
                 "2 minutes and 23 seconds", 
-                # "2 minutes and 23 seconds", 
-                # "2 minutes and 23 seconds", 
                 "1 day", "1 day", "12 hours")
 data_sets |> 
   map_dbl(~ mean(is.na(.$x))) |> 
@@ -407,50 +343,11 @@ data_sets |>
                   "Proportion missing", "Interval"))
 ```
 
-
-
-### Plot data sets on world map
-
-```{r raw-data-vis-all, fig.height = 7}
-plots = list()
-for (i in 1:length(data_sets)) {
-  # Work out x/y ranges with some padding
-  x_range <- range(data_sets[[i]]$x, na.rm = TRUE)
-  y_range <- range(data_sets[[i]]$y, na.rm = TRUE)
-  x_pad <- diff(x_range) * 0.05  # 5% padding
-  y_pad <- diff(y_range) * 0.05 # 5% padding
-
-  plots[[i]] = data_sets[[i]] |> 
-    ggplot() +
-    # Country boundaries
-    geom_sf(data = world, fill = "grey95", colour = "grey70", size = 0.3) +
-    
-    # Animal path and points
-    geom_path(aes(x = x, y = y, colour = timestamp), alpha = 0.2) +
-    geom_point(aes(x = x, y = y, colour = timestamp)) +
-    
-    # Colour scale
-    viridis::scale_color_viridis() +
-    
-    # Focus map on animal's range
-    coord_sf(
-      xlim = c(x_range[1] - x_pad, x_range[2] + x_pad),
-      ylim = c(y_range[1] - y_pad, y_range[2] + y_pad),
-      expand = FALSE
-    ) +
-    
-    # Labels and theme
-    labs(x = "Longitude", y = "Latitude", subtitle = names(data_sets)[i]) +
-    theme_minimal() +
-    theme(legend.position = "none")
-}
-
-wrap_plots(plots) + plot_layout(ncol = 3)
-```
-
 ## Model fitting
 
-The last 10% of points from each data set are left out to use as a 'test set' later on.
+The last 10% of points from each data set are left out to use as a 'test set'. The other 90% are used as a 'training set'.
+
+The code below fits the classical, ROAMS, Huber and trimmed methods to the training sets. It also computes the filtered and predicted values on the test sets so that mean-squared forecast errors (MSFE) can be reported.
 
 ```{r eval = FALSE}
 results = tibble(
@@ -706,10 +603,8 @@ for (i in 1:length(data_sets)) {
 results = results |> 
   mutate(frequency = frequencies)
 
-# readr::write_rds(results, "data/results.rds")
+readr::write_rds(results, "data/results.rds")
 ```
-
-
 
 ```{r eval = TRUE}
 # load pre-computed results
@@ -718,9 +613,9 @@ results = read_rds("data/results.rds")
 
 ## Results
 
-Evaluation metrics
+### Table of MSFEs per animal
 
-The MSFEs are reported relative to the classical method.
+This table forms part of Table 3 of @shankar2025. The MSFEs are reported relative to the classical method.
 
 ```{r}
 results |> 
@@ -766,31 +661,12 @@ results |>
   mutate(
     MSFE = MSFE / MSFE[which(method == "classical")],
     MSFE_clean = MSFE_clean / MSFE_clean[which(method == "classical")]) |>
-  # for paper
-  # filter(method %in% c("classical", "roams_fut", "roams_kalman")) |>  
-  # group_by(name) |>
-  # mutate(name = ifelse(row_number() == 1,
-  #                           paste0("\\midrule
-  #                                  \\multirow{3}{*}{", name, "}"),
-  #                           "")) |>
-  # ungroup() |> 
-  # mutate(
-  #   phi_estimate = as.character(
-  #     format(round(phi_estimate, 2), nsmall = 2)),
-  #   phi_estimate = case_when(
-  #   method == "roams_fut" ~ paste0("\\multirow{2}{*}{", phi_estimate, "}"),
-  #   method == "roams_kalman" ~ "",
-  #   TRUE ~ phi_estimate
-  # )) |> 
-  # kable("latex", booktabs = TRUE, escape = FALSE,
-  #       linesep = "", digits = 2,
-  #       align = c("l", "l|", rep("c", 3)))
-  
-  # for vignette
   knitr::kable(digits = 2)
 ```
 
-Other results
+### Table of data set information
+
+This table forms part of Table 2 of @shankar2025. Other ROAMS fit-related information is displayed as well, such as `lambda` chosen and number of `iterations`.
 
 ```{r}
 results |> 
@@ -811,115 +687,10 @@ results |>
     
     roams_phi = map_dbl(roams_model, ~ .$par[1]),
     classical_phi = map_dbl(classical_model, ~ .$par[1])
-    
-    # roams_MSFE = map2_dbl(
-    #   roams_oos, y_oos,
-    #   function(roams_oos, y_oos) {
-    #     SFEs = rowSums((y_oos - roams_oos$predicted_observations)^2)
-    #     MSFE = mean(SFEs, na.rm = TRUE)
-    #     return(MSFE)
-    #   }
-    # ),
-    # classical_MSFE = map2_dbl(
-    #   classical_oos, y_oos,
-    #   function(classical_oos, y_oos) {
-    #     SFEs = rowSums((y_oos - classical_oos$predicted_observations)^2)
-    #     MSFE = mean(SFEs, na.rm = TRUE)
-    #     return(MSFE)
-    #   }
-    # ),
-    # roams_trimmed_MSFE_5perc = map2_dbl(
-    #   roams_oos, y_oos,
-    #   function(roams_oos, y_oos) {
-    #     SFEs = rowSums((y_oos - roams_oos$predicted_observations)^2)
-    #     num_trim = round(0.05 * length(SFEs))
-    #     ascending_SFEs = sort(na.omit(SFEs))
-    #     n_complete = length(ascending_SFEs)
-    #     trimmed_SFEs = ascending_SFEs[1:(n_complete - num_trim)]
-    #     trimmed_MSFE = mean(trimmed_SFEs)
-    #     return(trimmed_MSFE)
-    #   }
-    # ),
-    # classical_trimmed_MSFE_5perc = map2_dbl(
-    #   classical_oos, y_oos,
-    #   function(classical_oos, y_oos) {
-    #     SFEs = rowSums((y_oos - classical_oos$predicted_observations)^2)
-    #     num_trim = round(0.05 * length(SFEs))
-    #     ascending_SFEs = sort(na.omit(SFEs))
-    #     n_complete = length(ascending_SFEs)
-    #     trimmed_SFEs = ascending_SFEs[1:(n_complete - num_trim)]
-    #     trimmed_MSFE = mean(trimmed_SFEs)
-    #     return(trimmed_MSFE)
-    #   }
-    # ),
-    # roams_trimmed_MSFE_10perc = map2_dbl(
-    #   roams_oos, y_oos,
-    #   function(roams_oos, y_oos) {
-    #     SFEs = rowSums((y_oos - roams_oos$predicted_observations)^2)
-    #     num_trim = round(0.1 * length(SFEs))
-    #     ascending_SFEs = sort(na.omit(SFEs))
-    #     n_complete = length(ascending_SFEs)
-    #     trimmed_SFEs = ascending_SFEs[1:(n_complete - num_trim)]
-    #     trimmed_MSFE = mean(trimmed_SFEs)
-    #     return(trimmed_MSFE)
-    #   }
-    # ),
-    # classical_trimmed_MSFE_10perc = map2_dbl(
-    #   classical_oos, y_oos,
-    #   function(classical_oos, y_oos) {
-    #     SFEs = rowSums((y_oos - classical_oos$predicted_observations)^2)
-    #     num_trim = round(0.1 * length(SFEs))
-    #     ascending_SFEs = sort(na.omit(SFEs))
-    #     n_complete = length(ascending_SFEs)
-    #     trimmed_SFEs = ascending_SFEs[1:(n_complete - num_trim)]
-    #     trimmed_MSFE = mean(trimmed_SFEs)
-    #     return(trimmed_MSFE)
-    #   }
-    # ),
-    # roams_MSFE_clean = map2_dbl(
-    #   roams_oos, y_oos,
-    #   function(roams_oos, y_oos) {
-    #     clean_timepoints = which(roams_oos$outliers_flagged == 0)
-    #     SFEs = rowSums((y_oos - roams_oos$predicted_observations)^2)
-    #     MSFE_clean = mean(SFEs[clean_timepoints], na.rm = TRUE)
-    #     return(MSFE_clean)
-    #   }
-    # ),
-    # classical_MSFE_clean = pmap_dbl(
-    #   list(classical_oos, roams_oos, y_oos),
-    #   function(classical_oos, roams_oos, y_oos) {
-    #     clean_timepoints = which(roams_oos$outliers_flagged == 0)
-    #     SFEs = rowSums((y_oos - classical_oos$predicted_observations)^2)
-    #     MSFE_clean = mean(SFEs[clean_timepoints], na.rm = TRUE)
-    #     return(MSFE_clean)
-    #   }
-    # )
-    
-    
-    # roams_MedSFE = map2_dbl(
-    #   roams_oos, y_oos,
-    #   ~ median(rowSums((.y - .x$predicted_observations)^2), 
-    #            na.rm = TRUE)
-    # ),
-    # classical_MedSFE = map2_dbl(
-    #   classical_oos, y_oos,
-    #   ~ median(rowSums((.y - .x$predicted_observations)^2), 
-    #            na.rm = TRUE)
-    # )
-    
     )  |> 
   select(name, frequency, lambda, iterations,
          n, n_complete, in_sample_detected,
          n_oos, n_oos_complete, oos_detected) |> 
-  # for paper
-  # kable("latex", booktabs = TRUE, escape = FALSE,
-  #       linesep = "",
-  #       align = c("l", "l|", 
-  #                 "c", "c", "c|",
-  #                 "c", "c", "c"
-  #                 ))
-  
-  # for vignette
   knitr::kable(digits = 3)
 ```
 
@@ -977,6 +748,8 @@ results |>
 
 ### Plot out-of-sample squared forecast errors
 
+Box plots of squared forecast errors for the classical and ROAMS-FUT methods. 
+
 ```{r oos-sfe-boxplots}
 results |> 
   select(-roams_model_list) |> 
@@ -1001,7 +774,9 @@ results |>
   select(name, classical_SFEs, roams_SFEs) |> 
   pivot_longer(c(classical_SFEs, roams_SFEs), 
                names_to = "method", values_to = "SFE") |> 
-  mutate(method = stringr::word(method, start = 1, end = 1, sep = "_")) |> 
+  mutate(method = ifelse(method == "roams_SFEs",
+                         "ROAMS-FUT",
+                         "classical")) |> 
   unnest_longer(SFE) |> 
   ggplot() +
   aes(x = method, y = SFE, colour = name) +
@@ -1066,7 +841,8 @@ for (i in 1:length(data_sets)) {
     # Labels and theme
     labs(x = "Longitude", y = "Latitude", subtitle = names(data_sets)[i]) +
     theme_minimal() +
-    theme(legend.position = "none")
+    theme(legend.position = "none",
+          aspect.ratio = 1)
 }
 
 wrap_plots(plots) + plot_layout(ncol = 3)
@@ -1074,7 +850,7 @@ wrap_plots(plots) + plot_layout(ncol = 3)
 
 ### Plot one-step-ahead out-of-sample predictions
 
-These plots only show the out of sample predictions (not the full path). We should consider resetting the x/y axis range to just the out of sample prediction range, but at the same time, it's kind of interesting to see where the OOS observations lie relative to the in-sample observations (blank canvas for some of these data sets).
+These plots only show the out of sample predictions (not the full path). It is interesting to see where the test set observations lie relative to the training set observations (blank canvas for some of these data sets).
 
 ```{r one-step-ahead-preds, fig.height = 7}
 plots = list()
@@ -1129,7 +905,8 @@ for (i in 1:length(data_sets)) {
     # Labels and theme
     labs(x = "Longitude", y = "Latitude", subtitle = names(data_sets)[i]) +
     theme_minimal() +
-    theme(legend.position = "none")
+    theme(legend.position = "none",
+          aspect.ratio = 1)
 }
 
 wrap_plots(plots) + plot_layout(ncol = 3)
@@ -1137,17 +914,19 @@ wrap_plots(plots) + plot_layout(ncol = 3)
 
 ## Blue whale plots
 
-This section creates Figure 6 in @shankar2025.
+This section reproduces the outputs in Section 5.2 of @shankar2025.
 
 ### Map 
 
-Fit models to blue whale data:
+Fit ROAMS and classical models to blue whale data:
 
-```{r eval = FALSE}
+```{r}
 y = whale_2008 %>% 
   select(x, y) %>% 
   as.matrix()
+```
 
+```{r eval = FALSE}
 var_est = c(mad(diff(y[,1]), na.rm = TRUE)^2,
             mad(diff(y[,2]), na.rm = TRUE)^2)
   
@@ -1211,6 +990,7 @@ plot_data = tibble(
 
 readr::write_rds(plot_data, "data/whale_plot_data.rds")
 readr::write_rds(roams_model_list, "data/whale_roams_model_list.rds")
+readr::write_rds(classical_model, "data/whale_classical_model.rds")
 ```
 
 Load `whale_plot_data.rds` and `whale_roams_model_list.rds`:
@@ -1218,6 +998,7 @@ Load `whale_plot_data.rds` and `whale_roams_model_list.rds`:
 ```{r}
 plot_data = readr::read_rds("data/whale_plot_data.rds")
 roams_model_list = readr::read_rds("data/whale_roams_model_list.rds")
+classical_model = readr::read_rds("data/whale_classical_model.rds")
 ```
 
 ```{r}
@@ -1248,13 +1029,6 @@ p1 = ggplot(plot_data) +
 
   geom_point(aes(x = x_data, y = y_data, colour = "observations"), 
              size = 2) +
-  
-  # geom_text(data = plot_data |> 
-  #             mutate(timepoint = 1:122) |> 
-  #             filter(timepoint %in% c(8, 106, 43, 63)),
-  #           aes(x = x_data, y = y_data, label = timepoint),
-  #           nudge_y = 1) +
-  
   geom_point(data = plot_data |> filter(outliers), 
              aes(x = x_data, y = y_data, colour = "detected outliers"),
              size = 3, pch = 1, stroke = 1) +
@@ -1282,6 +1056,8 @@ p1
 
 ### Map + BIC and proportion outlying curves
 
+Figure 7 of @shankar2025:
+
 ```{r fig.width = 9}
 p2 = roams_model_list %>% autoplot()
 
@@ -1296,6 +1072,29 @@ p2 = p21 + p22 + plot_layout(nrow = 2, axes = "collect")
 
 # Final plot
 p1 + p2
+```
+
+### Table of parameter estimates
+
+Table 4 of @shankar2025:
+
+```{r}
+roams_model = best_BIC_model(roams_model_list)
+roams_model = attach_insample_info(roams_model)
+
+tibble(
+  roams_model$par,
+  classical_model$par,
+) |> 
+  t() |> 
+  as_tibble() |> 
+  setNames(c("phi", 
+             "state error var lon", "state error var lat",
+             "obs error var lon", "obs error var lat"
+             )) |> 
+  mutate(method = c("ROAMS", "classical")) |> 
+  select(method, everything()) |> 
+  knitr::kable(digits = 3)
 ```
 
 ### $\|\gamma\|_2$ path plot

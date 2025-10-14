@@ -18,7 +18,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-> This page shows how the simulation results in section 4.2 of @shankar2025 are generated.
+> This page shows how the simulation results in Section 4.2 of @shankar2025 are generated.
 
 ```{r packages}
 library(tidyverse)
@@ -210,11 +210,11 @@ model_fits_roams_study2 = data_study2 |>
         init_par = c(0.5, rep(c(mad(diff(y[,1]), na.rm = TRUE)^2, 
                                 mad(diff(y[,2]), na.rm = TRUE)^2), 2)), 
         build = build, 
-        num_lambdas = 50, 
+        num_lambdas = 20, 
         cores = 1,
         lower = c(0, rep(1e-12, 4)), 
         upper = c(1, rep(Inf, 4)),
-        B = 20
+        B = 50
       )}, 
     .progress = TRUE),
     best_BIC_model = map(model_list, best_BIC_model),
@@ -439,6 +439,8 @@ Sensitivity and specificity of the ROAMS method:
 
 #### Mean sensitivity/specificity
 
+Figure 4 of @shankar2025:
+
 ```{r}
 p1 = eval_metrics_study2 |> 
   filter(method == "roams_fut_model") |> 
@@ -519,7 +521,7 @@ p1 + p2 + plot_layout(ncol = 2, axes = "collect", guides = "collect")
 
 ### Out-of-sample MSFE {.tabset}
 
-Mean-aggregated (Figure 4 of @shankar2025) and raw box plots of the one-step-ahead out-of-sample MSFE:
+Mean-aggregated (Figure 5 of @shankar2025) and raw box plots of the one-step-ahead out-of-sample MSFE:
 
 #### Mean MSFE
 

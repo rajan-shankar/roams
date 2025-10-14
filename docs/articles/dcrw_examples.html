@@ -74,7 +74,7 @@
     
     
 <blockquote>
-<p>This page shows how the examples in section 3.1 of <span class="citation">Shankar et al. (2025)</span> are generated.</p>
+<p>This page shows how the examples in Sections 5.1 and 5.2 of <span class="citation">Shankar et al. (2025)</span> are generated.</p>
 </blockquote>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/rajan-shankar/roams">roams</a></span><span class="op">)</span></span>
@@ -131,64 +131,8 @@ and
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>𝐳</mi><mrow><mi>t</mi><mo>−</mo><mn>2</mn></mrow></msub><annotation encoding="application/x-tex">\mathbf{z}_{t-2}</annotation></semantics></math>.
 This presentation makes it easier to understand the model dynamics, but
 in order to estimate the parameters of the model, the model must be
-converted into state-space form.</p>
-<p>We use a diagonal structure for the observation error variance
-matrix, allowing for different variances to be estimated for the
-longitude and the latitude directions,
-<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtable><mtr><mtd columnalign="right" style="text-align: right"><msub><mi>𝚺</mi><mi>𝐯</mi></msub></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><mrow><mo stretchy="true" form="prefix">[</mo><mtable><mtr><mtd columnalign="center" style="text-align: center"><msubsup><mi>σ</mi><mrow><mi>𝐯</mi><mo>,</mo><mtext mathvariant="normal">lon</mtext></mrow><mn>2</mn></msubsup></mtd><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd><mtd columnalign="center" style="text-align: center"><msubsup><mi>σ</mi><mrow><mi>𝐯</mi><mo>,</mo><mtext mathvariant="normal">lat</mtext></mrow><mn>2</mn></msubsup></mtd></mtr></mtable><mo stretchy="true" form="postfix">]</mo></mrow><mi>.</mi></mtd></mtr></mtable><annotation encoding="application/x-tex">\begin{align*}
-    \mathbf{\Sigma}_\mathbf{v} &amp;= \left[\begin{matrix}\sigma^2_{\mathbf{v},\text{lon}} &amp; 0 \\ 0 &amp; \sigma^2_{\mathbf{v},\text{lat}} \end{matrix}\right].
-\end{align*}</annotation></semantics></math> A similar matrix is used
-for the state error variance matrix
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>𝚺</mi><mi>𝐰</mi></msub><annotation encoding="application/x-tex">\mathbf{\Sigma}_\mathbf{w}</annotation></semantics></math>.
-<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtable><mtr><mtd columnalign="right" style="text-align: right"><mrow><mo stretchy="true" form="prefix">[</mo><mtable><mtr><mtd columnalign="center" style="text-align: center"><msub><mi>𝐳</mi><mi>t</mi></msub></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><msub><mi>𝐳</mi><mrow><mi>t</mi><mo>−</mo><mn>1</mn></mrow></msub></mtd></mtr></mtable><mo stretchy="true" form="postfix">]</mo></mrow></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><mrow><mo stretchy="true" form="prefix">[</mo><mtable><mtr><mtd columnalign="center" style="text-align: center"><mn>1</mn><mo>+</mo><mi>γ</mi></mtd><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd><mtd columnalign="center" style="text-align: center"><mo>−</mo><mi>γ</mi></mtd><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>1</mn><mo>+</mo><mi>γ</mi></mtd><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd><mtd columnalign="center" style="text-align: center"><mo>−</mo><mi>γ</mi></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><mn>1</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>1</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd></mtr></mtable><mo stretchy="true" form="postfix">]</mo></mrow><mrow><mo stretchy="true" form="prefix">[</mo><mtable><mtr><mtd columnalign="center" style="text-align: center"><msub><mi>𝐳</mi><mrow><mi>t</mi><mo>−</mo><mn>1</mn></mrow></msub></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><msub><mi>𝐳</mi><mrow><mi>t</mi><mo>−</mo><mn>2</mn></mrow></msub></mtd></mtr></mtable><mo stretchy="true" form="postfix">]</mo></mrow><mo>+</mo><msub><mi>𝛜</mi><mi>t</mi></msub><mo>,</mo><mspace width="0.222em"></mspace><mspace width="0.222em"></mspace><msub><mi>𝛜</mi><mi>t</mi></msub><mo>∼</mo><mi>N</mi><mrow><mo stretchy="true" form="prefix">(</mo><mn>𝟎</mn><mo>,</mo><mi>𝚺</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"><mi>𝚺</mi></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><mrow><mo stretchy="true" form="prefix">[</mo><mtable><mtr><mtd columnalign="center" style="text-align: center"><msubsup><mi>σ</mi><mrow><mi>ϵ</mi><mo>,</mo><mi>l</mi><mi>o</mi><mi>n</mi></mrow><mn>2</mn></msubsup></mtd><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd><mtd columnalign="center" style="text-align: center"><msubsup><mi>σ</mi><mrow><mi>ϵ</mi><mo>,</mo><mi>l</mi><mi>a</mi><mi>t</mi></mrow><mn>2</mn></msubsup></mtd><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd></mtr></mtable><mo stretchy="true" form="postfix">]</mo></mrow></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"><msub><mi>𝐲</mi><mi>t</mi></msub></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><mrow><mo stretchy="true" form="prefix">[</mo><mtable><mtr><mtd columnalign="center" style="text-align: center"><mn>1</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>1</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd></mtr></mtable><mo stretchy="true" form="postfix">]</mo></mrow><mrow><mo stretchy="true" form="prefix">[</mo><mtable><mtr><mtd columnalign="center" style="text-align: center"><msub><mi>𝐳</mi><mi>t</mi></msub></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><msub><mi>𝐳</mi><mrow><mi>t</mi><mo>−</mo><mn>1</mn></mrow></msub></mtd></mtr></mtable><mo stretchy="true" form="postfix">]</mo></mrow><mo>+</mo><msub><mi>𝛈</mi><mi>t</mi></msub><mo>,</mo><mspace width="0.222em"></mspace><mspace width="0.222em"></mspace><msub><mi>𝛈</mi><mi>t</mi></msub><mo>∼</mo><mi>N</mi><mrow><mo stretchy="true" form="prefix">(</mo><mn>𝟎</mn><mo>,</mo><mi>𝐑</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"><mi>𝐑</mi></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><mrow><mo stretchy="true" form="prefix">[</mo><mtable><mtr><mtd columnalign="center" style="text-align: center"><msubsup><mi>σ</mi><mrow><mi>η</mi><mo>,</mo><mi>l</mi><mi>o</mi><mi>n</mi></mrow><mn>2</mn></msubsup></mtd><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd><mtd columnalign="center" style="text-align: center"><msubsup><mi>σ</mi><mrow><mi>η</mi><mo>,</mo><mi>l</mi><mi>a</mi><mi>t</mi></mrow><mn>2</mn></msubsup></mtd></mtr></mtable><mo stretchy="true" form="postfix">]</mo></mrow></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"><mtext mathvariant="normal">initial state</mtext></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>𝐲</mi><mn>1</mn></msub><mo>,</mo><msub><mi>𝐲</mi><mn>1</mn></msub><mo stretchy="true" form="postfix">)</mo></mrow></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"><mtext mathvariant="normal">initial state variance</mtext></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><msub><mn>𝟎</mn><mrow><mn>4</mn><mo>×</mo><mn>4</mn></mrow></msub></mtd></mtr></mtable><annotation encoding="application/x-tex">
-\begin{align}
-\left[
-\begin{matrix}
-\mathbf z_t \\ \mathbf z_{t-1}
-\end{matrix}
-\right] &amp;= 
-\left[
-\begin{matrix}
-1+\gamma&amp;0&amp;-\gamma&amp;0 \\
-0&amp;1+\gamma&amp;0&amp;-\gamma \\
-1&amp;0&amp;0&amp;0 \\
-0&amp;1&amp;0&amp;0 \\
-\end{matrix}
-\right]
-\left[
-\begin{matrix}
-\mathbf z_{t-1} \\ \mathbf z_{t-2}
-\end{matrix}
-\right] + \boldsymbol \epsilon_t, \ \ \boldsymbol \epsilon_t \sim N\left(\mathbf 0, \boldsymbol \Sigma \right), \\
-\boldsymbol\Sigma &amp;= \left[
-\begin{matrix}
-\sigma^2_{\epsilon,lon}&amp;0&amp;0&amp;0 \\
-0&amp;\sigma^2_{\epsilon,lat}&amp;0&amp;0 \\
-0&amp;0&amp;0&amp;0 \\
-0&amp;0&amp;0&amp;0 \\
-\end{matrix}
-\right] \\
-\mathbf y_t &amp;=
-\left[
-\begin{matrix}
-1&amp;0&amp;0&amp;0 \\
-0&amp;1&amp;0&amp;0
-\end{matrix}
-\right]
-\left[
-\begin{matrix}
-\mathbf z_t \\ \mathbf z_{t-1}
-\end{matrix}\right] + \boldsymbol \eta_t, \ \ \boldsymbol \eta_t \sim N\left(\mathbf 0, \mathbf R \right), \\
-\mathbf R &amp;= \left[
-\begin{matrix}
-\sigma^2_{\eta,lon}&amp;0 \\
-0&amp;\sigma^2_{\eta,lat}  \\
-\end{matrix}
-\right] \\
-\text{initial state} &amp;= (\mathbf y_1, \mathbf y_1) \\
-\text{initial state variance} &amp;= \mathbf 0_{4\times 4}
-\end{align}
-</annotation></semantics></math></p>
+converted into state-space form. See the beginning of Section 4 of <span class="citation">Shankar et al. (2025)</span> for a summary on how this
+is done.</p>
 <div class="section level2 tabset">
 <h2 class="tabset" id="animals">Animals<a class="anchor" aria-label="anchor" href="#animals"></a>
 </h2>
@@ -199,157 +143,16 @@ for the state error variance matrix
 
 
 <ul class="nav nav-tabs" id="animals" role="tablist">
-<li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#blue-whale" id="blue-whale-tab" type="button" role="tab" aria-controls="blue-whale" aria-selected="true" class="active nav-link">Blue whale</button></li>
+<li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#cats" id="cats-tab" type="button" role="tab" aria-controls="cats" aria-selected="true" class="active nav-link">Cats</button></li>
+<li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#cows" id="cows-tab" type="button" role="tab" aria-controls="cows" aria-selected="false" class="nav-link">Cows</button></li>
 <li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#polar-bear" id="polar-bear-tab" type="button" role="tab" aria-controls="polar-bear" aria-selected="false" class="nav-link">Polar bear</button></li>
 <li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#seal" id="seal-tab" type="button" role="tab" aria-controls="seal" aria-selected="false" class="nav-link">Seal</button></li>
-<li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#cats" id="cats-tab" type="button" role="tab" aria-controls="cats" aria-selected="false" class="nav-link">Cats</button></li>
-<li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#cows" id="cows-tab" type="button" role="tab" aria-controls="cows" aria-selected="false" class="nav-link">Cows</button></li>
+<li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#blue-whale" id="blue-whale-tab" type="button" role="tab" aria-controls="blue-whale" aria-selected="false" class="nav-link">Blue whale</button></li>
 </ul>
 <div class="tab-content">
-<div class="active  tab-pane" id="blue-whale" role="tabpanel" aria-labelledby="blue-whale-tab">
+<div class="active  tab-pane" id="cats" role="tabpanel" aria-labelledby="cats-tab">
 
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">whale_2008</span> <span class="op">=</span> <span class="fu"><a href="https://readr.tidyverse.org/reference/read_delim.html" class="external-link">read_csv</a></span><span class="op">(</span><span class="st">"data/Blue whales Eastern North Pacific 1993-2008 - Argos Data.csv"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="co"># Standardise column names</span></span>
-<span>  <span class="fu">janitor</span><span class="fu">::</span><span class="fu"><a href="https://sfirke.github.io/janitor/reference/clean_names.html" class="external-link">clean_names</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span>  </span>
-<span>  <span class="co"># Keep only rows for the whale with ID "2008CA-Bmu-10839"</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">individual_local_identifier</span> <span class="op">==</span> <span class="st">"2008CA-Bmu-10839"</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
-<span>  <span class="co"># Replace missing values in 'manually_marked_outlier' with FALSE</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>manually_marked_outlier <span class="op">=</span> <span class="fu">tidyr</span><span class="fu">::</span><span class="fu"><a href="https://tidyr.tidyverse.org/reference/replace_na.html" class="external-link">replace_na</a></span><span class="op">(</span><span class="va">manually_marked_outlier</span>, <span class="cn">FALSE</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
-<span>  <span class="co"># Round timestamps to the nearest 12 hours</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>timestamp <span class="op">=</span> <span class="fu">lubridate</span><span class="fu">::</span><span class="fu"><a href="https://lubridate.tidyverse.org/reference/round_date.html" class="external-link">round_date</a></span><span class="op">(</span><span class="va">timestamp</span>, <span class="st">"12 hours"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
-<span>  <span class="co"># Within each group, keep only the last row (e.g. latest observation per 12-hour block)</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">timestamp</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html" class="external-link">slice_tail</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
-<span>  <span class="co"># Convert the data to a tsibble object (time series tibble)</span></span>
-<span>  <span class="fu">tsibble</span><span class="fu">::</span><span class="fu"><a href="https://tsibble.tidyverts.org/reference/tsibble.html" class="external-link">tsibble</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="co"># Fill in missing time points in the series with explicit gaps</span></span>
-<span>  <span class="fu">tsibble</span><span class="fu">::</span><span class="fu"><a href="https://tsibble.tidyverts.org/reference/fill_gaps.html" class="external-link">fill_gaps</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>   <span class="co"># Convert back to a regular tibble</span></span>
-<span>  <span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html" class="external-link">as_tibble</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
-<span>  <span class="co"># Rename longitude/latitude columns to x and y</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/rename.html" class="external-link">rename</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">location_long</span>,</span>
-<span>         y <span class="op">=</span> <span class="va">location_lat</span><span class="op">)</span></span></code></pre></div>
-<p>Plot with world map data:</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Work out x/y ranges with some padding</span></span>
-<span><span class="va">x_range</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/range.html" class="external-link">range</a></span><span class="op">(</span><span class="va">whale_2008</span><span class="op">$</span><span class="va">x</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="va">y_range</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/range.html" class="external-link">range</a></span><span class="op">(</span><span class="va">whale_2008</span><span class="op">$</span><span class="va">y</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">x_pad</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/diff.html" class="external-link">diff</a></span><span class="op">(</span><span class="va">x_range</span><span class="op">)</span> <span class="op">*</span> <span class="fl">0.05</span>  <span class="co"># 5% padding</span></span>
-<span><span class="va">y_pad</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/diff.html" class="external-link">diff</a></span><span class="op">(</span><span class="va">y_range</span><span class="op">)</span> <span class="op">*</span> <span class="fl">0.05</span> <span class="co"># 5% padding</span></span>
-<span></span>
-<span><span class="va">p1</span> <span class="op">=</span> <span class="va">whale_2008</span> <span class="op">|&gt;</span> </span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="co"># Country boundaries</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">world</span>, fill <span class="op">=</span> <span class="st">"grey95"</span>, colour <span class="op">=</span> <span class="st">"grey70"</span>, size <span class="op">=</span> <span class="fl">0.3</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="co"># Whale track and points</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_path</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">x</span>, y <span class="op">=</span> <span class="va">y</span>, colour <span class="op">=</span> <span class="va">timestamp</span><span class="op">)</span>, alpha <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">x</span>, y <span class="op">=</span> <span class="va">y</span>, colour <span class="op">=</span> <span class="va">timestamp</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="co"># Colour scale</span></span>
-<span>  <span class="fu">viridis</span><span class="fu">::</span><span class="fu"><a href="https://sjmgarnier.github.io/viridis/reference/scale_viridis.html" class="external-link">scale_color_viridis</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="co"># Labels and theme</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>x <span class="op">=</span> <span class="st">"Longitude"</span>, y <span class="op">=</span> <span class="st">"Latitude"</span>, title <span class="op">=</span> <span class="st">"Blue whale"</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_minimal</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"none"</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="co"># Focus map on whale’s range</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">coord_sf</a></span><span class="op">(</span></span>
-<span>    xlim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">x_range</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">-</span> <span class="va">x_pad</span>, <span class="va">x_range</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span> <span class="op">+</span> <span class="va">x_pad</span><span class="op">)</span>,</span>
-<span>    ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">y_range</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">-</span> <span class="va">y_pad</span>, <span class="va">y_range</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span> <span class="op">+</span> <span class="va">y_pad</span><span class="op">)</span>,</span>
-<span>    expand <span class="op">=</span> <span class="cn">FALSE</span></span>
-<span>  <span class="op">)</span></span>
-<span><span class="va">p1</span></span></code></pre></div>
-<p><img src="dcrw_examples_files/figure-html/raw-data-vis-whale-1.png" width="700"></p>
-</div>
-<div class="tab-pane" id="polar-bear" role="tabpanel" aria-labelledby="polar-bear-tab">
-
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">polar_low_freq</span> <span class="op">=</span> <span class="fu"><a href="https://readr.tidyverse.org/reference/read_delim.html" class="external-link">read_csv</a></span><span class="op">(</span><span class="st">"data/PB_Argos.csv"</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
-<span>  <span class="co"># Standardise column names</span></span>
-<span>  <span class="fu"><a href="https://sfirke.github.io/janitor/reference/clean_names.html" class="external-link">clean_names</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
-<span>  <span class="co"># Convert date_time column to a proper datetime object called 'timestamp'</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>timestamp <span class="op">=</span> <span class="fu"><a href="https://lubridate.tidyverse.org/reference/ymd_hms.html" class="external-link">ymd_hms</a></span><span class="op">(</span><span class="va">date_time</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
-<span>  <span class="co"># Drop the original date_time column</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="op">-</span><span class="va">date_time</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
-<span>  <span class="co"># Round timestamps to the nearest day</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>timestamp <span class="op">=</span> <span class="fu">lubridate</span><span class="fu">::</span><span class="fu"><a href="https://lubridate.tidyverse.org/reference/round_date.html" class="external-link">round_date</a></span><span class="op">(</span><span class="va">timestamp</span>, <span class="st">"1 day"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
-<span>  <span class="co"># Within each group, keep only the first row (e.g. earliest observation per day)</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">timestamp</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html" class="external-link">slice_head</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
-<span>  <span class="co"># Convert timestamp to a Date object (drop time-of-day information)</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>timestamp <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="va">timestamp</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
-<span>  <span class="co"># Convert the data to a tsibble object (time series tibble)</span></span>
-<span>  <span class="fu">tsibble</span><span class="fu">::</span><span class="fu"><a href="https://tsibble.tidyverts.org/reference/tsibble.html" class="external-link">tsibble</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="co"># Fill in missing time points in the series with explicit gaps</span></span>
-<span>  <span class="fu">tsibble</span><span class="fu">::</span><span class="fu"><a href="https://tsibble.tidyverts.org/reference/fill_gaps.html" class="external-link">fill_gaps</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="co"># Convert back to a regular tibble</span></span>
-<span>  <span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html" class="external-link">as_tibble</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
-<span>  <span class="co"># Rename longitude/latitude columns to x and y</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/rename.html" class="external-link">rename</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">lon</span>, y <span class="op">=</span> <span class="va">lat</span><span class="op">)</span></span></code></pre></div>
-<p>Plot with world map data:</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Work out x/y ranges with some padding</span></span>
-<span><span class="va">x_range</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/range.html" class="external-link">range</a></span><span class="op">(</span><span class="va">polar_low_freq</span><span class="op">$</span><span class="va">x</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="va">y_range</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/range.html" class="external-link">range</a></span><span class="op">(</span><span class="va">polar_low_freq</span><span class="op">$</span><span class="va">y</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">x_pad</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/diff.html" class="external-link">diff</a></span><span class="op">(</span><span class="va">x_range</span><span class="op">)</span> <span class="op">*</span> <span class="fl">0.05</span>  <span class="co"># 5% padding</span></span>
-<span><span class="va">y_pad</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/diff.html" class="external-link">diff</a></span><span class="op">(</span><span class="va">y_range</span><span class="op">)</span> <span class="op">*</span> <span class="fl">0.05</span> <span class="co"># 5% padding</span></span>
-<span></span>
-<span><span class="va">p2</span> <span class="op">=</span> <span class="va">p1</span> <span class="op"><a href="https://ggplot2.tidyverse.org/reference/gg-add.html" class="external-link">%+%</a></span> <span class="va">polar_low_freq</span> <span class="op">+</span> </span>
-<span>  <span class="co"># Focus map on polar bear's range</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">coord_sf</a></span><span class="op">(</span></span>
-<span>    xlim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">x_range</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">-</span> <span class="va">x_pad</span>, <span class="va">x_range</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span> <span class="op">+</span> <span class="va">x_pad</span><span class="op">)</span>,</span>
-<span>    ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">y_range</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">-</span> <span class="va">y_pad</span>, <span class="va">y_range</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span> <span class="op">+</span> <span class="va">y_pad</span><span class="op">)</span>,</span>
-<span>    expand <span class="op">=</span> <span class="cn">FALSE</span></span>
-<span>  <span class="op">)</span> <span class="op">+</span> </span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Polar bear"</span><span class="op">)</span></span>
-<span><span class="va">p2</span></span></code></pre></div>
-<p><img src="dcrw_examples_files/figure-html/raw-data-vis-polar_bear-1.png" width="700"></p>
-</div>
-<div class="tab-pane" id="seal" role="tabpanel" aria-labelledby="seal-tab">
-
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">seal</span> <span class="op">=</span> <span class="fu"><a href="https://readr.tidyverse.org/reference/read_delim.html" class="external-link">read_csv</a></span><span class="op">(</span><span class="st">"data/sealLocs.csv"</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
-<span>  <span class="co"># Keep only rows for the seal with ID "stephanie"</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">id</span> <span class="op">==</span> <span class="st">"stephanie"</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
-<span>  <span class="co"># Round timestamps to the nearest day</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>timestamp <span class="op">=</span> <span class="fu">lubridate</span><span class="fu">::</span><span class="fu"><a href="https://lubridate.tidyverse.org/reference/round_date.html" class="external-link">round_date</a></span><span class="op">(</span><span class="va">time</span>, <span class="st">"1 day"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
-<span>  <span class="co"># Within each group, keep only the last row (e.g. latest observation per day)</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">timestamp</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html" class="external-link">slice_tail</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
-<span>  <span class="co"># Convert timestamp to a Date object (drop time-of-day information)</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>timestamp <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="va">timestamp</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
-<span>  <span class="co"># Convert the data to a tsibble object indexed by timestamp</span></span>
-<span>  <span class="fu">tsibble</span><span class="fu">::</span><span class="fu"><a href="https://tsibble.tidyverts.org/reference/tsibble.html" class="external-link">tsibble</a></span><span class="op">(</span>index <span class="op">=</span> <span class="va">timestamp</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="co"># Fill in missing time points in the series with explicit gaps</span></span>
-<span>  <span class="fu">tsibble</span><span class="fu">::</span><span class="fu"><a href="https://tsibble.tidyverts.org/reference/fill_gaps.html" class="external-link">fill_gaps</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="co"># Convert back to a regular tibble</span></span>
-<span>  <span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html" class="external-link">as_tibble</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
-<span>  <span class="co"># Rename longitude/latitude columns to x and y</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/rename.html" class="external-link">rename</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">lon</span>,</span>
-<span>         y <span class="op">=</span> <span class="va">lat</span><span class="op">)</span></span></code></pre></div>
-<p>Plot with world map data:</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Work out x/y ranges with some padding</span></span>
-<span><span class="va">x_range</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/range.html" class="external-link">range</a></span><span class="op">(</span><span class="va">seal</span><span class="op">$</span><span class="va">x</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="va">y_range</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/range.html" class="external-link">range</a></span><span class="op">(</span><span class="va">seal</span><span class="op">$</span><span class="va">y</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">x_pad</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/diff.html" class="external-link">diff</a></span><span class="op">(</span><span class="va">x_range</span><span class="op">)</span> <span class="op">*</span> <span class="fl">0.05</span>  <span class="co"># 5% padding</span></span>
-<span><span class="va">y_pad</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/diff.html" class="external-link">diff</a></span><span class="op">(</span><span class="va">y_range</span><span class="op">)</span> <span class="op">*</span> <span class="fl">0.05</span> <span class="co"># 5% padding</span></span>
-<span></span>
-<span><span class="va">p1</span> <span class="op"><a href="https://ggplot2.tidyverse.org/reference/gg-add.html" class="external-link">%+%</a></span> <span class="va">seal</span> <span class="op">+</span> </span>
-<span>  <span class="co"># Focus map on s's range</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">coord_sf</a></span><span class="op">(</span></span>
-<span>    xlim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">x_range</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">-</span> <span class="va">x_pad</span>, <span class="va">x_range</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span> <span class="op">+</span> <span class="va">x_pad</span><span class="op">)</span>,</span>
-<span>    ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">y_range</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">-</span> <span class="va">y_pad</span>, <span class="va">y_range</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span> <span class="op">+</span> <span class="va">y_pad</span><span class="op">)</span>,</span>
-<span>    expand <span class="op">=</span> <span class="cn">FALSE</span></span>
-<span>  <span class="op">)</span> <span class="op">+</span> </span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Seal"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="dcrw_examples_files/figure-html/raw-data-vis-seal-1.png" width="700"></p>
-</div>
-<div class="tab-pane" id="cats" role="tabpanel" aria-labelledby="cats-tab">
-
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cat_mia</span> <span class="op">=</span> <span class="fu"><a href="https://readr.tidyverse.org/reference/read_delim.html" class="external-link">read_csv</a></span><span class="op">(</span><span class="st">"data/Feral cat (Felis catus) - Scotia, NSW.csv"</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://sfirke.github.io/janitor/reference/clean_names.html" class="external-link">clean_names</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>algorithm_marked_outlier <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">algorithm_marked_outlier</span><span class="op">)</span>, </span>
@@ -386,7 +189,7 @@ for the state error variance matrix
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/rename.html" class="external-link">rename</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">location_long</span>,</span>
 <span>         y <span class="op">=</span> <span class="va">location_lat</span><span class="op">)</span></span></code></pre></div>
 <p>Plot with world map data:</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Work out x/y ranges with some padding</span></span>
 <span><span class="va">x_range</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/range.html" class="external-link">range</a></span><span class="op">(</span><span class="va">cat_mia</span><span class="op">$</span><span class="va">x</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="va">y_range</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/range.html" class="external-link">range</a></span><span class="op">(</span><span class="va">cat_mia</span><span class="op">$</span><span class="va">y</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
@@ -394,19 +197,31 @@ for the state error variance matrix
 <span><span class="va">x_pad</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/diff.html" class="external-link">diff</a></span><span class="op">(</span><span class="va">x_range</span><span class="op">)</span> <span class="op">*</span> <span class="fl">0.05</span>  <span class="co"># 5% padding</span></span>
 <span><span class="va">y_pad</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/diff.html" class="external-link">diff</a></span><span class="op">(</span><span class="va">y_range</span><span class="op">)</span> <span class="op">*</span> <span class="fl">0.05</span> <span class="co"># 5% padding</span></span>
 <span></span>
-<span><span class="va">p1</span> <span class="op"><a href="https://ggplot2.tidyverse.org/reference/gg-add.html" class="external-link">%+%</a></span> <span class="va">cat_mia</span> <span class="op">+</span> </span>
-<span>  <span class="co"># Focus map on s's range</span></span>
+<span><span class="va">p1</span> <span class="op">=</span> <span class="va">cat_mia</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="co"># Country boundaries</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">world</span>, fill <span class="op">=</span> <span class="st">"grey95"</span>, colour <span class="op">=</span> <span class="st">"grey70"</span>, size <span class="op">=</span> <span class="fl">0.3</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="co"># Animal track and points</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_path</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">x</span>, y <span class="op">=</span> <span class="va">y</span>, colour <span class="op">=</span> <span class="va">timestamp</span><span class="op">)</span>, alpha <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">x</span>, y <span class="op">=</span> <span class="va">y</span>, colour <span class="op">=</span> <span class="va">timestamp</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="co"># Colour scale</span></span>
+<span>  <span class="fu">viridis</span><span class="fu">::</span><span class="fu"><a href="https://sjmgarnier.github.io/viridis/reference/scale_viridis.html" class="external-link">scale_color_viridis</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="co"># Labels and theme</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>x <span class="op">=</span> <span class="st">"Longitude"</span>, y <span class="op">=</span> <span class="st">"Latitude"</span>, title <span class="op">=</span> <span class="st">"Cat"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_minimal</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"none"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="co"># Focus map on whale’s range</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">coord_sf</a></span><span class="op">(</span></span>
 <span>    xlim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">x_range</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">-</span> <span class="va">x_pad</span>, <span class="va">x_range</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span> <span class="op">+</span> <span class="va">x_pad</span><span class="op">)</span>,</span>
 <span>    ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">y_range</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">-</span> <span class="va">y_pad</span>, <span class="va">y_range</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span> <span class="op">+</span> <span class="va">y_pad</span><span class="op">)</span>,</span>
 <span>    expand <span class="op">=</span> <span class="cn">FALSE</span></span>
-<span>  <span class="op">)</span> <span class="op">+</span> </span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Cat Mia"</span><span class="op">)</span></span></code></pre></div>
+<span>  <span class="op">)</span></span>
+<span><span class="va">p1</span></span></code></pre></div>
 <p><img src="dcrw_examples_files/figure-html/raw-data-vis-cat-1.png" width="700"></p>
 </div>
 <div class="tab-pane" id="cows" role="tabpanel" aria-labelledby="cows-tab">
 
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cow</span> <span class="op">=</span> <span class="fu"><a href="https://readr.tidyverse.org/reference/read_delim.html" class="external-link">read_csv</a></span><span class="op">(</span><span class="st">"data/export_UQ_GPS.csv"</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://sfirke.github.io/janitor/reference/clean_names.html" class="external-link">clean_names</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">partition_key</span> <span class="op">==</span> <span class="st">"70741400000EB036"</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
@@ -425,11 +240,9 @@ for the state error variance matrix
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/rename.html" class="external-link">rename</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">x</span>,</span>
 <span>         y <span class="op">=</span> <span class="va">y</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">cow_10</span> <span class="op">=</span> <span class="va">cow</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">date</span> <span class="op">==</span> <span class="st">"2024-11-10"</span><span class="op">)</span></span>
-<span><span class="va">cow_11</span> <span class="op">=</span> <span class="va">cow</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">date</span> <span class="op">==</span> <span class="st">"2024-11-11"</span><span class="op">)</span></span>
-<span><span class="va">cow_12</span> <span class="op">=</span> <span class="va">cow</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">date</span> <span class="op">==</span> <span class="st">"2024-11-12"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">cow_11</span> <span class="op">=</span> <span class="va">cow</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">date</span> <span class="op">==</span> <span class="st">"2024-11-11"</span><span class="op">)</span></span></code></pre></div>
 <p>Plot with world map data:</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Work out x/y ranges with some padding</span></span>
 <span><span class="va">x_range</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/range.html" class="external-link">range</a></span><span class="op">(</span><span class="va">cow_11</span><span class="op">$</span><span class="va">x</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="va">y_range</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/range.html" class="external-link">range</a></span><span class="op">(</span><span class="va">cow_11</span><span class="op">$</span><span class="va">y</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
@@ -447,6 +260,135 @@ for the state error variance matrix
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Cow 11"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="dcrw_examples_files/figure-html/raw-data-vis-cow-1.png" width="700"></p>
 </div>
+<div class="tab-pane" id="polar-bear" role="tabpanel" aria-labelledby="polar-bear-tab">
+
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">polar_low_freq</span> <span class="op">=</span> <span class="fu"><a href="https://readr.tidyverse.org/reference/read_delim.html" class="external-link">read_csv</a></span><span class="op">(</span><span class="st">"data/PB_Argos.csv"</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="co"># Standardise column names</span></span>
+<span>  <span class="fu"><a href="https://sfirke.github.io/janitor/reference/clean_names.html" class="external-link">clean_names</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="co"># Convert date_time column to a proper datetime object called 'timestamp'</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>timestamp <span class="op">=</span> <span class="fu"><a href="https://lubridate.tidyverse.org/reference/ymd_hms.html" class="external-link">ymd_hms</a></span><span class="op">(</span><span class="va">date_time</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="co"># Drop the original date_time column</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="op">-</span><span class="va">date_time</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="co"># Round timestamps to the nearest day</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>timestamp <span class="op">=</span> <span class="fu">lubridate</span><span class="fu">::</span><span class="fu"><a href="https://lubridate.tidyverse.org/reference/round_date.html" class="external-link">round_date</a></span><span class="op">(</span><span class="va">timestamp</span>, <span class="st">"1 day"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="co"># Within each group, keep only the first row (e.g. earliest observation per day)</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">timestamp</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html" class="external-link">slice_head</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="co"># Convert timestamp to a Date object (drop time-of-day information)</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>timestamp <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="va">timestamp</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="co"># Convert the data to a tsibble object (time series tibble)</span></span>
+<span>  <span class="fu">tsibble</span><span class="fu">::</span><span class="fu"><a href="https://tsibble.tidyverts.org/reference/tsibble.html" class="external-link">tsibble</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="co"># Fill in missing time points in the series with explicit gaps</span></span>
+<span>  <span class="fu">tsibble</span><span class="fu">::</span><span class="fu"><a href="https://tsibble.tidyverts.org/reference/fill_gaps.html" class="external-link">fill_gaps</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="co"># Convert back to a regular tibble</span></span>
+<span>  <span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html" class="external-link">as_tibble</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="co"># Rename longitude/latitude columns to x and y</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/rename.html" class="external-link">rename</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">lon</span>, y <span class="op">=</span> <span class="va">lat</span><span class="op">)</span></span></code></pre></div>
+<p>Plot with world map data:</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Work out x/y ranges with some padding</span></span>
+<span><span class="va">x_range</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/range.html" class="external-link">range</a></span><span class="op">(</span><span class="va">polar_low_freq</span><span class="op">$</span><span class="va">x</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">y_range</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/range.html" class="external-link">range</a></span><span class="op">(</span><span class="va">polar_low_freq</span><span class="op">$</span><span class="va">y</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">x_pad</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/diff.html" class="external-link">diff</a></span><span class="op">(</span><span class="va">x_range</span><span class="op">)</span> <span class="op">*</span> <span class="fl">0.05</span>  <span class="co"># 5% padding</span></span>
+<span><span class="va">y_pad</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/diff.html" class="external-link">diff</a></span><span class="op">(</span><span class="va">y_range</span><span class="op">)</span> <span class="op">*</span> <span class="fl">0.05</span> <span class="co"># 5% padding</span></span>
+<span></span>
+<span><span class="va">p2</span> <span class="op">=</span> <span class="va">p1</span> <span class="op"><a href="https://ggplot2.tidyverse.org/reference/gg-add.html" class="external-link">%+%</a></span> <span class="va">polar_low_freq</span> <span class="op">+</span> </span>
+<span>  <span class="co"># Focus map on polar bear's range</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">coord_sf</a></span><span class="op">(</span></span>
+<span>    xlim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">x_range</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">-</span> <span class="va">x_pad</span>, <span class="va">x_range</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span> <span class="op">+</span> <span class="va">x_pad</span><span class="op">)</span>,</span>
+<span>    ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">y_range</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">-</span> <span class="va">y_pad</span>, <span class="va">y_range</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span> <span class="op">+</span> <span class="va">y_pad</span><span class="op">)</span>,</span>
+<span>    expand <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Polar bear"</span><span class="op">)</span></span>
+<span><span class="va">p2</span></span></code></pre></div>
+<p><img src="dcrw_examples_files/figure-html/raw-data-vis-polar_bear-1.png" width="700"></p>
+</div>
+<div class="tab-pane" id="seal" role="tabpanel" aria-labelledby="seal-tab">
+
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">seal</span> <span class="op">=</span> <span class="fu"><a href="https://readr.tidyverse.org/reference/read_delim.html" class="external-link">read_csv</a></span><span class="op">(</span><span class="st">"data/sealLocs.csv"</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="co"># Keep only rows for the seal with ID "stephanie"</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">id</span> <span class="op">==</span> <span class="st">"stephanie"</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="co"># Round timestamps to the nearest day</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>timestamp <span class="op">=</span> <span class="fu">lubridate</span><span class="fu">::</span><span class="fu"><a href="https://lubridate.tidyverse.org/reference/round_date.html" class="external-link">round_date</a></span><span class="op">(</span><span class="va">time</span>, <span class="st">"1 day"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="co"># Within each group, keep only the last row (e.g. latest observation per day)</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">timestamp</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html" class="external-link">slice_tail</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="co"># Convert timestamp to a Date object (drop time-of-day information)</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>timestamp <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="va">timestamp</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="co"># Convert the data to a tsibble object indexed by timestamp</span></span>
+<span>  <span class="fu">tsibble</span><span class="fu">::</span><span class="fu"><a href="https://tsibble.tidyverts.org/reference/tsibble.html" class="external-link">tsibble</a></span><span class="op">(</span>index <span class="op">=</span> <span class="va">timestamp</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="co"># Fill in missing time points in the series with explicit gaps</span></span>
+<span>  <span class="fu">tsibble</span><span class="fu">::</span><span class="fu"><a href="https://tsibble.tidyverts.org/reference/fill_gaps.html" class="external-link">fill_gaps</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="co"># Convert back to a regular tibble</span></span>
+<span>  <span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html" class="external-link">as_tibble</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="co"># Rename longitude/latitude columns to x and y</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/rename.html" class="external-link">rename</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">lon</span>,</span>
+<span>         y <span class="op">=</span> <span class="va">lat</span><span class="op">)</span></span></code></pre></div>
+<p>Plot with world map data:</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Work out x/y ranges with some padding</span></span>
+<span><span class="va">x_range</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/range.html" class="external-link">range</a></span><span class="op">(</span><span class="va">seal</span><span class="op">$</span><span class="va">x</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">y_range</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/range.html" class="external-link">range</a></span><span class="op">(</span><span class="va">seal</span><span class="op">$</span><span class="va">y</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">x_pad</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/diff.html" class="external-link">diff</a></span><span class="op">(</span><span class="va">x_range</span><span class="op">)</span> <span class="op">*</span> <span class="fl">0.05</span>  <span class="co"># 5% padding</span></span>
+<span><span class="va">y_pad</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/diff.html" class="external-link">diff</a></span><span class="op">(</span><span class="va">y_range</span><span class="op">)</span> <span class="op">*</span> <span class="fl">0.05</span> <span class="co"># 5% padding</span></span>
+<span></span>
+<span><span class="va">p1</span> <span class="op"><a href="https://ggplot2.tidyverse.org/reference/gg-add.html" class="external-link">%+%</a></span> <span class="va">seal</span> <span class="op">+</span> </span>
+<span>  <span class="co"># Focus map on s's range</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">coord_sf</a></span><span class="op">(</span></span>
+<span>    xlim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">x_range</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">-</span> <span class="va">x_pad</span>, <span class="va">x_range</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span> <span class="op">+</span> <span class="va">x_pad</span><span class="op">)</span>,</span>
+<span>    ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">y_range</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">-</span> <span class="va">y_pad</span>, <span class="va">y_range</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span> <span class="op">+</span> <span class="va">y_pad</span><span class="op">)</span>,</span>
+<span>    expand <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Seal"</span><span class="op">)</span></span></code></pre></div>
+<p><img src="dcrw_examples_files/figure-html/raw-data-vis-seal-1.png" width="700"></p>
+</div>
+<div class="tab-pane" id="blue-whale" role="tabpanel" aria-labelledby="blue-whale-tab">
+
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">whale_2008</span> <span class="op">=</span> <span class="fu"><a href="https://readr.tidyverse.org/reference/read_delim.html" class="external-link">read_csv</a></span><span class="op">(</span><span class="st">"data/Blue whales Eastern North Pacific 1993-2008 - Argos Data.csv"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="co"># Standardise column names</span></span>
+<span>  <span class="fu">janitor</span><span class="fu">::</span><span class="fu"><a href="https://sfirke.github.io/janitor/reference/clean_names.html" class="external-link">clean_names</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span>  </span>
+<span>  <span class="co"># Keep only rows for the whale with ID "2008CA-Bmu-10839"</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">individual_local_identifier</span> <span class="op">==</span> <span class="st">"2008CA-Bmu-10839"</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="co"># Replace missing values in 'manually_marked_outlier' with FALSE</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>manually_marked_outlier <span class="op">=</span> <span class="fu">tidyr</span><span class="fu">::</span><span class="fu"><a href="https://tidyr.tidyverse.org/reference/replace_na.html" class="external-link">replace_na</a></span><span class="op">(</span><span class="va">manually_marked_outlier</span>, <span class="cn">FALSE</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="co"># Round timestamps to the nearest 12 hours</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>timestamp <span class="op">=</span> <span class="fu">lubridate</span><span class="fu">::</span><span class="fu"><a href="https://lubridate.tidyverse.org/reference/round_date.html" class="external-link">round_date</a></span><span class="op">(</span><span class="va">timestamp</span>, <span class="st">"12 hours"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="co"># Within each group, keep only the last row (e.g. latest observation per 12-hour block)</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">timestamp</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html" class="external-link">slice_tail</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="co"># Convert the data to a tsibble object (time series tibble)</span></span>
+<span>  <span class="fu">tsibble</span><span class="fu">::</span><span class="fu"><a href="https://tsibble.tidyverts.org/reference/tsibble.html" class="external-link">tsibble</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="co"># Fill in missing time points in the series with explicit gaps</span></span>
+<span>  <span class="fu">tsibble</span><span class="fu">::</span><span class="fu"><a href="https://tsibble.tidyverts.org/reference/fill_gaps.html" class="external-link">fill_gaps</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>   <span class="co"># Convert back to a regular tibble</span></span>
+<span>  <span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html" class="external-link">as_tibble</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="co"># Rename longitude/latitude columns to x and y</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/rename.html" class="external-link">rename</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">location_long</span>,</span>
+<span>         y <span class="op">=</span> <span class="va">location_lat</span><span class="op">)</span></span></code></pre></div>
+<p>Plot with world map data:</p>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Work out x/y ranges with some padding</span></span>
+<span><span class="va">x_range</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/range.html" class="external-link">range</a></span><span class="op">(</span><span class="va">whale_2008</span><span class="op">$</span><span class="va">x</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">y_range</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/range.html" class="external-link">range</a></span><span class="op">(</span><span class="va">whale_2008</span><span class="op">$</span><span class="va">y</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">x_pad</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/diff.html" class="external-link">diff</a></span><span class="op">(</span><span class="va">x_range</span><span class="op">)</span> <span class="op">*</span> <span class="fl">0.05</span>  <span class="co"># 5% padding</span></span>
+<span><span class="va">y_pad</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/diff.html" class="external-link">diff</a></span><span class="op">(</span><span class="va">y_range</span><span class="op">)</span> <span class="op">*</span> <span class="fl">0.05</span> <span class="co"># 5% padding</span></span>
+<span></span>
+<span><span class="va">p1</span> <span class="op"><a href="https://ggplot2.tidyverse.org/reference/gg-add.html" class="external-link">%+%</a></span> <span class="va">whale_2008</span> <span class="op">+</span> </span>
+<span>  <span class="co"># Focus map on s's range</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">coord_sf</a></span><span class="op">(</span></span>
+<span>    xlim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">x_range</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">-</span> <span class="va">x_pad</span>, <span class="va">x_range</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span> <span class="op">+</span> <span class="va">x_pad</span><span class="op">)</span>,</span>
+<span>    ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">y_range</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">-</span> <span class="va">y_pad</span>, <span class="va">y_range</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span> <span class="op">+</span> <span class="va">y_pad</span><span class="op">)</span>,</span>
+<span>    expand <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Blue whale"</span><span class="op">)</span></span></code></pre></div>
+<p><img src="dcrw_examples_files/figure-html/raw-data-vis-whale-1.png" width="700"></p>
+</div>
 </div>
 </div>
 <div class="section level2">
@@ -455,11 +397,8 @@ for the state error variance matrix
 <p>Combine the data sets into a list:</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">data_sets</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
-<span>  <span class="co"># "cat_max" = cat_max,</span></span>
 <span>  <span class="st">"cat_mia"</span> <span class="op">=</span> <span class="va">cat_mia</span>,</span>
-<span>  <span class="co"># "cow_10" = cow_10,</span></span>
 <span>  <span class="st">"cow_11"</span> <span class="op">=</span> <span class="va">cow_11</span>,</span>
-<span>  <span class="co"># "cow_12" = cow_12,</span></span>
 <span>  <span class="st">"polar_low_freq"</span> <span class="op">=</span> <span class="va">polar_low_freq</span>,</span>
 <span>  <span class="st">"seal"</span> <span class="op">=</span> <span class="va">seal</span>,</span>
 <span>  <span class="st">"whale_2008"</span> <span class="op">=</span> <span class="va">whale_2008</span></span>
@@ -470,10 +409,7 @@ for the state error variance matrix
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Add column containing frequency of measurements for each data set</span></span>
 <span><span class="va">frequencies</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"20 minutes"</span>, </span>
-<span>                <span class="co"># "20 minutes", </span></span>
 <span>                <span class="st">"2 minutes and 23 seconds"</span>, </span>
-<span>                <span class="co"># "2 minutes and 23 seconds", </span></span>
-<span>                <span class="co"># "2 minutes and 23 seconds", </span></span>
 <span>                <span class="st">"1 day"</span>, <span class="st">"1 day"</span>, <span class="st">"12 hours"</span><span class="op">)</span></span>
 <span><span class="va">data_sets</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map_dbl</a></span><span class="op">(</span><span class="op">~</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">.</span><span class="op">$</span><span class="va">x</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
@@ -534,53 +470,17 @@ for the state error variance matrix
 </tbody>
 </table>
 </div>
-<div class="section level3">
-<h3 id="plot-data-sets-on-world-map">Plot data sets on world map<a class="anchor" aria-label="anchor" href="#plot-data-sets-on-world-map"></a>
-</h3>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">plots</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">data_sets</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="co"># Work out x/y ranges with some padding</span></span>
-<span>  <span class="va">x_range</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/range.html" class="external-link">range</a></span><span class="op">(</span><span class="va">data_sets</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">x</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span>  <span class="va">y_range</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/range.html" class="external-link">range</a></span><span class="op">(</span><span class="va">data_sets</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">y</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span>  <span class="va">x_pad</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/diff.html" class="external-link">diff</a></span><span class="op">(</span><span class="va">x_range</span><span class="op">)</span> <span class="op">*</span> <span class="fl">0.05</span>  <span class="co"># 5% padding</span></span>
-<span>  <span class="va">y_pad</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/diff.html" class="external-link">diff</a></span><span class="op">(</span><span class="va">y_range</span><span class="op">)</span> <span class="op">*</span> <span class="fl">0.05</span> <span class="co"># 5% padding</span></span>
-<span></span>
-<span>  <span class="va">plots</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span> <span class="op">=</span> <span class="va">data_sets</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span> <span class="op">|&gt;</span> </span>
-<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
-<span>    <span class="co"># Country boundaries</span></span>
-<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">world</span>, fill <span class="op">=</span> <span class="st">"grey95"</span>, colour <span class="op">=</span> <span class="st">"grey70"</span>, size <span class="op">=</span> <span class="fl">0.3</span><span class="op">)</span> <span class="op">+</span></span>
-<span>    </span>
-<span>    <span class="co"># Animal path and points</span></span>
-<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_path</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">x</span>, y <span class="op">=</span> <span class="va">y</span>, colour <span class="op">=</span> <span class="va">timestamp</span><span class="op">)</span>, alpha <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span> <span class="op">+</span></span>
-<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">x</span>, y <span class="op">=</span> <span class="va">y</span>, colour <span class="op">=</span> <span class="va">timestamp</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>    </span>
-<span>    <span class="co"># Colour scale</span></span>
-<span>    <span class="fu">viridis</span><span class="fu">::</span><span class="fu"><a href="https://sjmgarnier.github.io/viridis/reference/scale_viridis.html" class="external-link">scale_color_viridis</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
-<span>    </span>
-<span>    <span class="co"># Focus map on animal's range</span></span>
-<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">coord_sf</a></span><span class="op">(</span></span>
-<span>      xlim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">x_range</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">-</span> <span class="va">x_pad</span>, <span class="va">x_range</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span> <span class="op">+</span> <span class="va">x_pad</span><span class="op">)</span>,</span>
-<span>      ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">y_range</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">-</span> <span class="va">y_pad</span>, <span class="va">y_range</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span> <span class="op">+</span> <span class="va">y_pad</span><span class="op">)</span>,</span>
-<span>      expand <span class="op">=</span> <span class="cn">FALSE</span></span>
-<span>    <span class="op">)</span> <span class="op">+</span></span>
-<span>    </span>
-<span>    <span class="co"># Labels and theme</span></span>
-<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>x <span class="op">=</span> <span class="st">"Longitude"</span>, y <span class="op">=</span> <span class="st">"Latitude"</span>, subtitle <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">data_sets</span><span class="op">)</span><span class="op">[</span><span class="va">i</span><span class="op">]</span><span class="op">)</span> <span class="op">+</span></span>
-<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_minimal</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
-<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"none"</span><span class="op">)</span></span>
-<span><span class="op">}</span></span>
-<span></span>
-<span><span class="fu"><a href="https://patchwork.data-imaginist.com/reference/wrap_plots.html" class="external-link">wrap_plots</a></span><span class="op">(</span><span class="va">plots</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://patchwork.data-imaginist.com/reference/plot_layout.html" class="external-link">plot_layout</a></span><span class="op">(</span>ncol <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></code></pre></div>
-<p><img src="dcrw_examples_files/figure-html/raw-data-vis-all-1.png" width="700"></p>
-</div>
 </div>
 <div class="section level2">
 <h2 id="model-fitting">Model fitting<a class="anchor" aria-label="anchor" href="#model-fitting"></a>
 </h2>
 <p>The last 10% of points from each data set are left out to use as a
-‘test set’ later on.</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+‘test set’. The other 90% are used as a ‘training set’.</p>
+<p>The code below fits the classical, ROAMS, Huber and trimmed methods
+to the training sets. It also computes the filtered and predicted values
+on the test sets so that mean-squared forecast errors (MSFE) can be
+reported.</p>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">results</span> <span class="op">=</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span></span>
 <span>  name <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">character</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  data_set <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
@@ -834,17 +734,21 @@ for the state error variance matrix
 <span><span class="va">results</span> <span class="op">=</span> <span class="va">results</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>frequency <span class="op">=</span> <span class="va">frequencies</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># readr::write_rds(results, "data/results.rds")</span></span></code></pre></div>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<span><span class="fu">readr</span><span class="fu">::</span><span class="fu"><a href="https://readr.tidyverse.org/reference/read_rds.html" class="external-link">write_rds</a></span><span class="op">(</span><span class="va">results</span>, <span class="st">"data/results.rds"</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># load pre-computed results</span></span>
 <span><span class="va">results</span> <span class="op">=</span> <span class="fu"><a href="https://readr.tidyverse.org/reference/read_rds.html" class="external-link">read_rds</a></span><span class="op">(</span><span class="st">"data/results.rds"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="results">Results<a class="anchor" aria-label="anchor" href="#results"></a>
 </h2>
-<p>Evaluation metrics</p>
-<p>The MSFEs are reported relative to the classical method.</p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<div class="section level3">
+<h3 id="table-of-msfes-per-animal">Table of MSFEs per animal<a class="anchor" aria-label="anchor" href="#table-of-msfes-per-animal"></a>
+</h3>
+<p>This table forms part of Table 3 of <span class="citation">Shankar et
+al. (2025)</span>. The MSFEs are reported relative to the classical
+method.</p>
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">results</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="op">-</span><span class="va">roams_model_list</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>roams_kalman_model <span class="op">=</span> <span class="va">roams_model</span>,</span>
@@ -888,27 +792,6 @@ for the state error variance matrix
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
 <span>    MSFE <span class="op">=</span> <span class="va">MSFE</span> <span class="op">/</span> <span class="va">MSFE</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="va">method</span> <span class="op">==</span> <span class="st">"classical"</span><span class="op">)</span><span class="op">]</span>,</span>
 <span>    MSFE_clean <span class="op">=</span> <span class="va">MSFE_clean</span> <span class="op">/</span> <span class="va">MSFE_clean</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="va">method</span> <span class="op">==</span> <span class="st">"classical"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="co"># for paper</span></span>
-<span>  <span class="co"># filter(method %in% c("classical", "roams_fut", "roams_kalman")) |&gt;  </span></span>
-<span>  <span class="co"># group_by(name) |&gt;</span></span>
-<span>  <span class="co"># mutate(name = ifelse(row_number() == 1,</span></span>
-<span>  <span class="co">#                           paste0("\\midrule</span></span>
-<span>  <span class="co">#                                  \\multirow{3}{*}{", name, "}"),</span></span>
-<span>  <span class="co">#                           "")) |&gt;</span></span>
-<span>  <span class="co"># ungroup() |&gt; </span></span>
-<span>  <span class="co"># mutate(</span></span>
-<span>  <span class="co">#   phi_estimate = as.character(</span></span>
-<span>  <span class="co">#     format(round(phi_estimate, 2), nsmall = 2)),</span></span>
-<span>  <span class="co">#   phi_estimate = case_when(</span></span>
-<span>  <span class="co">#   method == "roams_fut" ~ paste0("\\multirow{2}{*}{", phi_estimate, "}"),</span></span>
-<span>  <span class="co">#   method == "roams_kalman" ~ "",</span></span>
-<span>  <span class="co">#   TRUE ~ phi_estimate</span></span>
-<span>  <span class="co"># )) |&gt; </span></span>
-<span>  <span class="co"># kable("latex", booktabs = TRUE, escape = FALSE,</span></span>
-<span>  <span class="co">#       linesep = "", digits = 2,</span></span>
-<span>  <span class="co">#       align = c("l", "l|", rep("c", 3)))</span></span>
-<span>  </span>
-<span>  <span class="co"># for vignette</span></span>
 <span>  <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span>digits <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
 <thead><tr class="header">
@@ -1096,8 +979,15 @@ for the state error variance matrix
 </tr>
 </tbody>
 </table>
-<p>Other results</p>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+</div>
+<div class="section level3">
+<h3 id="table-of-data-set-information">Table of data set information<a class="anchor" aria-label="anchor" href="#table-of-data-set-information"></a>
+</h3>
+<p>This table forms part of Table 2 of <span class="citation">Shankar et
+al. (2025)</span>. Other ROAMS fit-related information is displayed as
+well, such as <code>lambda</code> chosen and number of
+<code>iterations</code>.</p>
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">results</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="op">-</span><span class="va">roams_model_list</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
@@ -1116,115 +1006,10 @@ for the state error variance matrix
 <span>    </span>
 <span>    roams_phi <span class="op">=</span> <span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map_dbl</a></span><span class="op">(</span><span class="va">roams_model</span>, <span class="op">~</span> <span class="va">.</span><span class="op">$</span><span class="va">par</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span>,</span>
 <span>    classical_phi <span class="op">=</span> <span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map_dbl</a></span><span class="op">(</span><span class="va">classical_model</span>, <span class="op">~</span> <span class="va">.</span><span class="op">$</span><span class="va">par</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span></span>
-<span>    </span>
-<span>    <span class="co"># roams_MSFE = map2_dbl(</span></span>
-<span>    <span class="co">#   roams_oos, y_oos,</span></span>
-<span>    <span class="co">#   function(roams_oos, y_oos) {</span></span>
-<span>    <span class="co">#     SFEs = rowSums((y_oos - roams_oos$predicted_observations)^2)</span></span>
-<span>    <span class="co">#     MSFE = mean(SFEs, na.rm = TRUE)</span></span>
-<span>    <span class="co">#     return(MSFE)</span></span>
-<span>    <span class="co">#   }</span></span>
-<span>    <span class="co"># ),</span></span>
-<span>    <span class="co"># classical_MSFE = map2_dbl(</span></span>
-<span>    <span class="co">#   classical_oos, y_oos,</span></span>
-<span>    <span class="co">#   function(classical_oos, y_oos) {</span></span>
-<span>    <span class="co">#     SFEs = rowSums((y_oos - classical_oos$predicted_observations)^2)</span></span>
-<span>    <span class="co">#     MSFE = mean(SFEs, na.rm = TRUE)</span></span>
-<span>    <span class="co">#     return(MSFE)</span></span>
-<span>    <span class="co">#   }</span></span>
-<span>    <span class="co"># ),</span></span>
-<span>    <span class="co"># roams_trimmed_MSFE_5perc = map2_dbl(</span></span>
-<span>    <span class="co">#   roams_oos, y_oos,</span></span>
-<span>    <span class="co">#   function(roams_oos, y_oos) {</span></span>
-<span>    <span class="co">#     SFEs = rowSums((y_oos - roams_oos$predicted_observations)^2)</span></span>
-<span>    <span class="co">#     num_trim = round(0.05 * length(SFEs))</span></span>
-<span>    <span class="co">#     ascending_SFEs = sort(na.omit(SFEs))</span></span>
-<span>    <span class="co">#     n_complete = length(ascending_SFEs)</span></span>
-<span>    <span class="co">#     trimmed_SFEs = ascending_SFEs[1:(n_complete - num_trim)]</span></span>
-<span>    <span class="co">#     trimmed_MSFE = mean(trimmed_SFEs)</span></span>
-<span>    <span class="co">#     return(trimmed_MSFE)</span></span>
-<span>    <span class="co">#   }</span></span>
-<span>    <span class="co"># ),</span></span>
-<span>    <span class="co"># classical_trimmed_MSFE_5perc = map2_dbl(</span></span>
-<span>    <span class="co">#   classical_oos, y_oos,</span></span>
-<span>    <span class="co">#   function(classical_oos, y_oos) {</span></span>
-<span>    <span class="co">#     SFEs = rowSums((y_oos - classical_oos$predicted_observations)^2)</span></span>
-<span>    <span class="co">#     num_trim = round(0.05 * length(SFEs))</span></span>
-<span>    <span class="co">#     ascending_SFEs = sort(na.omit(SFEs))</span></span>
-<span>    <span class="co">#     n_complete = length(ascending_SFEs)</span></span>
-<span>    <span class="co">#     trimmed_SFEs = ascending_SFEs[1:(n_complete - num_trim)]</span></span>
-<span>    <span class="co">#     trimmed_MSFE = mean(trimmed_SFEs)</span></span>
-<span>    <span class="co">#     return(trimmed_MSFE)</span></span>
-<span>    <span class="co">#   }</span></span>
-<span>    <span class="co"># ),</span></span>
-<span>    <span class="co"># roams_trimmed_MSFE_10perc = map2_dbl(</span></span>
-<span>    <span class="co">#   roams_oos, y_oos,</span></span>
-<span>    <span class="co">#   function(roams_oos, y_oos) {</span></span>
-<span>    <span class="co">#     SFEs = rowSums((y_oos - roams_oos$predicted_observations)^2)</span></span>
-<span>    <span class="co">#     num_trim = round(0.1 * length(SFEs))</span></span>
-<span>    <span class="co">#     ascending_SFEs = sort(na.omit(SFEs))</span></span>
-<span>    <span class="co">#     n_complete = length(ascending_SFEs)</span></span>
-<span>    <span class="co">#     trimmed_SFEs = ascending_SFEs[1:(n_complete - num_trim)]</span></span>
-<span>    <span class="co">#     trimmed_MSFE = mean(trimmed_SFEs)</span></span>
-<span>    <span class="co">#     return(trimmed_MSFE)</span></span>
-<span>    <span class="co">#   }</span></span>
-<span>    <span class="co"># ),</span></span>
-<span>    <span class="co"># classical_trimmed_MSFE_10perc = map2_dbl(</span></span>
-<span>    <span class="co">#   classical_oos, y_oos,</span></span>
-<span>    <span class="co">#   function(classical_oos, y_oos) {</span></span>
-<span>    <span class="co">#     SFEs = rowSums((y_oos - classical_oos$predicted_observations)^2)</span></span>
-<span>    <span class="co">#     num_trim = round(0.1 * length(SFEs))</span></span>
-<span>    <span class="co">#     ascending_SFEs = sort(na.omit(SFEs))</span></span>
-<span>    <span class="co">#     n_complete = length(ascending_SFEs)</span></span>
-<span>    <span class="co">#     trimmed_SFEs = ascending_SFEs[1:(n_complete - num_trim)]</span></span>
-<span>    <span class="co">#     trimmed_MSFE = mean(trimmed_SFEs)</span></span>
-<span>    <span class="co">#     return(trimmed_MSFE)</span></span>
-<span>    <span class="co">#   }</span></span>
-<span>    <span class="co"># ),</span></span>
-<span>    <span class="co"># roams_MSFE_clean = map2_dbl(</span></span>
-<span>    <span class="co">#   roams_oos, y_oos,</span></span>
-<span>    <span class="co">#   function(roams_oos, y_oos) {</span></span>
-<span>    <span class="co">#     clean_timepoints = which(roams_oos$outliers_flagged == 0)</span></span>
-<span>    <span class="co">#     SFEs = rowSums((y_oos - roams_oos$predicted_observations)^2)</span></span>
-<span>    <span class="co">#     MSFE_clean = mean(SFEs[clean_timepoints], na.rm = TRUE)</span></span>
-<span>    <span class="co">#     return(MSFE_clean)</span></span>
-<span>    <span class="co">#   }</span></span>
-<span>    <span class="co"># ),</span></span>
-<span>    <span class="co"># classical_MSFE_clean = pmap_dbl(</span></span>
-<span>    <span class="co">#   list(classical_oos, roams_oos, y_oos),</span></span>
-<span>    <span class="co">#   function(classical_oos, roams_oos, y_oos) {</span></span>
-<span>    <span class="co">#     clean_timepoints = which(roams_oos$outliers_flagged == 0)</span></span>
-<span>    <span class="co">#     SFEs = rowSums((y_oos - classical_oos$predicted_observations)^2)</span></span>
-<span>    <span class="co">#     MSFE_clean = mean(SFEs[clean_timepoints], na.rm = TRUE)</span></span>
-<span>    <span class="co">#     return(MSFE_clean)</span></span>
-<span>    <span class="co">#   }</span></span>
-<span>    <span class="co"># )</span></span>
-<span>    </span>
-<span>    </span>
-<span>    <span class="co"># roams_MedSFE = map2_dbl(</span></span>
-<span>    <span class="co">#   roams_oos, y_oos,</span></span>
-<span>    <span class="co">#   ~ median(rowSums((.y - .x$predicted_observations)^2), </span></span>
-<span>    <span class="co">#            na.rm = TRUE)</span></span>
-<span>    <span class="co"># ),</span></span>
-<span>    <span class="co"># classical_MedSFE = map2_dbl(</span></span>
-<span>    <span class="co">#   classical_oos, y_oos,</span></span>
-<span>    <span class="co">#   ~ median(rowSums((.y - .x$predicted_observations)^2), </span></span>
-<span>    <span class="co">#            na.rm = TRUE)</span></span>
-<span>    <span class="co"># )</span></span>
-<span>    </span>
 <span>    <span class="op">)</span>  <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">name</span>, <span class="va">frequency</span>, <span class="va">lambda</span>, <span class="va">iterations</span>,</span>
 <span>         <span class="va">n</span>, <span class="va">n_complete</span>, <span class="va">in_sample_detected</span>,</span>
 <span>         <span class="va">n_oos</span>, <span class="va">n_oos_complete</span>, <span class="va">oos_detected</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
-<span>  <span class="co"># for paper</span></span>
-<span>  <span class="co"># kable("latex", booktabs = TRUE, escape = FALSE,</span></span>
-<span>  <span class="co">#       linesep = "",</span></span>
-<span>  <span class="co">#       align = c("l", "l|", </span></span>
-<span>  <span class="co">#                 "c", "c", "c|",</span></span>
-<span>  <span class="co">#                 "c", "c", "c"</span></span>
-<span>  <span class="co">#                 ))</span></span>
-<span>  </span>
-<span>  <span class="co"># for vignette</span></span>
 <span>  <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span>digits <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></code></pre></div>
 <table style="width:100%;" class="table">
 <colgroup>
@@ -1314,6 +1099,7 @@ for the state error variance matrix
 </tr>
 </tbody>
 </table>
+</div>
 <div class="section level3 tabset">
 <h3 class="tabset" id="plot-outlier-diagnostics">Plot outlier diagnostics<a class="anchor" aria-label="anchor" href="#plot-outlier-diagnostics"></a>
 </h3>
@@ -1332,7 +1118,7 @@ for the state error variance matrix
 <div class="tab-content">
 <div class="active  tab-pane" id="cat" role="tabpanel" aria-labelledby="cat-tab">
 
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">results</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">name</span> <span class="op">==</span> <span class="st">"cat_mia"</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html" class="external-link">pull</a></span><span class="op">(</span><span class="va">roams_model_list</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
@@ -1342,7 +1128,7 @@ for the state error variance matrix
 </div>
 <div class="tab-pane" id="cow" role="tabpanel" aria-labelledby="cow-tab">
 
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">results</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">name</span> <span class="op">==</span> <span class="st">"cow_11"</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html" class="external-link">pull</a></span><span class="op">(</span><span class="va">roams_model_list</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
@@ -1352,7 +1138,7 @@ for the state error variance matrix
 </div>
 <div class="tab-pane" id="polar-bear-1" role="tabpanel" aria-labelledby="polar-bear-1-tab">
 
-<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">results</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">name</span> <span class="op">==</span> <span class="st">"polar_low_freq"</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html" class="external-link">pull</a></span><span class="op">(</span><span class="va">roams_model_list</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
@@ -1362,7 +1148,7 @@ for the state error variance matrix
 </div>
 <div class="tab-pane" id="seal-1" role="tabpanel" aria-labelledby="seal-1-tab">
 
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">results</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">name</span> <span class="op">==</span> <span class="st">"seal"</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html" class="external-link">pull</a></span><span class="op">(</span><span class="va">roams_model_list</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
@@ -1372,7 +1158,7 @@ for the state error variance matrix
 </div>
 <div class="tab-pane" id="blue-whale-1" role="tabpanel" aria-labelledby="blue-whale-1-tab">
 
-<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">results</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">name</span> <span class="op">==</span> <span class="st">"whale_2008"</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html" class="external-link">pull</a></span><span class="op">(</span><span class="va">roams_model_list</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
@@ -1385,7 +1171,9 @@ for the state error variance matrix
 <div class="section level3">
 <h3 id="plot-out-of-sample-squared-forecast-errors">Plot out-of-sample squared forecast errors<a class="anchor" aria-label="anchor" href="#plot-out-of-sample-squared-forecast-errors"></a>
 </h3>
-<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<p>Box plots of squared forecast errors for the classical and ROAMS-FUT
+methods.</p>
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">results</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="op">-</span><span class="va">roams_model_list</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
@@ -1409,7 +1197,9 @@ for the state error variance matrix
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">name</span>, <span class="va">classical_SFEs</span>, <span class="va">roams_SFEs</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://tidyr.tidyverse.org/reference/pivot_longer.html" class="external-link">pivot_longer</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">classical_SFEs</span>, <span class="va">roams_SFEs</span><span class="op">)</span>, </span>
 <span>               names_to <span class="op">=</span> <span class="st">"method"</span>, values_to <span class="op">=</span> <span class="st">"SFE"</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>method <span class="op">=</span> <span class="fu">stringr</span><span class="fu">::</span><span class="fu"><a href="https://stringr.tidyverse.org/reference/word.html" class="external-link">word</a></span><span class="op">(</span><span class="va">method</span>, start <span class="op">=</span> <span class="fl">1</span>, end <span class="op">=</span> <span class="fl">1</span>, sep <span class="op">=</span> <span class="st">"_"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">method</span> <span class="op">==</span> <span class="st">"roams_SFEs"</span>,</span>
+<span>                         <span class="st">"ROAMS-FUT"</span>,</span>
+<span>                         <span class="st">"classical"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://tidyr.tidyverse.org/reference/unnest_longer.html" class="external-link">unnest_longer</a></span><span class="op">(</span><span class="va">SFE</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">method</span>, y <span class="op">=</span> <span class="va">SFE</span>, colour <span class="op">=</span> <span class="va">name</span><span class="op">)</span> <span class="op">+</span></span>
@@ -1422,7 +1212,7 @@ for the state error variance matrix
 <div class="section level3">
 <h3 id="plot-in-sample-fit">Plot in-sample fit<a class="anchor" aria-label="anchor" href="#plot-in-sample-fit"></a>
 </h3>
-<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">plots</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">data_sets</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="co"># Work out x/y ranges with some padding</span></span>
@@ -1475,7 +1265,8 @@ for the state error variance matrix
 <span>    <span class="co"># Labels and theme</span></span>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>x <span class="op">=</span> <span class="st">"Longitude"</span>, y <span class="op">=</span> <span class="st">"Latitude"</span>, subtitle <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">data_sets</span><span class="op">)</span><span class="op">[</span><span class="va">i</span><span class="op">]</span><span class="op">)</span> <span class="op">+</span></span>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_minimal</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
-<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"none"</span><span class="op">)</span></span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"none"</span>,</span>
+<span>          aspect.ratio <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
 <span><span class="op">}</span></span>
 <span></span>
 <span><span class="fu"><a href="https://patchwork.data-imaginist.com/reference/wrap_plots.html" class="external-link">wrap_plots</a></span><span class="op">(</span><span class="va">plots</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://patchwork.data-imaginist.com/reference/plot_layout.html" class="external-link">plot_layout</a></span><span class="op">(</span>ncol <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></code></pre></div>
@@ -1485,11 +1276,10 @@ for the state error variance matrix
 <h3 id="plot-one-step-ahead-out-of-sample-predictions">Plot one-step-ahead out-of-sample predictions<a class="anchor" aria-label="anchor" href="#plot-one-step-ahead-out-of-sample-predictions"></a>
 </h3>
 <p>These plots only show the out of sample predictions (not the full
-path). We should consider resetting the x/y axis range to just the out
-of sample prediction range, but at the same time, it’s kind of
-interesting to see where the OOS observations lie relative to the
-in-sample observations (blank canvas for some of these data sets).</p>
-<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
+path). It is interesting to see where the test set observations lie
+relative to the training set observations (blank canvas for some of
+these data sets).</p>
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">plots</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">data_sets</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="co"># Work out x/y ranges with some padding</span></span>
@@ -1542,7 +1332,8 @@ in-sample observations (blank canvas for some of these data sets).</p>
 <span>    <span class="co"># Labels and theme</span></span>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>x <span class="op">=</span> <span class="st">"Longitude"</span>, y <span class="op">=</span> <span class="st">"Latitude"</span>, subtitle <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">data_sets</span><span class="op">)</span><span class="op">[</span><span class="va">i</span><span class="op">]</span><span class="op">)</span> <span class="op">+</span></span>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_minimal</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
-<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"none"</span><span class="op">)</span></span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"none"</span>,</span>
+<span>          aspect.ratio <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
 <span><span class="op">}</span></span>
 <span></span>
 <span><span class="fu"><a href="https://patchwork.data-imaginist.com/reference/wrap_plots.html" class="external-link">wrap_plots</a></span><span class="op">(</span><span class="va">plots</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://patchwork.data-imaginist.com/reference/plot_layout.html" class="external-link">plot_layout</a></span><span class="op">(</span>ncol <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></code></pre></div>
@@ -1552,18 +1343,17 @@ in-sample observations (blank canvas for some of these data sets).</p>
 <div class="section level2">
 <h2 id="blue-whale-plots">Blue whale plots<a class="anchor" aria-label="anchor" href="#blue-whale-plots"></a>
 </h2>
-<p>This section creates Figure 6 in <span class="citation">Shankar et
-al. (2025)</span>.</p>
+<p>This section reproduces the outputs in Section 5.2 of <span class="citation">Shankar et al. (2025)</span>.</p>
 <div class="section level3">
 <h3 id="map">Map<a class="anchor" aria-label="anchor" href="#map"></a>
 </h3>
-<p>Fit models to blue whale data:</p>
-<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
+<p>Fit ROAMS and classical models to blue whale data:</p>
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">y</span> <span class="op">=</span> <span class="va">whale_2008</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">y</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">var_est</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/mad.html" class="external-link">mad</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/diff.html" class="external-link">diff</a></span><span class="op">(</span><span class="va">y</span><span class="op">[</span>,<span class="fl">1</span><span class="op">]</span><span class="op">)</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span>,</span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">var_est</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/mad.html" class="external-link">mad</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/diff.html" class="external-link">diff</a></span><span class="op">(</span><span class="va">y</span><span class="op">[</span>,<span class="fl">1</span><span class="op">]</span><span class="op">)</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span>,</span>
 <span>            <span class="fu"><a href="https://rdrr.io/r/stats/mad.html" class="external-link">mad</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/diff.html" class="external-link">diff</a></span><span class="op">(</span><span class="va">y</span><span class="op">[</span>,<span class="fl">2</span><span class="op">]</span><span class="op">)</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span></span>
 <span>  </span>
 <span><span class="va">build_fn</span> <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">par</span><span class="op">)</span> <span class="op">{</span></span>
@@ -1625,12 +1415,14 @@ al. (2025)</span>.</p>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">readr</span><span class="fu">::</span><span class="fu"><a href="https://readr.tidyverse.org/reference/read_rds.html" class="external-link">write_rds</a></span><span class="op">(</span><span class="va">plot_data</span>, <span class="st">"data/whale_plot_data.rds"</span><span class="op">)</span></span>
-<span><span class="fu">readr</span><span class="fu">::</span><span class="fu"><a href="https://readr.tidyverse.org/reference/read_rds.html" class="external-link">write_rds</a></span><span class="op">(</span><span class="va">roams_model_list</span>, <span class="st">"data/whale_roams_model_list.rds"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">readr</span><span class="fu">::</span><span class="fu"><a href="https://readr.tidyverse.org/reference/read_rds.html" class="external-link">write_rds</a></span><span class="op">(</span><span class="va">roams_model_list</span>, <span class="st">"data/whale_roams_model_list.rds"</span><span class="op">)</span></span>
+<span><span class="fu">readr</span><span class="fu">::</span><span class="fu"><a href="https://readr.tidyverse.org/reference/read_rds.html" class="external-link">write_rds</a></span><span class="op">(</span><span class="va">classical_model</span>, <span class="st">"data/whale_classical_model.rds"</span><span class="op">)</span></span></code></pre></div>
 <p>Load <code>whale_plot_data.rds</code> and
 <code>whale_roams_model_list.rds</code>:</p>
 <div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">plot_data</span> <span class="op">=</span> <span class="fu">readr</span><span class="fu">::</span><span class="fu"><a href="https://readr.tidyverse.org/reference/read_rds.html" class="external-link">read_rds</a></span><span class="op">(</span><span class="st">"data/whale_plot_data.rds"</span><span class="op">)</span></span>
-<span><span class="va">roams_model_list</span> <span class="op">=</span> <span class="fu">readr</span><span class="fu">::</span><span class="fu"><a href="https://readr.tidyverse.org/reference/read_rds.html" class="external-link">read_rds</a></span><span class="op">(</span><span class="st">"data/whale_roams_model_list.rds"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">roams_model_list</span> <span class="op">=</span> <span class="fu">readr</span><span class="fu">::</span><span class="fu"><a href="https://readr.tidyverse.org/reference/read_rds.html" class="external-link">read_rds</a></span><span class="op">(</span><span class="st">"data/whale_roams_model_list.rds"</span><span class="op">)</span></span>
+<span><span class="va">classical_model</span> <span class="op">=</span> <span class="fu">readr</span><span class="fu">::</span><span class="fu"><a href="https://readr.tidyverse.org/reference/read_rds.html" class="external-link">read_rds</a></span><span class="op">(</span><span class="st">"data/whale_classical_model.rds"</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/get_theme.html" class="external-link">theme_set</a></span><span class="op">(</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_bw</a></span><span class="op">(</span>base_size <span class="op">=</span> <span class="fl">14</span><span class="op">)</span> <span class="op">+</span> </span>
@@ -1657,13 +1449,6 @@ al. (2025)</span>.</p>
 <span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">x_data</span>, y <span class="op">=</span> <span class="va">y_data</span>, colour <span class="op">=</span> <span class="st">"observations"</span><span class="op">)</span>, </span>
 <span>             size <span class="op">=</span> <span class="fl">2</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  </span>
-<span>  <span class="co"># geom_text(data = plot_data |&gt; </span></span>
-<span>  <span class="co">#             mutate(timepoint = 1:122) |&gt; </span></span>
-<span>  <span class="co">#             filter(timepoint %in% c(8, 106, 43, 63)),</span></span>
-<span>  <span class="co">#           aes(x = x_data, y = y_data, label = timepoint),</span></span>
-<span>  <span class="co">#           nudge_y = 1) +</span></span>
-<span>  </span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">plot_data</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">outliers</span><span class="op">)</span>, </span>
 <span>             <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">x_data</span>, y <span class="op">=</span> <span class="va">y_data</span>, colour <span class="op">=</span> <span class="st">"detected outliers"</span><span class="op">)</span>,</span>
 <span>             size <span class="op">=</span> <span class="fl">3</span>, pch <span class="op">=</span> <span class="fl">1</span>, stroke <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="op">+</span></span>
@@ -1687,11 +1472,12 @@ al. (2025)</span>.</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/guides.html" class="external-link">guides</a></span><span class="op">(</span>colour <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/guide_legend.html" class="external-link">guide_legend</a></span><span class="op">(</span>ncol <span class="op">=</span> <span class="fl">2</span>, byrow <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">p1</span></span></code></pre></div>
-<p><img src="dcrw_examples_files/figure-html/unnamed-chunk-18-1.png" width="700"></p>
+<p><img src="dcrw_examples_files/figure-html/unnamed-chunk-19-1.png" width="700"></p>
 </div>
 <div class="section level3">
 <h3 id="map-bic-and-proportion-outlying-curves">Map + BIC and proportion outlying curves<a class="anchor" aria-label="anchor" href="#map-bic-and-proportion-outlying-curves"></a>
 </h3>
+<p>Figure 7 of <span class="citation">Shankar et al. (2025)</span>:</p>
 <div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">p2</span> <span class="op">=</span> <span class="va">roams_model_list</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/autoplot.html" class="external-link">autoplot</a></span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
@@ -1706,14 +1492,72 @@ al. (2025)</span>.</p>
 <span></span>
 <span><span class="co"># Final plot</span></span>
 <span><span class="va">p1</span> <span class="op">+</span> <span class="va">p2</span></span></code></pre></div>
-<p><img src="dcrw_examples_files/figure-html/unnamed-chunk-19-1.png" width="864"></p>
+<p><img src="dcrw_examples_files/figure-html/unnamed-chunk-20-1.png" width="864"></p>
+</div>
+<div class="section level3">
+<h3 id="table-of-parameter-estimates">Table of parameter estimates<a class="anchor" aria-label="anchor" href="#table-of-parameter-estimates"></a>
+</h3>
+<p>Table 4 of <span class="citation">Shankar et al. (2025)</span>:</p>
+<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">roams_model</span> <span class="op">=</span> <span class="fu"><a href="../reference/best_BIC_model.html">best_BIC_model</a></span><span class="op">(</span><span class="va">roams_model_list</span><span class="op">)</span></span>
+<span><span class="va">roams_model</span> <span class="op">=</span> <span class="fu"><a href="../reference/attach_insample_info.html">attach_insample_info</a></span><span class="op">(</span><span class="va">roams_model</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span></span>
+<span>  <span class="va">roams_model</span><span class="op">$</span><span class="va">par</span>,</span>
+<span>  <span class="va">classical_model</span><span class="op">$</span><span class="va">par</span>,</span>
+<span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html" class="external-link">as_tibble</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/stats/setNames.html" class="external-link">setNames</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"phi"</span>, </span>
+<span>             <span class="st">"state error var lon"</span>, <span class="st">"state error var lat"</span>,</span>
+<span>             <span class="st">"obs error var lon"</span>, <span class="st">"obs error var lat"</span></span>
+<span>             <span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ROAMS"</span>, <span class="st">"classical"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">method</span>, <span class="fu"><a href="https://tidyselect.r-lib.org/reference/everything.html" class="external-link">everything</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span>digits <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></code></pre></div>
+<table style="width:100%;" class="table">
+<colgroup>
+<col width="10%">
+<col width="6%">
+<col width="21%">
+<col width="21%">
+<col width="19%">
+<col width="19%">
+</colgroup>
+<thead><tr class="header">
+<th align="left">method</th>
+<th align="right">phi</th>
+<th align="right">state error var lon</th>
+<th align="right">state error var lat</th>
+<th align="right">obs error var lon</th>
+<th align="right">obs error var lat</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">ROAMS</td>
+<td align="right">0.438</td>
+<td align="right">0.101</td>
+<td align="right">0.027</td>
+<td align="right">0.079</td>
+<td align="right">0.013</td>
+</tr>
+<tr class="even">
+<td align="left">classical</td>
+<td align="right">0.712</td>
+<td align="right">0.032</td>
+<td align="right">0.002</td>
+<td align="right">2.783</td>
+<td align="right">0.613</td>
+</tr>
+</tbody>
+</table>
 </div>
 <div class="section level3">
 <h3 id="gamma_2-path-plot">
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="postfix">∥</mo><mi>γ</mi><msub><mo stretchy="false" form="postfix">∥</mo><mn>2</mn></msub></mrow><annotation encoding="application/x-tex">\|\gamma\|_2</annotation></semantics></math>
 path plot<a class="anchor" aria-label="anchor" href="#gamma_2-path-plot"></a>
 </h3>
-<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">roams_model_list</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="../reference/get_attribute.html">get_attribute</a></span><span class="op">(</span><span class="st">"gamma"</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map</a></span><span class="op">(</span><span class="op">~</span> <span class="fu"><a href="https://rdrr.io/r/base/apply.html" class="external-link">apply</a></span><span class="op">(</span><span class="va">.</span>, <span class="fl">1</span>, <span class="kw">function</span><span class="op">(</span><span class="va">gamma</span><span class="op">)</span> <span class="op">{</span><span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">sqrt</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">gamma</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span><span class="op">)</span><span class="op">}</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
@@ -1734,7 +1578,7 @@ path plot<a class="anchor" aria-label="anchor" href="#gamma_2-path-plot"></a>
 <span>              <span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html" class="external-link">slice_max</a></span><span class="op">(</span><span class="va">gamma_L2</span>, n <span class="op">=</span> <span class="fl">4</span><span class="op">)</span>,</span>
 <span>            <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>label <span class="op">=</span> <span class="va">timepoint</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"none"</span><span class="op">)</span><span class="op">)</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p><img src="dcrw_examples_files/figure-html/unnamed-chunk-20-1.png" width="700"></p>
+<p><img src="dcrw_examples_files/figure-html/unnamed-chunk-22-1.png" width="700"></p>
 <div class="section level4 unnumbered">
 <h4 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h4>
