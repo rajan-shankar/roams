@@ -12,6 +12,8 @@
 #' @param lower Optional numeric vector of lower bounds for optimization. If \code{NA}, defaults to \code{-Inf} for all parameters. Must be of same length as \code{init_par}.
 #' @param upper Optional numeric vector of upper bounds for optimization. If \code{NA}, defaults to \code{Inf} for all parameters. Must be of same length as \code{init_par}.
 #' @param tol Tolerance level for checking convergence of the ROAMS procedure. Default is \code{1e-4}.
+#' @param lambda_min Minimum \eqn{\lambda} value to consider when constructing the sequence of \eqn{\lambda}'s. Ignored if \code{custom_lambdas} is specified. Default is 2.
+#' @param excessive_outliers_iter_limit Integer. Maximum number of iterations allowed where \eqn{\ge 50\%} of timepoints are flagged as outliers. This many outliers suggests \eqn{\lambda} is too low. Allows ROAMS to get through these \eqn{\lambda}'s quicker. Default is 1.
 #' @param control A named list of control options to pass to \code{optim} via \code{dlm::dlmMLE()}. Default is \code{list(parscale = init_par)}, which can help the optimizer if parameters are on vastly different scales.
 #'
 #' @return If more than one \eqn{\lambda} values are used, returns an object of class \code{roams_SSM_list} — a list containing a \code{roams_SSM} model for each \eqn{\lambda}. If only one \eqn{\lambda} value is used (i.e. \code{custom_lambdas} is manually specified as a single value), returns a single \code{roams_SSM} object.
@@ -42,7 +44,7 @@
 #'
 #' @seealso \code{\link[dlm]{dlmMLE}}, \code{\link{best_BIC_model}}, \code{\link{outlier_target_model}}, \code{\link{get_attribute}}, \code{\link{autoplot.roams_SSM_list}}, \code{\link{attach_insample_info}}, \code{\link{oos_filter}}, \code{\link{specify_SSM}}
 #'
-#' @references She, Y., & Owen, A. B. (2011). Outlier Detection Using Nonconvex Penalized Regression. *Journal of the American Statistical Association, 106*(494), 626–639. https://doi.org/10.1198/jasa.2011.tm10390
+#' @references She, Y., & Owen, A. B. (2011). Outlier Detection Using Nonconvex Penalized Regression. \emph{Journal of the American Statistical Association, 106}(494), 626–639. https://doi.org/10.1198/jasa.2011.tm10390
 #'
 #' @export
 roams_SSM = function(
@@ -56,6 +58,8 @@ roams_SSM = function(
     lower = NA,
     upper = NA,
     tol = 1e-4,
+    lambda_min = 2,
+    excessive_outliers_iter_limit = 1,
     control = list(parscale = init_par)
     ) {
 
@@ -75,11 +79,12 @@ roams_SSM = function(
                          lower = lower,
                          upper = upper,
                          tol = tol,
+                         excessive_outliers_iter_limit = excessive_outliers_iter_limit,
                          control = control)
 
     # Highest lambda is the supremum norm of mahalanobis residuals of classical fit
     highest_lambda = max(dlmInfo(y, y, classical, build)$mahalanobis_residuals)
-    lowest_lambda = 1
+    lowest_lambda = lambda_min
 
     if (lowest_lambda >= highest_lambda) {
       stop("Automatic lambda selection failed. Lowest lambda = 1 is too large. Your data set may not have outliers. Try providing a custom lambda sequence via the 'custom_lambdas' argument.")
@@ -105,6 +110,7 @@ roams_SSM = function(
                        lower = lower,
                        upper = upper,
                        tol = tol,
+                       excessive_outliers_iter_limit = excessive_outliers_iter_limit,
                        control = control)
 
       return(model)
@@ -122,6 +128,7 @@ roams_SSM = function(
                            lower = lower,
                            upper = upper,
                            tol = tol,
+                           excessive_outliers_iter_limit = excessive_outliers_iter_limit,
                            control = control)
 
   return(model_list)
@@ -137,6 +144,7 @@ lambda_grid = function(
     lower,
     upper,
     tol,
+    excessive_outliers_iter_limit = excessive_outliers_iter_limit,
     control
     ) {
 
@@ -151,6 +159,7 @@ lambda_grid = function(
                                  lower,
                                  upper,
                                  tol,
+                                 excessive_outliers_iter_limit,
                                  control)
     }
   } else {
@@ -165,6 +174,7 @@ lambda_grid = function(
                                                        lower,
                                                        upper,
                                                        tol,
+                                                       excessive_outliers_iter_limit,
                                                        control))
 
     future::plan(future::sequential)
@@ -183,6 +193,7 @@ run_IPOD = function(
     lower,
     upper,
     tol,
+    excessive_outliers_iter_limit,
     control
 ) {
 
@@ -197,9 +208,17 @@ run_IPOD = function(
   adj_y = y
   r = NA
   theta_old = par
+  prop_outlying = 0
+  excessive_outliers_offences = 0
 
   for (j in 1:B) {
     if (j != 1) {theta_old = fit$par}
+    if (prop_outlying >= 0.5) {
+      excessive_outliers_offences = excessive_outliers_offences + 1
+      if (excessive_outliers_offences >= excessive_outliers_iter_limit) {
+        break
+      }
+    }
 
     fit = dlm::dlmMLE(
       adj_y,
@@ -402,10 +421,14 @@ dlmInfo = function(y, adj_y, model, build) {
 #'   \item{\code{smoothed_states_var}}{List of smoothed state variance matrices.}
 #' }
 #'
+#' These smoothed attributes are obtained using the RTS smoothing algorithm  (Rauch et al. 1965).
+#'
 #' @details
 #' The attached outputs enable richer diagnostics, outlier inspection, and plotting.
 #' For \code{huber_robust_SSM} and \code{trimmed_robust_SSM} models, in-sample information is computed using a custom robust filtering function, and smoothed quantities (\code{smoothed_states}, \code{smoothed_observations}, and \code{smoothed_states_var}) are \strong{not available}.
 #' This function should only be applied once to a model object.
+#'
+#' @references Rauch, H.E., Tung, F., Striebel, C.T. (1965). Maximum likelihood estimates of linear dynamic systems. \emph{AIAA Journal 3}(8), 1445–1450. https://doi.org/10.2514/3.3166
 #'
 #' @seealso \code{\link{oos_filter}}
 #'
@@ -492,8 +515,8 @@ attach_insample_info = function(model) {
 #' @param model A fitted model object of class \code{roams_SSM}, \code{classical_SSM}, \code{oracle_SSM}, \code{huber_robust_SSM}, or \code{trimmed_robust_SSM}.
 #' @param build A function that maps a numeric parameter vector to a corresponding \code{dlm} model object. The \code{specify_SSM} function can be used to create this \code{build} function.
 #' @param outlier_locs A logical or binary vector of the same length as \code{nrow(y)}, indicating time points to be treated as missing (i.e., time points that are known to be outliers). Used only with \code{oracle_SSM} models.
-#' @param threshold Mahalanobis distance threshold for identifying outliers in \code{roams_SSM} models. Default is \code{sqrt(qchisq(0.99, ncol(y)))}.
-#' @param multiplier Multiplier for how quickly the filter grows its filtered state variance (uncertainty) after detecting an outlier in \code{roams_SSM} models. Default is \code{2}.
+#' @param threshold Mahalanobis distance threshold for detecting out-of-sample outliers in \code{roams_SSM} models. Set to \code{Inf} to recover the usual Kalman filter. Default is \code{sqrt(qchisq(0.99, ncol(y)))}.
+#' @param multiplier Multiplier for how quickly the filter grows its filtered state variance (uncertainty) after detecting an outlier in \code{roams_SSM} models. It is the tuneable parameter \eqn{b} of the `fast-updating threshold' filter. Only works if \code{threshold} is not \code{Inf}. Default is \code{2}.
 #'
 #' @return A named list containing out-of-sample inference results:
 #' \describe{

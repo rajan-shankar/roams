@@ -22,9 +22,9 @@ oos_filter(
 
 \item{outlier_locs}{A logical or binary vector of the same length as \code{nrow(y)}, indicating time points to be treated as missing (i.e., time points that are known to be outliers). Used only with \code{oracle_SSM} models.}
 
-\item{threshold}{Mahalanobis distance threshold for identifying outliers in \code{roams_SSM} models. Default is \code{sqrt(qchisq(0.99, ncol(y)))}.}
+\item{threshold}{Mahalanobis distance threshold for detecting out-of-sample outliers in \code{roams_SSM} models. Set to \code{Inf} to recover the usual Kalman filter. Default is \code{sqrt(qchisq(0.99, ncol(y)))}.}
 
-\item{multiplier}{Multiplier for how quickly the filter grows its filtered state variance (uncertainty) after detecting an outlier in \code{roams_SSM} models. Default is \code{2}.}
+\item{multiplier}{Multiplier for how quickly the filter grows its filtered state variance (uncertainty) after detecting an outlier in \code{roams_SSM} models. It is the tuneable parameter \eqn{b} of the `fast-updating threshold' filter. Only works if \code{threshold} is not \code{Inf}. Default is \code{2}.}
 }
 \value{
 A named list containing out-of-sample inference results:

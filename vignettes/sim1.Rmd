@@ -217,7 +217,7 @@ model_fits_roams_study1 = data_study1 |>
         init_par = c(0.5, rep(c(mad(diff(y[,1]), na.rm = TRUE)^2, 
                                 mad(diff(y[,2]), na.rm = TRUE)^2), 2)), 
         build = build, 
-        num_lambdas = 50, 
+        num_lambdas = 20, 
         cores = 1,
         lower = c(0, rep(1e-12, 4)), 
         upper = c(1, rep(Inf, 4)),
@@ -438,7 +438,7 @@ PS = 2.0  # point sizes
 Load `eval_metrics_study1.rds`:
 
 ```{r load_eval_metrics}
-eval_metrics_study1 = read_rds(paste0(data_path, "eval_metrics_study1_full.rds"))  # change back to not _full
+eval_metrics_study1 = read_rds(paste0(data_path, "eval_metrics_study1.rds"))
 ```
 
 Check number of replicates per sample size $n$ and configuration:
@@ -761,16 +761,14 @@ eval_metrics_study1 |>
   theme(legend.text = element_markdown())
 ```
 
-### Table of parameter estimation mean RMSEs for n = 500
+### Table of parameter estimation mean RMSEs for n = 1000
 
 Table 2 of @shankar2025. For each outlier configuration, the mean parameter estimation RMSEs of each method is reported relative to the oracle benchmark method:
-
-((I want this to be n = 1000 in the final version))
 
 ```{r}
 eval_metrics_study1 |> 
   filter(method != "roams_kalman_model") |> 
-  filter(n == 500) |>  
+  filter(n == 1000) |>  
   select(setting, method, par_dist_phi:par_dist_state_var) |> 
   group_by(setting, method) |> 
   summarise(phi = mean(sqrt(par_dist_phi)),

@@ -31,7 +31,7 @@ A named list with elements \code{GG}, \code{W}, \code{FF}, \code{V}, \code{m0}, 
 suitable for use in a custom \code{build} function for modeling or for online filtering (e.g., using \code{\link{oos_filter}}).
 }
 \description{
-A helper function for users to construct a state-space model in the format expected by the \code{dlm} package, which is the package used internally for most of the model fitting functions.
+A helper function for users to construct a state-space model in the format expected by the \code{dlm} package, which is the package used internally for some model fitting functions.
 This function returns a named list of model components which can be directly used in a user-defined
 \code{build} function passed to any modeling function in this package.
 }

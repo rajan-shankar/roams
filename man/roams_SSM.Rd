@@ -2,7 +2,7 @@
 % Please edit documentation in R/roams_SSM.R
 \name{roams_SSM}
 \alias{roams_SSM}
-\title{Robust Regularized Fitting of State Space Models}
+\title{Robust Outlier-Adjusted Mean-Shift Estimation of State Space Models}
 \usage{
 roams_SSM(
   y,
@@ -14,6 +14,9 @@ roams_SSM(
   B = 50,
   lower = NA,
   upper = NA,
+  tol = 1e-04,
+  lambda_min = 2,
+  excessive_outliers_iter_limit = 1,
   control = list(parscale = init_par)
 )
 }
@@ -30,11 +33,17 @@ roams_SSM(
 
 \item{cores}{Integer. Number of CPU cores to use for parallel processing. Default is 1 (sequential execution).}
 
-\item{B}{Integer. Maximum number of IPOD iterations per \eqn{\lambda}. Default is 50.}
+\item{B}{Integer. Maximum number of iterations per \eqn{\lambda}. Default is 50.}
 
 \item{lower}{Optional numeric vector of lower bounds for optimization. If \code{NA}, defaults to \code{-Inf} for all parameters. Must be of same length as \code{init_par}.}
 
 \item{upper}{Optional numeric vector of upper bounds for optimization. If \code{NA}, defaults to \code{Inf} for all parameters. Must be of same length as \code{init_par}.}
+
+\item{tol}{Tolerance level for checking convergence of the ROAMS procedure. Default is \code{1e-4}.}
+
+\item{lambda_min}{Minimum \eqn{\lambda} value to consider when constructing the sequence of \eqn{\lambda}'s. Ignored if \code{custom_lambdas} is specified. Default is 2.}
+
+\item{excessive_outliers_iter_limit}{Integer. Maximum number of iterations allowed where \eqn{\ge 50\%} of timepoints are flagged as outliers. This many outliers suggests \eqn{\lambda} is too low. Allows ROAMS to get through these \eqn{\lambda}'s quicker. Default is 1.}
 
 \item{control}{A named list of control options to pass to \code{optim} via \code{dlm::dlmMLE()}. Default is \code{list(parscale = init_par)}, which can help the optimizer if parameters are on vastly different scales.}
 }
@@ -49,8 +58,8 @@ Each \code{roams_SSM} object includes:
   \item \code{loglik} - Log-likelihood of the fitted model.
   \item \code{RSS} - Residual sum of squares.
   \item \code{gamma} - Matrix of estimated outlier adjustments.
-  \item \code{iterations} - Number of IPOD iterations performed.
-  \item Optimization output from \code{dlm::dlmMLE()} from the final IPOD iteration.
+  \item \code{iterations} - Number of iterations performed.
+  \item Optimization output from \code{dlm::dlmMLE()} from the final iteration.
   \item \code{y} - The original data matrix.
   \item \code{build} - The original build function used to specify the model.
 }
@@ -59,17 +68,17 @@ Each \code{roams_SSM} object includes:
 Fits a robust state space model to multivariate time series data using iterative parameter estimation and outlier detection. This procedure is inspired by the Iterative Procedure for Outlier Detection (IPOD) algorithm of She and Owen (2011) and is applied over a sequence of regularization parameters (\eqn{\lambda}'s), identifying outliers via Mahalanobis residuals and re-fitting the model iteratively.
 }
 \details{
-The IPOD procedure alternates between estimating model parameters via maximum likelihood and identifying outlying observations based on Mahalanobis residuals. For each iteration:
+The ROAMS procedure alternates between estimating model parameters via maximum likelihood and identifying outlying observations based on Mahalanobis distance of residuals. For each iteration:
 \enumerate{
   \item A \code{dlm} model is fit using \code{dlm::dlmMLE()}.
-  \item Mahalanobis residuals are computed.
-  \item Observations with residuals above the current \eqn{\lambda} threshold are treated as missing in the next iteration.
+  \item Mahalanobis distance of residuals (Mahalanobis residuals) are computed.
+  \item Observations with Mahalanobis residual (plus a \eqn{\log(|\mathbf{S}_{t|t-1}|)} adjustment) above the current \eqn{\lambda} threshold are treated as missing in the next iteration.
 }
 
 The algorithm stops when the change in parameters and outlier estimates is sufficiently small or if too many outliers are detected (more than 50\% of complete observations).
 }
 \references{
-She, Y., & Owen, A. B. (2011). Outlier Detection Using Nonconvex Penalized Regression. *Journal of the American Statistical Association, 106*(494), 626–639. https://doi.org/10.1198/jasa.2011.tm10390
+She, Y., & Owen, A. B. (2011). Outlier Detection Using Nonconvex Penalized Regression. \emph{Journal of the American Statistical Association, 106}(494), 626–639. https://doi.org/10.1198/jasa.2011.tm10390
 }
 \seealso{
 \code{\link[dlm]{dlmMLE}}, \code{\link{best_BIC_model}}, \code{\link{outlier_target_model}}, \code{\link{get_attribute}}, \code{\link{autoplot.roams_SSM_list}}, \code{\link{attach_insample_info}}, \code{\link{oos_filter}}, \code{\link{specify_SSM}}

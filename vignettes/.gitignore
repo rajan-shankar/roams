@@ -1,3 +1,5 @@
 *.DS_store
 *_seed2025.rds
 *_seed1303.rds
+*.html
+*.R

@@ -1,6 +1,6 @@
 #' Specify a State-Space Model in DLM Format
 #'
-#' A helper function for users to construct a state-space model in the format expected by the \code{dlm} package, which is the package used internally for most of the model fitting functions.
+#' A helper function for users to construct a state-space model in the format expected by the \code{dlm} package, which is the package used internally for some model fitting functions.
 #' This function returns a named list of model components which can be directly used in a user-defined
 #' \code{build} function passed to any modeling function in this package.
 #'

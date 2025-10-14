@@ -1,7 +1,7 @@
 Package: roams
 Type: Package
 Title: Robust Outlier-Adjusted Mean-Shift Estimation of State-Space Models
-Version: 0.6.1
+Version: 0.6.5
 Authors@R: c(
     person("Rajan", "Shankar", 
            email = "rajan.shankar@sydney.edu.au", 
@@ -38,15 +38,15 @@ Imports:
   latex2exp,
   dplyr,
   tibble,
+  purrr,
+  ggplot2,
   expm,
   dlm,
-  purrr,
   MASS,
   patchwork,
   future,
   furrr
 Depends:
-  ggplot2,
   R (>= 4.1.0)
 Suggests: 
     knitr,

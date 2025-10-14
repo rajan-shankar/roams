@@ -28,6 +28,8 @@ For models of class \code{roams_SSM}, \code{classical_SSM}, or \code{oracle_SSM}
   \item{\code{smoothed_observations}}{Posterior mean of the observed series based on smoothed states.}
   \item{\code{smoothed_states_var}}{List of smoothed state variance matrices.}
 }
+
+These smoothed attributes are obtained using the RTS smoothing algorithm  (Rauch et al. 1965).
 }
 \description{
 Attaches detailed in-sample information—such as predicted, filtered, and smoothed states and observations—to a model object fitted using any of the package’s supported SSM estimation methods.
@@ -37,6 +39,9 @@ These quantities are not stored by default in model objects due to their potenti
 The attached outputs enable richer diagnostics, outlier inspection, and plotting.
 For \code{huber_robust_SSM} and \code{trimmed_robust_SSM} models, in-sample information is computed using a custom robust filtering function, and smoothed quantities (\code{smoothed_states}, \code{smoothed_observations}, and \code{smoothed_states_var}) are \strong{not available}.
 This function should only be applied once to a model object.
+}
+\references{
+Rauch, H.E., Tung, F., Striebel, C.T. (1965). Maximum likelihood estimates of linear dynamic systems. \emph{AIAA Journal 3}(8), 1445–1450. https://doi.org/10.2514/3.3166
 }
 \seealso{
 \code{\link{oos_filter}}
