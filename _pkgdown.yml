@@ -1,7 +1,8 @@
 url: https://github.com/rajan-shankar/roams
 template:
   bootstrap: 5
-
+  params:
+    favicon: favicon.ico
 
 articles:
 - title: Articles

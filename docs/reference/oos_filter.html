@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">roams</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.5</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -76,11 +76,11 @@
 
 
 <dt id="arg-threshold">threshold<a class="anchor" aria-label="anchor" href="#arg-threshold"></a></dt>
-<dd><p>Mahalanobis distance threshold for identifying outliers in <code>roams_SSM</code> models. Default is <code>sqrt(qchisq(0.99, ncol(y)))</code>.</p></dd>
+<dd><p>Mahalanobis distance threshold for detecting out-of-sample outliers in <code>roams_SSM</code> models. Set to <code>Inf</code> to recover the usual Kalman filter. Default is <code>sqrt(qchisq(0.99, ncol(y)))</code>.</p></dd>
 
 
 <dt id="arg-multiplier">multiplier<a class="anchor" aria-label="anchor" href="#arg-multiplier"></a></dt>
-<dd><p>Multiplier for how quickly the filter grows its filtered state variance (uncertainty) after detecting an outlier in <code>roams_SSM</code> models. Default is <code>2</code>.</p></dd>
+<dd><p>Multiplier for how quickly the filter grows its filtered state variance (uncertainty) after detecting an outlier in <code>roams_SSM</code> models. It is the tuneable parameter \(b\) of the `fast-updating threshold' filter. Only works if <code>threshold</code> is not <code>Inf</code>. Default is <code>2</code>.</p></dd>
 
 </dl></div>
     <div class="section level2">
