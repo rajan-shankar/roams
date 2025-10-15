@@ -400,7 +400,12 @@ eval_metrics_study1 = model_fits_study1 |>
     par_dist_obs_var   = map_dbl(
       model, .f = ~ get_par_dist_obs_var(.x, true_par)),
     par_dist_state_var = map_dbl(
-      model, .f = ~ get_par_dist_state_var(.x, true_par))
+      model, .f = ~ get_par_dist_state_var(.x, true_par)),
+    iterations = map2_dbl(model, method, .f = ~ ifelse(
+        str_starts(.y, "roams"),
+        .x$iterations,
+        NA
+      ))
     ) |> 
   select(-c(model, 
             y_oos, x_oos, y, y_clean, x, 
@@ -799,6 +804,50 @@ eval_metrics_study1 |>
   select(Parameter, Configuration, 
          Oracle, ROAMS, Huber, Trimmed, Classical) |> 
   kable(digits = 2)
+```
+
+### ROAMS iterations {.tabset}
+
+Mean-aggregated and raw number of iterations performed by ROAMS when fitting models.
+
+#### Mean number of iterations
+
+```{r fig.height = 5}
+settings = c("clean data", "cluster", "fixed distance", "multi-level")
+labels_settings = c("Clean data", "Cluster", "Fixed distance", "Multi-level")
+
+eval_metrics_study1 |> 
+  filter(method == "roams_fut_model") |> 
+  group_by(n, setting) |> 
+  summarise(iterations = mean(iterations)) |> 
+  ggplot() +
+  aes(x = factor(n), y = iterations, 
+      colour = setting, group = setting, linetype = setting) +
+  geom_line(linewidth = LW) +
+  geom_point(size = PS) +
+  labs(x = "n", y = "Mean ROAMS iterations", colour = NULL, linetype = NULL) +
+  scale_colour_manual(
+    values = setNames(c("#0072B2","#56B4E9","#009E73","#F5C710"), settings),
+    labels = setNames(labels_settings, settings)) +
+  scale_linetype_manual(
+    values = setNames(c("solid", "dashed", "dotted", "dotdash"), settings),
+    labels = setNames(labels_settings, settings)) +
+  guides(colour = guide_legend(ncol = 2, byrow = TRUE))
+```
+
+#### Raw number of iterations
+
+```{r fig.height = 5}
+eval_metrics_study1 |> 
+  filter(method == "roams_fut_model") |> 
+  ggplot() +
+  aes(x = factor(n), y = iterations, colour = setting) +
+  geom_boxplot() +
+  labs(x = "n", y = "ROAMS iterations", colour = NULL, linetype = NULL) +
+  scale_colour_manual(
+    values = setNames(c("#0072B2","#56B4E9","#009E73","#F5C710"), settings),
+    labels = setNames(labels_settings, settings)) +
+  guides(colour = guide_legend(ncol = 2, byrow = TRUE))
 ```
 
 ### References

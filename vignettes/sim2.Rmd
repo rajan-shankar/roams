@@ -382,7 +382,12 @@ eval_metrics_study2 = model_fits_study2 |>
     par_dist_obs_var   = map_dbl(
       model, .f = ~ get_par_dist_obs_var(.x, true_par)),
     par_dist_state_var = map_dbl(
-      model, .f = ~ get_par_dist_state_var(.x, true_par))
+      model, .f = ~ get_par_dist_state_var(.x, true_par)),
+    iterations = map2_dbl(model, method, .f = ~ ifelse(
+        str_starts(.y, "roams"),
+        .x$iterations,
+        NA
+      ))
     ) |> 
   select(-c(model, 
             y_oos, x_oos, y, y_clean, x, 
@@ -853,6 +858,62 @@ p2 = eval_metrics_study2 |>
        colour = NULL) +
   scale_x_continuous(labels = scales::percent) +
   theme(legend.text = element_markdown())
+
+p1 + p2 + plot_layout(ncol = 2, axes = "collect", guides = "collect")
+```
+
+### ROAMS iterations {.tabset}
+
+Mean-aggregated and raw number of iterations performed by ROAMS when fitting models.
+
+#### Mean number of iterations
+
+```{r fig.height = 4}
+p1 = eval_metrics_study2 |> 
+  filter(method == "roams_fut_model") |> 
+  filter(contamination == 0.1) |> 
+  group_by(distance) |> 
+  summarise(iterations = mean(iterations)) |> 
+  ggplot() +
+  aes(x = factor(distance), y = iterations, group = 1) +
+  geom_line(linewidth = LW) +
+  geom_point(size = PS) +
+  labs(x = "Outlier distance", y = "Mean ROAMS iterations")
+
+p2 = eval_metrics_study2 |> 
+  filter(method == "roams_fut_model") |> 
+  filter(distance == 5) |> 
+  group_by(contamination) |> 
+  summarise(iterations = mean(iterations)) |> 
+  ggplot() +
+  aes(x = contamination, y = iterations) +
+  geom_line(linewidth = LW) +
+  geom_point(size = PS) +
+  labs(x = "Contamination rate", y = "Mean ROAMS iterations") +
+  scale_x_continuous(labels = scales::percent)
+
+p1 + p2 + plot_layout(ncol = 2, axes = "collect", guides = "collect")
+```
+
+#### Raw number of iterations
+
+```{r fig.height = 4}
+p1 = eval_metrics_study2 |> 
+  filter(method == "roams_fut_model") |> 
+  filter(contamination == 0.1) |> 
+  ggplot() +
+  aes(x = factor(distance), y = iterations) +
+  geom_boxplot() +
+  labs(x = "Outlier distance", y = "ROAMS iterations")
+
+p2 = eval_metrics_study2 |> 
+  filter(method == "roams_fut_model") |> 
+  filter(distance == 5) |> 
+  ggplot() +
+  aes(x = contamination, y = iterations, group = contamination) +
+  geom_boxplot() +
+  labs(x = "Contamination rate", y = "ROAMS iterations") +
+  scale_x_continuous(labels = scales::percent)
 
 p1 + p2 + plot_layout(ncol = 2, axes = "collect", guides = "collect")
 ```

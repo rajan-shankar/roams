@@ -1,8 +1,8 @@
-url: https://github.com/rajan-shankar/roams
+url: https://rajan-shankar.github.io/roams/
 template:
   bootstrap: 5
   params:
-    favicon: pkgdown/favicon.ico
+    favicon: pkgdown/favicon/favicon.ico
 
 articles:
 - title: Articles
