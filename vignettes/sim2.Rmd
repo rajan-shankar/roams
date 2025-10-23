@@ -387,6 +387,11 @@ eval_metrics_study2 = model_fits_study2 |>
         str_starts(.y, "roams"),
         .x$iterations,
         NA
+      )),
+    lambda = map2_dbl(model, method, .f = ~ ifelse(
+        str_starts(.y, "roams"),
+        .x$lambda,
+        NA
       ))
     ) |> 
   select(-c(model, 
@@ -918,6 +923,61 @@ p2 = eval_metrics_study2 |>
 p1 + p2 + plot_layout(ncol = 2, axes = "collect", guides = "collect")
 ```
 
+### ROAMS lambda selected {.tabset}
+
+Mean-aggregated and raw value of the tuning parameter $\lambda$ selected by ROAMS when fitting models.
+
+#### Mean lambda
+
+```{r fig.height = 4}
+p1 = eval_metrics_study2 |> 
+  filter(method == "roams_fut_model") |> 
+  filter(contamination == 0.1) |> 
+  group_by(distance) |> 
+  summarise(lambda = mean(lambda)) |> 
+  ggplot() +
+  aes(x = factor(distance), y = lambda, group = 1) +
+  geom_line(linewidth = LW) +
+  geom_point(size = PS) +
+  labs(x = "Outlier distance", y = "Mean ROAMS lambda")
+
+p2 = eval_metrics_study2 |> 
+  filter(method == "roams_fut_model") |> 
+  filter(distance == 5) |> 
+  group_by(contamination) |> 
+  summarise(lambda = mean(lambda)) |> 
+  ggplot() +
+  aes(x = contamination, y = lambda) +
+  geom_line(linewidth = LW) +
+  geom_point(size = PS) +
+  labs(x = "Contamination rate", y = "Mean ROAMS lambda") +
+  scale_x_continuous(labels = scales::percent)
+
+p1 + p2 + plot_layout(ncol = 2, axes = "collect", guides = "collect")
+```
+
+#### Raw lambda
+
+```{r fig.height = 4}
+p1 = eval_metrics_study2 |> 
+  filter(method == "roams_fut_model") |> 
+  filter(contamination == 0.1) |> 
+  ggplot() +
+  aes(x = factor(distance), y = lambda) +
+  geom_boxplot() +
+  labs(x = "Outlier distance", y = "ROAMS lambda")
+
+p2 = eval_metrics_study2 |> 
+  filter(method == "roams_fut_model") |> 
+  filter(distance == 5) |> 
+  ggplot() +
+  aes(x = contamination, y = lambda, group = contamination) +
+  geom_boxplot() +
+  labs(x = "Contamination rate", y = "ROAMS lambda") +
+  scale_x_continuous(labels = scales::percent)
+
+p1 + p2 + plot_layout(ncol = 2, axes = "collect", guides = "collect")
+```
 
 ### References
 

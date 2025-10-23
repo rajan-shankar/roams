@@ -23,7 +23,7 @@ knitr::opts_chunk$set(
 
 ```{r packages}
 library(tidyverse)
-library(roams) # version 0.5.1
+library(roams) # version 0.6.5
 library(future)
 
 ## Number of cores to use
@@ -405,6 +405,11 @@ eval_metrics_study1 = model_fits_study1 |>
         str_starts(.y, "roams"),
         .x$iterations,
         NA
+      )),
+    lambda = map2_dbl(model, method, .f = ~ ifelse(
+        str_starts(.y, "roams"),
+        .x$lambda,
+        NA
       ))
     ) |> 
   select(-c(model, 
@@ -480,7 +485,7 @@ p1 = eval_metrics_study1 |>
                "Sensitivity" = "Mean Sensitivity", 
                "Specificity" = "Mean Specificity"))) +
   labs(x = "n", y = NULL, colour = NULL, linetype = NULL) +
-  scale_y_continuous(labels = scales::percent, limits = c(0.5,1)) +
+  scale_y_continuous(labels = scales::percent, limits = c(0.3,1)) +
   scale_colour_manual(
     values = setNames(c("#0072B2","#56B4E9","#009E73","#F5C710"), settings),
     labels = setNames(labels_settings, settings)) +
@@ -510,7 +515,7 @@ p2 = eval_metrics_study1 |>
   scale_colour_manual(values = c("#5B126EFF","#D24644FF","#FCA108FF")) +
   labs(x = "n", y = NULL, 
        colour = NULL, linetype = NULL) +
-  scale_y_continuous(labels = scales::percent, limits = c(0.5,1)) +
+  scale_y_continuous(labels = scales::percent, limits = c(0.3,1)) +
   guides(colour = guide_legend(ncol = 2, byrow = TRUE))
 
 p1 + p2 + plot_layout(ncol = 2, widths = c(2,1), axes = "collect")
@@ -844,6 +849,50 @@ eval_metrics_study1 |>
   aes(x = factor(n), y = iterations, colour = setting) +
   geom_boxplot() +
   labs(x = "n", y = "ROAMS iterations", colour = NULL, linetype = NULL) +
+  scale_colour_manual(
+    values = setNames(c("#0072B2","#56B4E9","#009E73","#F5C710"), settings),
+    labels = setNames(labels_settings, settings)) +
+  guides(colour = guide_legend(ncol = 2, byrow = TRUE))
+```
+
+### ROAMS lambda selected {.tabset}
+
+Mean-aggregated and raw value of the tuning parameter $\lambda$ selected by ROAMS when fitting models.
+
+#### Mean lambda
+
+```{r fig.height = 5}
+settings = c("clean data", "cluster", "fixed distance", "multi-level")
+labels_settings = c("Clean data", "Cluster", "Fixed distance", "Multi-level")
+
+eval_metrics_study1 |> 
+  filter(method == "roams_fut_model") |> 
+  group_by(n, setting) |> 
+  summarise(lambda = mean(lambda)) |> 
+  ggplot() +
+  aes(x = factor(n), y = lambda, 
+      colour = setting, group = setting, linetype = setting) +
+  geom_line(linewidth = LW) +
+  geom_point(size = PS) +
+  labs(x = "n", y = "Mean ROAMS lambda", colour = NULL, linetype = NULL) +
+  scale_colour_manual(
+    values = setNames(c("#0072B2","#56B4E9","#009E73","#F5C710"), settings),
+    labels = setNames(labels_settings, settings)) +
+  scale_linetype_manual(
+    values = setNames(c("solid", "dashed", "dotted", "dotdash"), settings),
+    labels = setNames(labels_settings, settings)) +
+  guides(colour = guide_legend(ncol = 2, byrow = TRUE))
+```
+
+#### Raw lambda
+
+```{r fig.height = 5}
+eval_metrics_study1 |> 
+  filter(method == "roams_fut_model") |> 
+  ggplot() +
+  aes(x = factor(n), y = lambda, colour = setting) +
+  geom_boxplot() +
+  labs(x = "n", y = "ROAMS lambda", colour = NULL, linetype = NULL) +
   scale_colour_manual(
     values = setNames(c("#0072B2","#56B4E9","#009E73","#F5C710"), settings),
     labels = setNames(labels_settings, settings)) +

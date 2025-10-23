@@ -35,7 +35,7 @@ library(knitr)
 world <- rnaturalearth::ne_countries(scale = "medium", returnclass = "sf")
 ```
 
-These examples all use the first-differenced correlated random walk (DCRW) model, a type of linear Gaussian SSM. This model is detailed in @auger-methe_guide_2021. The DCRW model has the following observation and state processes,
+The four data sets in this vignette are all modelled using the first-differenced correlated random walk (DCRW) model, a type of linear Gaussian SSM. This model is detailed in @auger-methe_guide_2021. The DCRW model has the following observation and state processes,
 \begin{align} \label{eq:DCRW_equations}
 \begin{split}
     \mathbf{y}_t &= \mathbf{z}_{t} + \mathbf{v}_t \\
@@ -48,7 +48,7 @@ Notice the use of $\mathbf{z}$ instead of $\mathbf{x}$ for the state process; th
 
 ## Animals {.tabset}
 
-We illustrate our method on five example data sets.
+We illustrate our method on four example data sets.
 
 ### Cats
 
@@ -120,50 +120,6 @@ p1 = cat_mia |>
     expand = FALSE
   )
 p1
-```
-
-### Cows
-
-```{r}
-cow = read_csv("data/export_UQ_GPS.csv") |> 
-  clean_names() |> 
-  filter(partition_key == "70741400000EB036") |> 
-  # The cow data longitude and latitude are swapped! So we set x to be latitude and y to be longitude:
-  rename(x = latitude,
-         y = longitude) |> 
-  mutate(date = date(timestamp)) |> 
-  select(date, timestamp, x, y) |>
-  group_by(date) |> 
-  mutate(diff = c(2.38, diff(timestamp))) |>
-  mutate(missing_rows = map(diff, ~ seq_len(round(. / 2.38)))) |>
-  unnest(missing_rows) |>
-  mutate(x = ifelse(missing_rows > 1, NA, x),
-         y = ifelse(missing_rows > 1, NA, y)) |> 
-  ungroup() |> 
-  rename(x = x,
-         y = y)
-
-cow_11 = cow |> filter(date == "2024-11-11")
-```
-
-Plot with world map data:
-
-```{r raw-data-vis-cow, fig.height=5}
-# Work out x/y ranges with some padding
-x_range <- range(cow_11$x, na.rm = TRUE)
-y_range <- range(cow_11$y, na.rm = TRUE)
-
-x_pad <- diff(x_range) * 0.05  # 5% padding
-y_pad <- diff(y_range) * 0.05 # 5% padding
-
-p1 %+% cow_11 + 
-  # Focus map on s's range
-  coord_sf(
-    xlim = c(x_range[1] - x_pad, x_range[2] + x_pad),
-    ylim = c(y_range[1] - y_pad, y_range[2] + y_pad),
-    expand = FALSE
-  ) + 
-  labs(title = "Cow 11")
 ```
 
 ### Polar bear
@@ -315,7 +271,6 @@ Combine the data sets into a list:
 ```{r}
 data_sets = list(
   "cat_mia" = cat_mia,
-  "cow_11" = cow_11,
   "polar_low_freq" = polar_low_freq,
   "seal" = seal,
   "whale_2008" = whale_2008
@@ -326,9 +281,7 @@ data_sets = list(
 
 ```{r}
 # Add column containing frequency of measurements for each data set
-frequencies = c("20 minutes", 
-                "2 minutes and 23 seconds", 
-                "1 day", "1 day", "12 hours")
+frequencies = c("20 minutes", "1 day", "1 day", "12 hours")
 data_sets |> 
   map_dbl(~ mean(is.na(.$x))) |> 
   round(2) |> 
@@ -706,16 +659,6 @@ results |>
   autoplot()
 ```
 
-#### Cow
-
-```{r}
-results |> 
-  filter(name == "cow_11") |> 
-  pull(roams_model_list) |> 
-  pluck(1) |> 
-  autoplot()
-```
-
 #### Polar bear
 
 ```{r}
@@ -845,7 +788,7 @@ for (i in 1:length(data_sets)) {
           aspect.ratio = 1)
 }
 
-wrap_plots(plots) + plot_layout(ncol = 3)
+wrap_plots(plots) + plot_layout(ncol = 2)
 ```
 
 ### Plot one-step-ahead out-of-sample predictions
@@ -909,7 +852,7 @@ for (i in 1:length(data_sets)) {
           aspect.ratio = 1)
 }
 
-wrap_plots(plots) + plot_layout(ncol = 3)
+wrap_plots(plots) + plot_layout(ncol = 2)
 ```
 
 ## Blue whale plots
@@ -1062,9 +1005,14 @@ Figure 7 of @shankar2025:
 p2 = roams_model_list %>% autoplot()
 
 # Extract individual plots for editing
-p21 = p2[[1]]
+p21 = p2[[1]] + 
+  labs(x = latex2exp::TeX("$\\log_{10}(\\lambda)$")) +
+  scale_x_log10()
+
 p22 = p2[[2]] +
-  labs(y = "Detected outliers") +
+  labs(y = "Detected outliers",
+       x = latex2exp::TeX("$\\log_{10}(\\lambda)$")) +
+  scale_x_log10() +
   scale_y_continuous(labels = scales::percent)
 
 # Re-combine plots
@@ -1097,7 +1045,9 @@ tibble(
   knitr::kable(digits = 3)
 ```
 
-### $\|\gamma\|_2$ path plot
+### Path plot of gamma shift parameters
+
+This plot shows how the $L_2$-norm of the $\boldsymbol{\gamma}_t$ parameter changes as $\lambda$ increases, for $t=1,\dots,n$. It can give insight into how different timepoints are flagged/unflagged as outliers depending on the value of $\lambda$. The four timepoints with the largest $L_2$-norm at the lowest $\lambda$ have been labelled. 
 
 ```{r}
 roams_model_list |> 
@@ -1108,7 +1058,7 @@ roams_model_list |>
   tibble() |> 
   mutate(timepoint = 1:122) |> 
   pivot_longer(-timepoint, names_to = "lambda", values_to = "gamma_L2") |> 
-  mutate(lambda = as.numeric(str_remove(lambda, "lambda_"))) |> 
+  mutate(lambda = rep(get_attribute(roams_model_list, "lambda"), 122)) |>
   (\(df) 
   ggplot(df) +
   aes(x = lambda, y = gamma_L2, colour = factor(timepoint)) +
@@ -1119,11 +1069,10 @@ roams_model_list |>
               ungroup() |> 
               slice_max(gamma_L2, n = 4),
             aes(label = timepoint)) +
+    labs(x = latex2exp::TeX("$\\lambda$"),
+         y = latex2exp::TeX("$L_2 \\ norm \\ of \\ \\gamma_t$")) +
   theme(legend.position = "none"))()
 ```
-
-
-
 
 
 #### References
