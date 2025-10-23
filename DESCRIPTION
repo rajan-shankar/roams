@@ -1,7 +1,7 @@
 Package: roams
 Type: Package
 Title: Robust Outlier-Adjusted Mean-Shift Estimation of State-Space Models
-Version: 0.6.5
+Version: 0.6.6
 Authors@R: c(
     person("Rajan", "Shankar", 
            email = "rajan.shankar@sydney.edu.au", 
