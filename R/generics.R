@@ -142,7 +142,10 @@ autoplot.roams_SSM_list = function(object,
     ggplot2::theme_bw(base_size = 16)
 
   if (attribute1 == "prop_outlying") {
-    p1 = p1 + ggplot2::coord_cartesian(ylim = c(0, NA))
+    p1 = p1 +
+      ggplot2::coord_cartesian(ylim = c(0, NA)) +
+      ggplot2::labs(y = "Outliers") +
+      ggplot2::scale_y_continuous(labels = scales::percent)
   }
 
   p2 = ggplot2::ggplot(data, ggplot2::aes(x = lambda, y = attribute2)) +
@@ -159,7 +162,10 @@ autoplot.roams_SSM_list = function(object,
     ggplot2::theme_bw(base_size = 16)
 
   if (attribute2 == "prop_outlying") {
-    p2 = p2 + ggplot2::coord_cartesian(ylim = c(0, NA))
+    p2 = p2 +
+      ggplot2::coord_cartesian(ylim = c(0, NA)) +
+      ggplot2::labs(y = "Outliers") +
+      ggplot2::scale_y_continuous(labels = scales::percent)
   }
 
   p1 + p2 + patchwork::plot_layout(

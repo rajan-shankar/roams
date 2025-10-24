@@ -41,7 +41,8 @@ Imports:
   MASS,
   patchwork,
   future,
-  furrr
+  furrr,
+  scales
 Depends:
   R (>= 4.1.0)
 Suggests: 
