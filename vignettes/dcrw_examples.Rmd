@@ -864,8 +864,8 @@ This section reproduces the outputs in Section 5.2 of @shankar2025.
 Fit ROAMS and classical models to blue whale data:
 
 ```{r}
-y = whale_2008 %>% 
-  select(x, y) %>% 
+y = whale_2008 |> 
+  select(x, y) |> 
   as.matrix()
 ```
 
@@ -1002,21 +1002,7 @@ p1
 Figure 7 of @shankar2025:
 
 ```{r fig.width = 9}
-p2 = roams_model_list %>% autoplot()
-
-# Extract individual plots for editing
-p21 = p2[[1]] + 
-  labs(x = latex2exp::TeX("$\\log_{10}(\\lambda)$")) +
-  scale_x_log10()
-
-p22 = p2[[2]] +
-  labs(y = "Detected outliers",
-       x = latex2exp::TeX("$\\log_{10}(\\lambda)$")) +
-  scale_x_log10() +
-  scale_y_continuous(labels = scales::percent)
-
-# Re-combine plots
-p2 = p21 + p22 + plot_layout(nrow = 2, axes = "collect")
+p2 = roams_model_list |> autoplot()
 
 # Final plot
 p1 + p2

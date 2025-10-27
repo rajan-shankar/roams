@@ -11,7 +11,7 @@ outliers in state-space models using the ROAMS (Robust Outlier-Adjusted
 Mean-Shift) framework. It includes functionality for fitting benchmark
 models, visualizing model selection criteria, and evaluating in-sample
 and out-of-sample performance. Simulation tools for generating synthetic
-data under a first-difference correlated random walk (DCRW) model are
+data under a first-differenced correlated random walk (DCRW) model are
 also included. Designed with flexibility for user-defined model
 structures via the `specify_SSM()` interface.
 
