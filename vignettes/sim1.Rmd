@@ -61,6 +61,17 @@ data_study1 = simulate_data_study1(
   seed = as.numeric(str_remove(seed, "seed"))
 )
 
+# The following lines ensure that the out-of-sample data for each n and each configuration is the same. 
+# This reduces variance and enhances clarity in the MSFE plots shown in the results section.
+data_study1_y_oos = data_study1 |> 
+  filter(n == 100, setting == "clean data") |> 
+  pull(y_oos)
+
+data_study1 = data_study1 |> 
+  group_by(n, setting) |> 
+  mutate(y_oos = data_study1_y_oos) |> 
+  ungroup()
+
 readr::write_rds(data_study1, 
                  paste0(data_path, "data_", study, "_", seed, ".rds"),
                  compress = "gz")

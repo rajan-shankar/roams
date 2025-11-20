@@ -23,3 +23,10 @@ You can install the development version of **roams** from GitHub with:
 # install.packages("pak")
 pak::pak("rajan-shankar/roams")
 ```
+
+OR if using Windows:
+
+``` r
+# install.packages("devtools")
+devtools::install_github("rajan-shankar/roams")
+```
