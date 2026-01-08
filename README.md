@@ -15,6 +15,9 @@ data under a first-differenced correlated random walk (DCRW) model are
 also included. Designed with flexibility for user-defined model
 structures via the `specify_SSM()` interface.
 
+See the corresponding ROAMS paper (pre-print) here:
+[arxiv.org/abs/2511.15155](https://arxiv.org/abs/2511.15155)
+
 ## Installation
 
 You can install the development version of **roams** from GitHub with:

@@ -21,7 +21,9 @@ knitr::opts_chunk$set(
 **roams** provides functions for estimating parameters and detecting outliers in state-space models using the ROAMS (Robust Outlier-Adjusted Mean-Shift) framework. 
 It includes functionality for fitting benchmark models, visualizing model selection criteria, and evaluating in-sample and out-of-sample performance. 
 Simulation tools for generating synthetic data under a first-differenced correlated random walk (DCRW) model are also included. 
-Designed with flexibility for user-defined model structures via the `specify_SSM()` interface.
+Designed with flexibility for user-defined model structures via the `specify_SSM()` interface. 
+
+See the corresponding ROAMS paper (pre-print) here: [arxiv.org/abs/2511.15155](https://arxiv.org/abs/2511.15155)
 
 ## Installation
 
