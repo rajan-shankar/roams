@@ -9,6 +9,7 @@ oracle_SSM(
   init_par,
   build,
   outlier_locs,
+  build_args = list(),
   lower = NA,
   upper = NA,
   control = list(parscale = init_par)

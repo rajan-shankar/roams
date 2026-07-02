@@ -8,6 +8,7 @@ huber_robust_SSM(
   y,
   init_par,
   build,
+  build_args = list(),
   lower = NA,
   upper = NA,
   control = list(parscale = init_par)

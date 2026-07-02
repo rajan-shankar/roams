@@ -4,7 +4,8 @@
 #'
 #' @param y A numeric matrix of observations, with each row corresponding to a time point.
 #' @param init_par A numeric vector of initial parameter values for optimization.
-#' @param build A function that accepts a parameter vector and returns a \code{dlm} model (as used in \code{dlm::dlmMLE()}). The \code{specify_SSM} function can be used to create this \code{build} function.
+#' @param build A function whose first argument is a parameter vector and that returns a \code{dlm} model (as used in \code{dlm::dlmMLE()}). The \code{specify_SSM} function can be used to create this \code{build} function. Additional named arguments can be declared in \code{build} and supplied via \code{build_args}.
+#' @param build_args An optional named list of additional arguments to forward to \code{build} on every call. For example, \code{build_args = list(u = covariate_matrix)} allows \code{build} to be written as \code{function(par, u) \{ ... \}} without requiring a closure or factory function. Default is \code{list()}.
 #' @param num_lambdas Integer. The number of \eqn{\lambda} values to evaluate. Ignored if \code{custom_lambdas} is specified. Default is 20.
 #' @param custom_lambdas Optional numeric vector. If supplied, these are the exact \eqn{\lambda} values used for model fitting. If not provided or set to \code{NA}, then \code{num_lambdas} \eqn{\lambda}'s are automatically chosen.
 #' @param cores Integer. Number of CPU cores to use for parallel processing. Default is 1 (sequential execution).
@@ -15,6 +16,7 @@
 #' @param lambda_min Minimum \eqn{\lambda} value to consider when constructing the sequence of \eqn{\lambda}'s. Ignored if \code{custom_lambdas} is specified. Default is 2.
 #' @param excessive_outliers_iter_limit Integer. Maximum number of iterations allowed where \eqn{\ge 50\%} of timepoints are flagged as outliers. This many outliers suggests \eqn{\lambda} is too low. Allows ROAMS to get through these \eqn{\lambda}'s quicker. Default is 1.
 #' @param control A named list of control options to pass to \code{optim} via \code{dlm::dlmMLE()}. Default is \code{list(parscale = init_par)}, which can help the optimizer if parameters are on vastly different scales.
+#' @param thresholding Character string specifying the outlier thresholding rule. Either \code{"hard"} (default) or \code{"soft"}. Hard thresholding fully removes flagged observations (sets them to missing), corresponding to an L0 penalty on the outlier shifts \eqn{\gamma}. Soft thresholding applies a continuous LASSO shrinkage to each \eqn{\gamma_t}, partially adjusting observations rather than discarding them entirely, which corresponds to an L1 penalty.
 #'
 #' @return If more than one \eqn{\lambda} values are used, returns an object of class \code{roams_SSM_list} — a list containing a \code{roams_SSM} model for each \eqn{\lambda}. If only one \eqn{\lambda} value is used (i.e. \code{custom_lambdas} is manually specified as a single value), returns a single \code{roams_SSM} object.
 #'
@@ -37,8 +39,11 @@
 #' \enumerate{
 #'   \item A \code{dlm} model is fit using \code{dlm::dlmMLE()}.
 #'   \item Mahalanobis distance of residuals (Mahalanobis residuals) are computed.
-#'   \item Observations with Mahalanobis residual (plus a \eqn{\log(|\mathbf{S}_{t|t-1}|)} adjustment) above the current \eqn{\lambda} threshold are treated as missing in the next iteration.
+#'   \item Outlier shift estimates \eqn{\gamma_t} are updated using the selected thresholding rule.
+#'   \item The adjusted data \code{adj_y} is updated and passed to the next iteration.
 #' }
+#'
+#' Under \strong{hard thresholding}, observations whose penalised Mahalanobis score \eqn{d_t^2 + \log|\mathbf{S}_{t|t-1}|} exceeds \eqn{\lambda^2} are fully removed (set to missing), equivalent to setting \eqn{\hat{\gamma}_t = r_t}. Under \strong{soft thresholding}, a group-LASSO shrinkage operator is applied: \eqn{\hat{\gamma}_t = \max(1 - \lambda / d_t,\, 0)\, r_t}, where \eqn{d_t} is the Mahalanobis distance of the one-step-ahead residual. Partial adjustments are retained in the data (\code{adj_y = y - gamma}) rather than treating observations as missing.
 #'
 #' The algorithm stops when the change in parameters and outlier estimates is sufficiently small or if too many outliers are detected (more than 50\% of complete observations).
 #'
@@ -51,6 +56,7 @@ roams_SSM = function(
     y,
     init_par,
     build,
+    build_args = list(),
     num_lambdas = 20,
     custom_lambdas = NA,
     cores = 1,
@@ -60,7 +66,8 @@ roams_SSM = function(
     tol = 1e-4,
     lambda_min = 2,
     excessive_outliers_iter_limit = 1,
-    control = list(parscale = init_par)
+    control = list(parscale = init_par),
+    thresholding = "hard"
     ) {
 
   if (ncol(y) > nrow(y)) {
@@ -80,10 +87,13 @@ roams_SSM = function(
                          upper = upper,
                          tol = tol,
                          excessive_outliers_iter_limit = excessive_outliers_iter_limit,
-                         control = control)
+                         control = control,
+                         thresholding = thresholding,
+                         build_args = build_args)
 
-    # Highest lambda is the supremum norm of mahalanobis residuals of classical fit
-    highest_lambda = max(dlmInfo(y, y, classical, build)$mahalanobis_residuals)
+    # Highest lambda is the supremum norm of mahalanobis residuals of classical fit.
+    # classical$build is already wrapped, so pass it directly.
+    highest_lambda = max(dlmInfo(y, y, classical, classical$build)$mahalanobis_residuals)
     lowest_lambda = lambda_min
 
     if (lowest_lambda >= highest_lambda) {
@@ -111,7 +121,9 @@ roams_SSM = function(
                        upper = upper,
                        tol = tol,
                        excessive_outliers_iter_limit = excessive_outliers_iter_limit,
-                       control = control)
+                       control = control,
+                       thresholding = thresholding,
+                       build_args = build_args)
 
       return(model)
     }
@@ -129,7 +141,9 @@ roams_SSM = function(
                            upper = upper,
                            tol = tol,
                            excessive_outliers_iter_limit = excessive_outliers_iter_limit,
-                           control = control)
+                           control = control,
+                           thresholding = thresholding,
+                           build_args = build_args)
 
   return(model_list)
 }
@@ -145,7 +159,9 @@ lambda_grid = function(
     upper,
     tol,
     excessive_outliers_iter_limit = excessive_outliers_iter_limit,
-    control
+    control,
+    thresholding = "hard",
+    build_args = list()
     ) {
 
   if (cores == 1) {
@@ -160,7 +176,9 @@ lambda_grid = function(
                                  upper,
                                  tol,
                                  excessive_outliers_iter_limit,
-                                 control)
+                                 control,
+                                 thresholding,
+                                 build_args)
     }
   } else {
 
@@ -175,7 +193,9 @@ lambda_grid = function(
                                                        upper,
                                                        tol,
                                                        excessive_outliers_iter_limit,
-                                                       control))
+                                                       control,
+                                                       thresholding,
+                                                       build_args))
 
     future::plan(future::sequential)
   }
@@ -194,8 +214,12 @@ run_IPOD = function(
     upper,
     tol,
     excessive_outliers_iter_limit,
-    control
+    control,
+    thresholding = "hard",
+    build_args = list()
 ) {
+
+  build = wrap_build(build, build_args)
 
   if (is.na(lower)[1]) {lower = rep(-Inf, length(init_par))}
   if (is.na(upper)[1]) {upper = rep(Inf, length(init_par))}
@@ -235,24 +259,56 @@ run_IPOD = function(
     r = y - info_output$predicted_observations
     gamma_old = gamma
     gamma = matrix(0, nrow = n, ncol = dim_obs)
-    objective_increase = info_output$mahalanobis_residuals^2 + log(info_output$det_S)
-    objective_increase = ifelse(info_output$mahalanobis_residuals == 0,
-                                min(min(objective_increase), lambda) - 1,
-                                objective_increase)  # NA values should have lowest contribution
-    gamma[objective_increase > lambda^2,] = r[objective_increase > lambda^2,]
-    which_nz = which(rowSums(abs(gamma)) != 0)
 
-    # Too many outliers detected will cause instability
-    if (length(which_nz) / n_complete >= 0.5) {
-      # Re-update gamma to only keep best nz timepoints
-      keep_threshold = n_complete / 2 + (n - n_complete)
-      which_nz = which(rank(objective_increase) > keep_threshold)
-      gamma = matrix(0, nrow = n, ncol = dim_obs)
-      gamma[which_nz,] = r[which_nz,]
+    if (thresholding == "hard") {
+      # Hard thresholding: fully remove flagged observations (L0 penalty)
+      objective_increase = info_output$mahalanobis_residuals^2 + log(info_output$det_S)
+      # NA timepoints should have the lowest penalised score so they are never flagged
+      objective_increase = ifelse(info_output$mahalanobis_residuals == 0,
+                                  min(min(objective_increase), lambda) - 1,
+                                  objective_increase)
+      gamma[objective_increase > lambda^2,] = r[objective_increase > lambda^2,]
+      which_nz = which(rowSums(abs(gamma)) != 0)
+
+      # Too many outliers detected will cause instability
+      if (length(which_nz) / n_complete >= 0.5) {
+        # Re-update gamma to only keep best nz timepoints
+        keep_threshold = n_complete / 2 + (n - n_complete)
+        which_nz = which(rank(objective_increase) > keep_threshold)
+        gamma = matrix(0, nrow = n, ncol = dim_obs)
+        gamma[which_nz,] = r[which_nz,]
+      }
+
+      adj_y = y
+      adj_y[which_nz,] = NA
+
+    } else if (thresholding == "soft") {
+      # Soft thresholding: group-LASSO shrinkage (L1 penalty)
+      # gamma_t = max(1 - lambda / d_t, 0) * r_t, where d_t is Mahalanobis distance
+      mah_resid = info_output$mahalanobis_residuals
+      scale_factor = ifelse(mah_resid > 0, pmax(1 - lambda / mah_resid, 0), 0)
+      gamma = r * scale_factor
+      which_nz = which(scale_factor > 0)
+
+      # Too many outliers detected will cause instability
+      if (length(which_nz) / n_complete >= 0.5) {
+        # Restrict to top 50% of timepoints by Mahalanobis residual
+        keep_threshold = n_complete / 2 + (n - n_complete)
+        keep_rows = which(rank(mah_resid) > keep_threshold)
+        gamma = matrix(0, nrow = n, ncol = dim_obs)
+        keep_scale = ifelse(mah_resid[keep_rows] > 0,
+                            pmax(1 - lambda / mah_resid[keep_rows], 0), 0)
+        gamma[keep_rows,] = r[keep_rows,] * keep_scale
+        which_nz = keep_rows[keep_scale > 0]
+      }
+
+      # Partially adjust observations rather than treating them as missing
+      adj_y = y - gamma
+
+    } else {
+      stop("Invalid 'thresholding' value. Must be \"hard\" or \"soft\".")
     }
 
-    adj_y = y
-    adj_y[which_nz,] = NA
     gap_gamma = max(abs(gamma - gamma_old))
     gap_theta = max(abs(fit$par - theta_old))
 
@@ -281,32 +337,85 @@ run_IPOD = function(
       ),
     fit,  # output from dlmMLE (which is just output from optim)
     list(y = y),
-    list(build = build)
+    list(build = build),       # wrapped build (callable as build(par))
+    list(build_args = build_args)
     )
 
   class(model) = "roams_SSM"
   return(model)
 }
 
+# Wrap a build function to pre-supply named extra arguments.
+# When build_args is empty, returns build unchanged — no closure overhead,
+# and model$build remains the user's original function.
+wrap_build = function(build, build_args) {
+  force(build)  # evaluate promise now, before the closure captures it
+  if (length(build_args) == 0) return(build)
+  function(par, ...) do.call(build, c(list(par), build_args))
+}
+
+# Apply time-varying matrix elements from covariates (X/JFF or X/JGG) at time t.
+# Returns the base matrix with indexed elements replaced by X[t, k].
+apply_covariate_matrix = function(base_mat, J_mat, X, t) {
+  if (is.null(J_mat) || is.null(X)) return(base_mat)
+  out = base_mat
+  nz = which(J_mat != 0, arr.ind = TRUE)
+  for (k in seq_len(nrow(nz))) {
+    out[nz[k, 1], nz[k, 2]] = X[t, J_mat[nz[k, 1], nz[k, 2]]]
+  }
+  out
+}
+
+# Compute list of S_t = A_t %*% P_{t|t-1} %*% t(A_t) + V for each t.
+# When JFF is NULL, A is constant and a vectorised path is used.
+compute_S_list = function(P_tt_1_list, A_base, JFF, X_cov, V) {
+  if (is.null(JFF)) {
+    purrr::map(P_tt_1_list, ~ A_base %*% . %*% t(A_base) + V)
+  } else {
+    purrr::map2(P_tt_1_list, seq_along(P_tt_1_list), ~ {
+      A_t = apply_covariate_matrix(A_base, JFF, X_cov, .y)
+      A_t %*% .x %*% t(A_t) + V
+    })
+  }
+}
+
+# Compute an n x dim_obs matrix of A_t %*% state_t for t = 1, ..., n.
+# state_mat has n+1 rows (row 1 is t=0); rows 2:(n+1) correspond to t=1,...,n.
+# When JFF is NULL a single matrix multiply is used; otherwise per-step loop.
+compute_obs_from_states = function(state_mat, A_base, JFF, X_cov, n) {
+  if (is.null(JFF)) {
+    (state_mat[2:(n + 1), , drop = FALSE]) %*% t(A_base)
+  } else {
+    do.call(rbind, lapply(seq_len(n), function(t) {
+      drop(apply_covariate_matrix(A_base, JFF, X_cov, t) %*% state_mat[t + 1, ])
+    }))
+  }
+}
+
 IPOD_oos_robust_filter = function(y, par, build, threshold, multiplier = 1) {
 
   SSM_specs = build(par)
 
-  Phi = SSM_specs$GG
-  Sigma_w = SSM_specs$W
-  A = SSM_specs$FF
-  Sigma_v = SSM_specs$V
-  x_tt = SSM_specs$m0
-  P_tt = SSM_specs$C0
+  Phi_base = SSM_specs$GG
+  Sigma_w  = SSM_specs$W
+  A_base   = SSM_specs$FF
+  Sigma_v  = SSM_specs$V
+  x_tt     = SSM_specs$m0
+  P_tt     = SSM_specs$C0
 
-  n = nrow(y)
-  dim_obs = ncol(y)
-  dim_state = nrow(Phi)
+  # Covariate components (may be NULL for models without exogenous inputs)
+  X_cov = SSM_specs$X
+  JFF   = SSM_specs$JFF
+  JGG   = SSM_specs$JGG
+
+  n         = nrow(y)
+  dim_obs   = ncol(y)
+  dim_state = nrow(Phi_base)
 
   x_tt_1 = NA
   P_tt_1 = NA
   y_tt_1 = NA
-  S_t = NA
+  S_t    = NA
 
   filtered_states = matrix(0, nrow = n, ncol = dim_state)
   filtered_observations = matrix(0, nrow = n, ncol = dim_obs)
@@ -319,37 +428,41 @@ IPOD_oos_robust_filter = function(y, par, build, threshold, multiplier = 1) {
   outliers_flagged = rep(0, n)
 
   for (t in 1:n) {
+    # Resolve time-varying matrices at time t
+    A   = apply_covariate_matrix(A_base,   JFF, X_cov, t)
+    Phi = apply_covariate_matrix(Phi_base, JGG, X_cov, t)
+
     x_tt_1 = Phi %*% x_tt
     P_tt_1 = Phi %*% P_tt %*% t(Phi) + Sigma_w
     y_tt_1 = A %*% x_tt_1
-    S_t = A %*% P_tt_1 %*% t(A) + Sigma_v
+    S_t    = A %*% P_tt_1 %*% t(A) + Sigma_v
     inv_S_t = solve(S_t)
 
     if (any(is.na(y[t,]))) {
       mahalanobis_residuals[t] = 0
       x_tt = x_tt_1
-      P_tt = multiplier*P_tt_1
+      P_tt = multiplier * P_tt_1
     } else {
 
       mahalanobis_residuals[t] = drop(sqrt(t(y[t,] - y_tt_1) %*% inv_S_t %*% (y[t,] - y_tt_1)))
 
       if (mahalanobis_residuals[t] <= threshold) {
-        K_t = P_tt_1 %*% t(A) %*% inv_S_t
+        K_t  = P_tt_1 %*% t(A) %*% inv_S_t
         x_tt = x_tt_1 + K_t %*% (y[t,] - y_tt_1)
         P_tt = P_tt_1 - K_t %*% A %*% P_tt_1
       } else {
         x_tt = x_tt_1
-        P_tt = multiplier*P_tt_1
+        P_tt = multiplier * P_tt_1
         outliers_flagged[t] = 1
       }
     }
 
-    filtered_states[t,] = x_tt
+    filtered_states[t,]    = x_tt
     filtered_observations[t,] = A %*% x_tt
-    predicted_states[t,] = x_tt_1
+    predicted_states[t,]   = x_tt_1
     predicted_observations[t,] = y_tt_1
-    filtered_states_var[[t]] = P_tt
-    predicted_states_var[[t]] = P_tt_1
+    filtered_states_var[[t]]   = P_tt
+    predicted_states_var[[t]]  = P_tt_1
     predicted_observations_var[[t]] = S_t
   }
 
@@ -370,12 +483,17 @@ IPOD_oos_robust_filter = function(y, par, build, threshold, multiplier = 1) {
 # Mainly used for getting residuals and predictions from ROAMS SSMs.
 dlmInfo = function(y, adj_y, model, build) {
 
-  filter_output = dlm::dlmFilter(adj_y, mod = build(model$par))
+  filter_output   = dlm::dlmFilter(adj_y, mod = build(model$par))
   smoother_output = dlm::dlmSmooth(filter_output)
-  A = filter_output$mod$FF
 
-  S = purrr::map(dlm::dlmSvd2var(filter_output$U.R, filter_output$D.R),
-          ~ A %*% . %*% t(A) + filter_output$mod$V)
+  A_base = filter_output$mod$FF
+  X_cov  = filter_output$mod$X    # NULL when no covariates
+  JFF    = filter_output$mod$JFF  # NULL when no covariates
+  V      = filter_output$mod$V
+  n      = nrow(y)
+
+  P_tt_1_list = dlm::dlmSvd2var(filter_output$U.R, filter_output$D.R)
+  S     = compute_S_list(P_tt_1_list, A_base, JFF, X_cov, V)
   inv_S = purrr::map(S, .f = solve)
   mahalanobis_residuals = purrr::map2_dbl(
     apply(y - filter_output$f, 1, c, simplify = FALSE),
@@ -386,10 +504,10 @@ dlmInfo = function(y, adj_y, model, build) {
   mahalanobis_residuals = ifelse(is.na(mahalanobis_residuals), 0, mahalanobis_residuals)
 
   return(list(
-    smoothed_observations = (smoother_output$s %*% t(A))[2:(nrow(y) + 1),],
-    filtered_observations = (filter_output$m %*% t(A))[2:(nrow(y) + 1),],
+    smoothed_observations  = compute_obs_from_states(smoother_output$s, A_base, JFF, X_cov, n),
+    filtered_observations  = compute_obs_from_states(filter_output$m,   A_base, JFF, X_cov, n),
     predicted_observations = filter_output$f,
-    mahalanobis_residuals = mahalanobis_residuals,
+    mahalanobis_residuals  = mahalanobis_residuals,
     det_S = det_S
   ))
 
@@ -464,13 +582,18 @@ attach_insample_info = function(model) {
     stop("Invalid model class. Expected 'roams_SSM' or 'classical_SSM' or 'oracle_SSM' or 'huber_robust_SSM' or 'trimmed_robust_SSM'.")
   }
 
-  filter_output = dlm::dlmFilter(adj_y, mod = model$build(model$par))
+  filter_output   = dlm::dlmFilter(adj_y, mod = model$build(model$par))
   smoother_output = dlm::dlmSmooth(filter_output)
-  A = filter_output$mod$FF
 
-  P_tt_1 = dlm::dlmSvd2var(filter_output$U.R, filter_output$D.R)
-  S = purrr::map(P_tt_1, ~ A %*% . %*% t(A) + filter_output$mod$V)
-  P_tt = dlm::dlmSvd2var(filter_output$U.C, filter_output$D.C)
+  A_base = filter_output$mod$FF
+  X_cov  = filter_output$mod$X    # NULL when no covariates
+  JFF    = filter_output$mod$JFF  # NULL when no covariates
+  V      = filter_output$mod$V
+  n      = nrow(y)
+
+  P_tt_1      = dlm::dlmSvd2var(filter_output$U.R, filter_output$D.R)
+  S           = compute_S_list(P_tt_1, A_base, JFF, X_cov, V)
+  P_tt        = dlm::dlmSvd2var(filter_output$U.C, filter_output$D.C)
   P_tt_smooth = dlm::dlmSvd2var(smoother_output$U.S, smoother_output$D.S)
 
   inv_S = purrr::map(S, ~ solve(.))
@@ -483,11 +606,11 @@ attach_insample_info = function(model) {
 
   output = c(model,
     list(
-    smoothed_states  = smoother_output$s[2:(nrow(y) + 1),],
-    filtered_states  = filter_output$m[2:(nrow(y) + 1),],
+    smoothed_states  = smoother_output$s[2:(n + 1), , drop = FALSE],
+    filtered_states  = filter_output$m[2:(n + 1), , drop = FALSE],
     predicted_states = filter_output$a,
-    smoothed_observations  = (smoother_output$s %*% t(A))[2:(nrow(y) + 1),],
-    filtered_observations  = (filter_output$m %*% t(A))[2:(nrow(y) + 1),],
+    smoothed_observations  = compute_obs_from_states(smoother_output$s, A_base, JFF, X_cov, n),
+    filtered_observations  = compute_obs_from_states(filter_output$m,   A_base, JFF, X_cov, n),
     predicted_observations = filter_output$f,
     smoothed_states_var = P_tt_smooth,
     filtered_states_var = P_tt,
@@ -513,7 +636,8 @@ attach_insample_info = function(model) {
 #'
 #' @param y_oos A numeric matrix containing out-of-sample observations. Each row corresponds to a time point.
 #' @param model A fitted model object of class \code{roams_SSM}, \code{classical_SSM}, \code{oracle_SSM}, \code{huber_robust_SSM}, or \code{trimmed_robust_SSM}.
-#' @param build A function that maps a numeric parameter vector to a corresponding \code{dlm} model object. The \code{specify_SSM} function can be used to create this \code{build} function.
+#' @param build A function whose first argument is a parameter vector and that returns a \code{dlm} model object. The \code{specify_SSM} function can be used to create this \code{build} function.
+#' @param build_args An optional named list of additional arguments to forward to \code{build}. Should match what was supplied to the fitting function (e.g. \code{roams_SSM}) unless a different covariate matrix is needed for the out-of-sample period. Default is \code{list()}.
 #' @param outlier_locs A logical or binary vector of the same length as \code{nrow(y)}, indicating time points to be treated as missing (i.e., time points that are known to be outliers). Used only with \code{oracle_SSM} models.
 #' @param threshold Mahalanobis distance threshold for detecting out-of-sample outliers in \code{roams_SSM} models. Set to \code{Inf} to recover the usual Kalman filter. Default is \code{sqrt(qchisq(0.99, ncol(y)))}.
 #' @param multiplier Multiplier for how quickly the filter grows its filtered state variance (uncertainty) after detecting an outlier in \code{roams_SSM} models. It is the tuneable parameter \eqn{b} of the `fast-updating threshold' filter. Only works if \code{threshold} is not \code{Inf}. Default is \code{2}.
@@ -538,11 +662,13 @@ attach_insample_info = function(model) {
 #'
 #' @export
 oos_filter = function(y_oos, model, build,
+                      build_args = list(),
                       outlier_locs = rep(0, nrow(y_oos)),
                       threshold = sqrt(qchisq(0.99, ncol(y_oos))),
                       multiplier = 2) {
 
-  y = y_oos
+  y     = y_oos
+  build = wrap_build(build, build_args)
 
   if (inherits(model, "huber_robust_SSM")) {
     oos_output = ruben_filter(model$par, y, build, obj_type = "huber")
@@ -574,11 +700,16 @@ oos_filter = function(y_oos, model, build,
   }
 
   filter_output = dlm::dlmFilter(adj_y, mod = build(model$par))
-  A = filter_output$mod$FF
+
+  A_base = filter_output$mod$FF
+  X_cov  = filter_output$mod$X    # NULL when no covariates
+  JFF    = filter_output$mod$JFF  # NULL when no covariates
+  V      = filter_output$mod$V
+  n      = nrow(y)
 
   P_tt_1 = dlm::dlmSvd2var(filter_output$U.R, filter_output$D.R)
-  S = purrr::map(P_tt_1, ~ A %*% . %*% t(A) + filter_output$mod$V)
-  P_tt = dlm::dlmSvd2var(filter_output$U.C, filter_output$D.C)
+  S      = compute_S_list(P_tt_1, A_base, JFF, X_cov, V)
+  P_tt   = dlm::dlmSvd2var(filter_output$U.C, filter_output$D.C)
 
   inv_S = purrr::map(S, ~ solve(.))
   mahalanobis_residuals = purrr::map2_dbl(
@@ -589,9 +720,9 @@ oos_filter = function(y_oos, model, build,
   mahalanobis_residuals = ifelse(is.na(mahalanobis_residuals), 0, mahalanobis_residuals)
 
   return(list(
-             filtered_states  = filter_output$m[2:(nrow(y) + 1),],
+             filtered_states  = filter_output$m[2:(n + 1), , drop = FALSE],
              predicted_states = filter_output$a,
-             filtered_observations  = (filter_output$m %*% t(A))[2:(nrow(y) + 1),],
+             filtered_observations  = compute_obs_from_states(filter_output$m, A_base, JFF, X_cov, n),
              predicted_observations = filter_output$f,
              filtered_states_var = P_tt,
              predicted_states_var = P_tt_1,

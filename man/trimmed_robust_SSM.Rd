@@ -9,6 +9,7 @@ trimmed_robust_SSM(
   init_par,
   build,
   alpha,
+  build_args = list(),
   lower = NA,
   upper = NA,
   control = list(parscale = init_par)

@@ -8,6 +8,7 @@ oos_filter(
   y_oos,
   model,
   build,
+  build_args = list(),
   outlier_locs = rep(0, nrow(y_oos)),
   threshold = sqrt(qchisq(0.99, ncol(y_oos))),
   multiplier = 2
@@ -18,7 +19,9 @@ oos_filter(
 
 \item{model}{A fitted model object of class \code{roams_SSM}, \code{classical_SSM}, \code{oracle_SSM}, \code{huber_robust_SSM}, or \code{trimmed_robust_SSM}.}
 
-\item{build}{A function that maps a numeric parameter vector to a corresponding \code{dlm} model object. The \code{specify_SSM} function can be used to create this \code{build} function.}
+\item{build}{A function whose first argument is a parameter vector and that returns a \code{dlm} model object. The \code{specify_SSM} function can be used to create this \code{build} function.}
+
+\item{build_args}{An optional named list of additional arguments to forward to \code{build}. Should match what was supplied to the fitting function (e.g. \code{roams_SSM}) unless a different covariate matrix is needed for the out-of-sample period. Default is \code{list()}.}
 
 \item{outlier_locs}{A logical or binary vector of the same length as \code{nrow(y)}, indicating time points to be treated as missing (i.e., time points that are known to be outliers). Used only with \code{oracle_SSM} models.}
 

@@ -8,6 +8,7 @@ roams_SSM(
   y,
   init_par,
   build,
+  build_args = list(),
   num_lambdas = 20,
   custom_lambdas = NA,
   cores = 1,
@@ -17,7 +18,8 @@ roams_SSM(
   tol = 1e-04,
   lambda_min = 2,
   excessive_outliers_iter_limit = 1,
-  control = list(parscale = init_par)
+  control = list(parscale = init_par),
+  thresholding = "hard"
 )
 }
 \arguments{
@@ -25,7 +27,9 @@ roams_SSM(
 
 \item{init_par}{A numeric vector of initial parameter values for optimization.}
 
-\item{build}{A function that accepts a parameter vector and returns a \code{dlm} model (as used in \code{dlm::dlmMLE()}). The \code{specify_SSM} function can be used to create this \code{build} function.}
+\item{build}{A function whose first argument is a parameter vector and that returns a \code{dlm} model (as used in \code{dlm::dlmMLE()}). The \code{specify_SSM} function can be used to create this \code{build} function. Additional named arguments can be declared in \code{build} and supplied via \code{build_args}.}
+
+\item{build_args}{An optional named list of additional arguments to forward to \code{build} on every call. For example, \code{build_args = list(u = covariate_matrix)} allows \code{build} to be written as \code{function(par, u) \{ ... \}} without requiring a closure or factory function. Default is \code{list()}.}
 
 \item{num_lambdas}{Integer. The number of \eqn{\lambda} values to evaluate. Ignored if \code{custom_lambdas} is specified. Default is 20.}
 
@@ -46,6 +50,8 @@ roams_SSM(
 \item{excessive_outliers_iter_limit}{Integer. Maximum number of iterations allowed where \eqn{\ge 50\%} of timepoints are flagged as outliers. This many outliers suggests \eqn{\lambda} is too low. Allows ROAMS to get through these \eqn{\lambda}'s quicker. Default is 1.}
 
 \item{control}{A named list of control options to pass to \code{optim} via \code{dlm::dlmMLE()}. Default is \code{list(parscale = init_par)}, which can help the optimizer if parameters are on vastly different scales.}
+
+\item{thresholding}{Character string specifying the outlier thresholding rule. Either \code{"hard"} (default) or \code{"soft"}. Hard thresholding fully removes flagged observations (sets them to missing), corresponding to an L0 penalty on the outlier shifts \eqn{\gamma}. Soft thresholding applies a continuous LASSO shrinkage to each \eqn{\gamma_t}, partially adjusting observations rather than discarding them entirely, which corresponds to an L1 penalty.}
 }
 \value{
 If more than one \eqn{\lambda} values are used, returns an object of class \code{roams_SSM_list} — a list containing a \code{roams_SSM} model for each \eqn{\lambda}. If only one \eqn{\lambda} value is used (i.e. \code{custom_lambdas} is manually specified as a single value), returns a single \code{roams_SSM} object.
@@ -72,8 +78,11 @@ The ROAMS procedure alternates between estimating model parameters via maximum l
 \enumerate{
   \item A \code{dlm} model is fit using \code{dlm::dlmMLE()}.
   \item Mahalanobis distance of residuals (Mahalanobis residuals) are computed.
-  \item Observations with Mahalanobis residual (plus a \eqn{\log(|\mathbf{S}_{t|t-1}|)} adjustment) above the current \eqn{\lambda} threshold are treated as missing in the next iteration.
+  \item Outlier shift estimates \eqn{\gamma_t} are updated using the selected thresholding rule.
+  \item The adjusted data \code{adj_y} is updated and passed to the next iteration.
 }
+
+Under \strong{hard thresholding}, observations whose penalised Mahalanobis score \eqn{d_t^2 + \log|\mathbf{S}_{t|t-1}|} exceeds \eqn{\lambda^2} are fully removed (set to missing), equivalent to setting \eqn{\hat{\gamma}_t = r_t}. Under \strong{soft thresholding}, a group-LASSO shrinkage operator is applied: \eqn{\hat{\gamma}_t = \max(1 - \lambda / d_t,\, 0)\, r_t}, where \eqn{d_t} is the Mahalanobis distance of the one-step-ahead residual. Partial adjustments are retained in the data (\code{adj_y = y - gamma}) rather than treating observations as missing.
 
 The algorithm stops when the change in parameters and outlier estimates is sufficiently small or if too many outliers are detected (more than 50\% of complete observations).
 }

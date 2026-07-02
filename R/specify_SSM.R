@@ -10,12 +10,20 @@
 #' @param observation_noise_var A square matrix specifying the variance of the observation noise (\code{V}).
 #' @param init_state_mean A vector specifying the initial mean of the state (\code{m0}).
 #' @param init_state_var A square matrix specifying the initial state covariance (\code{C0}).
+#' @param covariates Optional numeric matrix of exogenous inputs (\code{X}), with \eqn{n} rows (one per time point) and \eqn{k} columns (one per covariate). Default is \code{NULL}.
+#' @param obs_covariate_index Optional integer matrix of the same dimensions as \code{observation_matrix} (\code{JFF}). A nonzero entry \code{[i, j] = k} means the \eqn{(i,j)} element of the observation matrix at time \eqn{t} is replaced by \code{covariates[t, k]}. Default is \code{NULL}.
+#' @param state_covariate_index Optional integer matrix of the same dimensions as \code{state_transition_matrix} (\code{JGG}). A nonzero entry \code{[i, j] = k} means the \eqn{(i,j)} element of the state transition matrix at time \eqn{t} is replaced by \code{covariates[t, k]}. Default is \code{NULL}.
 #'
 #' @details
 #' The letters in the parentheses in the Arguments section correspond to the naming convention used in the \code{dlm} package.
 #'
+#' Exogenous inputs (covariates) enter the model through the \code{X}, \code{JFF}, and/or \code{JGG} components.
+#' The matrix \code{X} (supplied via \code{covariates}) must be closed over inside the \code{build} function so that
+#' it is available when the build function is called during fitting.
+#'
 #' @return A named list with elements \code{GG}, \code{W}, \code{FF}, \code{V}, \code{m0}, and \code{C0},
-#' suitable for use in a custom \code{build} function for modeling or for online filtering (e.g., using \code{\link{oos_filter}}).
+#' and optionally \code{X}, \code{JFF}, and/or \code{JGG} when covariate arguments are supplied.
+#' Suitable for use in a custom \code{build} function for modeling or for online filtering (e.g., using \code{\link{oos_filter}}).
 #'
 #' @examples
 #' build_function = function(par) {
@@ -52,15 +60,24 @@ specify_SSM = function(
     observation_matrix,
     observation_noise_var,
     init_state_mean,
-    init_state_var
+    init_state_var,
+    covariates = NULL,
+    obs_covariate_index = NULL,
+    state_covariate_index = NULL
 ) {
 
-  return(list(
+  result = list(
     "GG" = state_transition_matrix,
     "W" = state_noise_var,
     "FF" = observation_matrix,
     "V" = observation_noise_var,
     "m0" = init_state_mean,
     "C0" = init_state_var
-  ))
+  )
+
+  if (!is.null(covariates))          result$X   = covariates
+  if (!is.null(obs_covariate_index)) result$JFF = obs_covariate_index
+  if (!is.null(state_covariate_index)) result$JGG = state_covariate_index
+
+  return(result)
 }

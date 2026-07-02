@@ -28,7 +28,6 @@ Description: roams provides functions for estimating parameters and detecting ou
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.3.2
 Imports:
   stats,
   latex2exp,
@@ -51,4 +50,4 @@ Suggests:
 VignetteBuilder: knitr
 URL: https://github.com/rajan-shankar/roams, https://rajan-shankar.github.io/roams
 BugReports: https://github.com/rajan-shankar/roams/issues
-
+Config/roxygen2/version: 8.0.0

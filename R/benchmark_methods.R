@@ -20,10 +20,13 @@ oracle_SSM = function(
     init_par,
     build,
     outlier_locs,
+    build_args = list(),
     lower = NA,
     upper = NA,
     control = list(parscale = init_par)
 ) {
+
+  build = wrap_build(build, build_args)
 
   if (is.na(lower)[1]) {lower = rep(-Inf, length(init_par))}
   if (is.na(upper)[1]) {upper = rep(Inf, length(init_par))}
@@ -41,7 +44,8 @@ oracle_SSM = function(
     control = control
   )
 
-  model = c(optim_output, list("outlier_locs" = outlier_locs), list("y" = y), list("build" = build))
+  model = c(optim_output, list("outlier_locs" = outlier_locs), list("y" = y),
+            list("build" = build), list("build_args" = build_args))
   class(model) = "oracle_SSM"
   return(model)
 }
@@ -66,10 +70,13 @@ classical_SSM = function(
     y,
     init_par,
     build,
+    build_args = list(),
     lower = NA,
     upper = NA,
     control = list(parscale = init_par)
 ) {
+
+  build = wrap_build(build, build_args)
 
   if (is.na(lower)[1]) {lower = rep(-Inf, length(init_par))}
   if (is.na(upper)[1]) {upper = rep(Inf, length(init_par))}
@@ -87,7 +94,7 @@ classical_SSM = function(
     control = control
   )
 
-  model = c(optim_output, list("y" = y), list("build" = build))
+  model = c(optim_output, list("y" = y), list("build" = build), list("build_args" = build_args))
   class(model) = "classical_SSM"
   return(model)
 }
@@ -115,10 +122,13 @@ huber_robust_SSM = function(
     y,
     init_par,
     build,
+    build_args = list(),
     lower = NA,
     upper = NA,
     control = list(parscale = init_par)
     ) {
+
+  build = wrap_build(build, build_args)
 
   if (is.na(lower)[1]) {lower = rep(-Inf, length(init_par))}
   if (is.na(upper)[1]) {upper = rep(Inf, length(init_par))}
@@ -136,7 +146,7 @@ huber_robust_SSM = function(
     control = control
   )
 
-  model = c(optim_output, list("y" = y), list("build" = build))
+  model = c(optim_output, list("y" = y), list("build" = build), list("build_args" = build_args))
   class(model) = "huber_robust_SSM"
   return(model)
 }
@@ -166,10 +176,13 @@ trimmed_robust_SSM = function(
     init_par,
     build,
     alpha,
+    build_args = list(),
     lower = NA,
     upper = NA,
     control = list(parscale = init_par)
 ) {
+
+  build = wrap_build(build, build_args)
 
   if (is.na(lower)[1]) {lower = rep(-Inf, length(init_par))}
   if (is.na(upper)[1]) {upper = rep(Inf, length(init_par))}
@@ -188,7 +201,8 @@ trimmed_robust_SSM = function(
     control = control
   )
 
-  model = c(optim_output, "alpha" = alpha, list("y" = y), list("build" = build))
+  model = c(optim_output, "alpha" = alpha, list("y" = y), list("build" = build),
+            list("build_args" = build_args))
   class(model) = "trimmed_robust_SSM"
   return(model)
 }
@@ -215,17 +229,22 @@ ruben_filter = function(
 
   SSM_specs = build(par)
 
-  Phi = SSM_specs$GG
-  Sigma_w = SSM_specs$W
-  A = SSM_specs$FF
-  Sigma_v = SSM_specs$V
-  x_tt = SSM_specs$m0
-  P_tt = SSM_specs$C0
+  Phi_base = SSM_specs$GG
+  Sigma_w  = SSM_specs$W
+  A_base   = SSM_specs$FF
+  Sigma_v  = SSM_specs$V
+  x_tt     = SSM_specs$m0
+  P_tt     = SSM_specs$C0
 
-  n = nrow(y)
+  # Covariate components (may be NULL for models without exogenous inputs)
+  X_cov = SSM_specs$X
+  JFF   = SSM_specs$JFF
+  JGG   = SSM_specs$JGG
+
+  n         = nrow(y)
   n_complete = nrow(na.omit(y))
-  dim_obs = ncol(y)
-  dim_state = nrow(Phi)
+  dim_obs   = ncol(y)
+  dim_state = nrow(Phi_base)
 
 
   if (return_obj) {
@@ -258,22 +277,26 @@ ruben_filter = function(
   }
 
   for (t in 1:n) {
+    # Resolve time-varying matrices at time t
+    A   = apply_covariate_matrix(A_base,   JFF, X_cov, t)
+    Phi = apply_covariate_matrix(Phi_base, JGG, X_cov, t)
+
     x_tt_1 = Phi %*% x_tt
     P_tt_1 = Phi %*% P_tt %*% t(Phi) + Sigma_w
     y_tt_1 = A %*% x_tt_1
 
-    sqrt_Sigma_v = expm::sqrtm(Sigma_v)
+    sqrt_Sigma_v     = expm::sqrtm(Sigma_v)
     inv_sqrt_Sigma_v = solve(sqrt_Sigma_v)
     W_elements = drop(psi_huber(inv_sqrt_Sigma_v %*% (y[t,] - y_tt_1))) / drop(inv_sqrt_Sigma_v %*% (y[t,] - y_tt_1))
     inv_W = diag(1/W_elements)
-    S_t = A %*% P_tt_1 %*% t(A) + sqrt_Sigma_v %*% inv_W %*% sqrt_Sigma_v
+    S_t     = A %*% P_tt_1 %*% t(A) + sqrt_Sigma_v %*% inv_W %*% sqrt_Sigma_v
     inv_S_t = solve(S_t)
 
     if (any(is.na(y[t,]))) {
       x_tt = x_tt_1
       P_tt = P_tt_1
     } else {
-      K_t = P_tt_1 %*% t(A) %*% inv_S_t
+      K_t  = P_tt_1 %*% t(A) %*% inv_S_t
       x_tt = x_tt_1 + K_t %*% (y[t,] - y_tt_1)
       P_tt = P_tt_1 - K_t %*% A %*% P_tt_1
     }
