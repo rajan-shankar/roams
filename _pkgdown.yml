@@ -1,6 +1,7 @@
 url: https://rajan-shankar.github.io/roams/
 template:
   bootstrap: 5
+  math-rendering: mathjax
   params:
     favicon: pkgdown/favicon/favicon.ico
 

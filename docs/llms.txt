@@ -1,0 +1,81 @@
+# roams
+
+**roams** provides functions for estimating parameters and detecting
+outliers in state-space models using the ROAMS (Robust Outlier-Adjusted
+Mean-Shift) framework. It includes functionality for fitting benchmark
+models, visualizing model selection criteria, and evaluating in-sample
+and out-of-sample performance. Simulation tools for generating synthetic
+data under a first-differenced correlated random walk (DCRW) model are
+also included. Designed with flexibility for user-defined model
+structures via the
+[`specify_SSM()`](https://rajan-shankar.github.io/roams/reference/specify_SSM.md)
+interface.
+
+See the corresponding ROAMS paper (pre-print) here:
+[arxiv.org/abs/2511.15155](https://arxiv.org/abs/2511.15155)
+
+## Installation
+
+You can install the development version of **roams** from GitHub with:
+
+``` r
+
+# install.packages("pak")
+pak::pak("rajan-shankar/roams")
+```
+
+OR if using Windows:
+
+``` r
+
+# install.packages("devtools")
+devtools::install_github("rajan-shankar/roams")
+```
+
+# Package index
+
+## All functions
+
+- [`attach_insample_info()`](https://rajan-shankar.github.io/roams/reference/attach_insample_info.md)
+  : Attach In-Sample Information to Fitted State Space Model
+- [`autoplot(`*`<roams_SSM_list>`*`)`](https://rajan-shankar.github.io/roams/reference/autoplot.roams_SSM_list.md)
+  : Autoplot for a ROAMS SSM List
+- [`best_BIC_model()`](https://rajan-shankar.github.io/roams/reference/best_BIC_model.md)
+  : Select Best Model Based on BIC
+- [`classical_SSM()`](https://rajan-shankar.github.io/roams/reference/classical_SSM.md)
+  : Classical State Space Model Fit
+- [`get_attribute()`](https://rajan-shankar.github.io/roams/reference/get_attribute.md)
+  : Extract Attributes from a ROAMS SSM List
+- [`huber_robust_SSM()`](https://rajan-shankar.github.io/roams/reference/huber_robust_SSM.md)
+  : Huber-Robust State Space Model Fit
+- [`oos_filter()`](https://rajan-shankar.github.io/roams/reference/oos_filter.md)
+  : Compute Out-of-Sample Inference for Fitted State Space Model
+- [`oracle_SSM()`](https://rajan-shankar.github.io/roams/reference/oracle_SSM.md)
+  : Oracle State Space Model Fit
+- [`outlier_target_model()`](https://rajan-shankar.github.io/roams/reference/outlier_target_model.md)
+  : Select Model Based on Target Outlier Proportion
+- [`roams_SSM()`](https://rajan-shankar.github.io/roams/reference/roams_SSM.md)
+  : Robust Outlier-Adjusted Mean-Shift Estimation of State Space Models
+- [`simulate_data_study1()`](https://rajan-shankar.github.io/roams/reference/simulate_data_study1.md)
+  : Simulate DCRW Data for Study 1: Different Outlier Configurations
+- [`simulate_data_study2()`](https://rajan-shankar.github.io/roams/reference/simulate_data_study2.md)
+  : Simulate DCRW Data for Study 2: Increasing Contamination and Varying
+  Outlier Distance
+- [`specify_SSM()`](https://rajan-shankar.github.io/roams/reference/specify_SSM.md)
+  : Specify a State-Space Model in DLM Format
+- [`trimmed_robust_SSM()`](https://rajan-shankar.github.io/roams/reference/trimmed_robust_SSM.md)
+  : Trimmed-Robust State Space Model Fit
+
+# Articles
+
+### Articles
+
+- [Introduction](https://rajan-shankar.github.io/roams/articles/introduction.md):
+- [DCRW
+  examples](https://rajan-shankar.github.io/roams/articles/dcrw_examples.md):
+- [Simulation study
+  1](https://rajan-shankar.github.io/roams/articles/sim1.md):
+- [Simulation study
+  2](https://rajan-shankar.github.io/roams/articles/sim2.md):
+- [Simulation study
+  3](https://rajan-shankar.github.io/roams/articles/sim3.md):

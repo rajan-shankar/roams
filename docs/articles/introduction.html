@@ -6,15 +6,20 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>Introduction • roams</title>
-<!-- favicons --><link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
-<link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
-<link rel="apple-touch-icon" type="image/png" sizes="180x180" href="../apple-touch-icon.png">
-<link rel="apple-touch-icon" type="image/png" sizes="120x120" href="../apple-touch-icon-120x120.png">
-<link rel="apple-touch-icon" type="image/png" sizes="76x76" href="../apple-touch-icon-76x76.png">
-<link rel="apple-touch-icon" type="image/png" sizes="60x60" href="../apple-touch-icon-60x60.png">
-<script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png">
+<link rel="icon" type="”image/svg+xml”" href="../favicon.svg">
+<link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
+<link rel="icon" sizes="any" href="../favicon.ico">
+<link rel="manifest" href="../site.webmanifest">
+<!-- mathjax math --><script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js" integrity="sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI=" crossorigin="anonymous"></script><script>
+  window.MathJax = {
+    chtml: {
+      fontURL: "https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/output/chtml/fonts/woff-v2"
+    }
+  };
+</script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Introduction">
 </head>
@@ -26,7 +31,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">roams</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.6</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -78,7 +83,7 @@ contained in the <code>roams</code> package and how to use them. We’ll
 begin by simulating a data set, fitting a model, inspecting results, and
 finally using the model to perform out-of-sample (OOS) filtering.</p>
 <div class="figure" style="text-align: center">
-<img src="introduction_files/figure-html/unnamed-chunk-2-1.png" alt="Overview of `roams` functions" width="90%"><p class="caption">
+<img src="introduction_files/figure-html/unnamed-chunk-2-1.png" class="r-plt" alt="Overview of `roams` functions" width="90%"><p class="caption">
 Overview of <code>roams</code> functions
 </p>
 </div>
@@ -102,9 +107,7 @@ ggplot2 theme for consistent plotting.</p>
 used in the simulations results of Study 1 in <span class="citation">Shankar et al. (2025)</span>. We use this function to
 simulate a single sample (<code>samples = 1</code>) for each of the
 different sample sizes and outlier settings, and extract specifically
-the <em>cluster</em> setting with
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>n</mi><mo>=</mo><mn>100</mn></mrow><annotation encoding="application/x-tex">n=100</annotation></semantics></math>
-timepoints.</p>
+the <em>cluster</em> setting with <span class="math inline">\(n=100\)</span> timepoints.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">data</span> <span class="op">=</span> <span class="fu"><a href="../reference/simulate_data_study1.html">simulate_data_study1</a></span><span class="op">(</span>samples <span class="op">=</span> <span class="fl">1</span>, seed <span class="op">=</span> <span class="fl">12345</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">n</span> <span class="op">==</span> <span class="fl">100</span>, <span class="va">setting</span> <span class="op">==</span> <span class="st">"cluster"</span><span class="op">)</span></span></code></pre></div>
@@ -134,54 +137,39 @@ through 2D space. We can plot these observations indexed by time:</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">y1</span>, y <span class="op">=</span> <span class="va">y2</span>, colour <span class="op">=</span> <span class="va">timepoint</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_viridis.html" class="external-link">scale_colour_viridis_c</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p><img src="introduction_files/figure-html/unnamed-chunk-5-1.png" width="700"></p>
-<p>The object first starts near the coordinate
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="true" form="prefix">[</mo><mn>0</mn><mo>,</mo><mn>0</mn><mo stretchy="true" form="postfix">]</mo></mrow><annotation encoding="application/x-tex">[0,0]</annotation></semantics></math>,
-then it moves in the positive
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="true" form="prefix">[</mo><msub><mi>y</mi><mn>1</mn></msub><mo>,</mo><msub><mi>y</mi><mn>2</mn></msub><mo stretchy="true" form="postfix">]</mo></mrow><annotation encoding="application/x-tex">[y_1, y_2]</annotation></semantics></math>
-direction, and then it loops around before moving back in the the
-negative
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="true" form="prefix">[</mo><msub><mi>y</mi><mn>1</mn></msub><mo>,</mo><msub><mi>y</mi><mn>2</mn></msub><mo stretchy="true" form="postfix">]</mo></mrow><annotation encoding="application/x-tex">[y_1, y_2]</annotation></semantics></math>
-direction. In the top right, there are a few observations scattered away
-from the main trajectory taken by the object. We suspect that these
-points are outliers.</p>
+<p><img src="introduction_files/figure-html/unnamed-chunk-5-1.png" class="r-plt" alt="" width="700"></p>
+<p>The object first starts near the coordinate <span class="math inline">\([0,0]\)</span>, then it moves in the positive
+<span class="math inline">\([y_1, y_2]\)</span> direction, and then it
+loops around before moving back in the the negative <span class="math inline">\([y_1, y_2]\)</span> direction. In the top right,
+there are a few observations scattered away from the main trajectory
+taken by the object. We suspect that these points are outliers.</p>
 </div>
 <div class="section level2">
 <h2 id="fitting-a-roams-state-space-model">Fitting a ROAMS state-space model<a class="anchor" aria-label="anchor" href="#fitting-a-roams-state-space-model"></a>
 </h2>
 <p>Here are the state and observation equations for a linear Gaussian
 state-space model:</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtable><mtr><mtd columnalign="right" style="text-align: right"><msub><mi>𝐲</mi><mi>t</mi></msub></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><mi>𝐀</mi><msub><mi>𝐱</mi><mi>t</mi></msub><mo>+</mo><msub><mi>𝐯</mi><mi>t</mi></msub></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"><msub><mi>𝐱</mi><mi>t</mi></msub></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><mi>𝚽</mi><msub><mi>𝐱</mi><mrow><mi>t</mi><mo>−</mo><mn>1</mn></mrow></msub><mo>+</mo><msub><mi>𝐰</mi><mi>t</mi></msub><mo>,</mo></mtd></mtr></mtable><annotation encoding="application/x-tex">
+<p><span class="math display">\[
 \begin{align}
-\boldsymbol y_t &amp;= \boldsymbol A \boldsymbol x_t + \boldsymbol v_t \\
-\boldsymbol x_t &amp;= \boldsymbol \Phi \boldsymbol x_{t-1} + \boldsymbol w_t,
+\boldsymbol y_t &amp;= \boldsymbol A \boldsymbol x_t + \boldsymbol v_t
+\\
+\boldsymbol x_t &amp;= \boldsymbol \Phi \boldsymbol x_{t-1} +
+\boldsymbol w_t,
 \end{align}
-</annotation></semantics></math></p>
-<p>where
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>𝐲</mi><mi>t</mi></msub><annotation encoding="application/x-tex">\boldsymbol y_t</annotation></semantics></math>
-is the observation process,
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>𝐱</mi><mi>t</mi></msub><annotation encoding="application/x-tex">\boldsymbol x_t</annotation></semantics></math>
-is the state process,
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>𝐯</mi><mi>t</mi></msub><mo>∼</mo><mi>N</mi><mrow><mo stretchy="true" form="prefix">(</mo><mn>𝟎</mn><mo>,</mo><msub><mi>𝚺</mi><mi>𝐯</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\boldsymbol v_t \sim N(\boldsymbol 0, \boldsymbol\Sigma_{\boldsymbol v})</annotation></semantics></math>
-and
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>𝐰</mi><mi>t</mi></msub><mo>∼</mo><mi>N</mi><mrow><mo stretchy="true" form="prefix">(</mo><mn>𝟎</mn><mo>,</mo><msub><mi>𝚺</mi><mi>𝐰</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\boldsymbol w_t \sim N(\boldsymbol 0, \boldsymbol\Sigma_{\boldsymbol w})</annotation></semantics></math>.
-The state-space model we want to use to model our data is the
-first-differenced correlated random walk (DCRW) model. The DCRW model
-has a 2-dimensional
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>𝐲</mi><mi>t</mi></msub><annotation encoding="application/x-tex">\boldsymbol y_t</annotation></semantics></math>
-and a 4-dimensional
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>𝐱</mi><mi>t</mi></msub><annotation encoding="application/x-tex">\boldsymbol x_t</annotation></semantics></math>
-because
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>𝐱</mi><mi>t</mi></msub><annotation encoding="application/x-tex">\boldsymbol x_t</annotation></semantics></math>
-tries to capture the true location of the object at times
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>t</mi><annotation encoding="application/x-tex">t</annotation></semantics></math>
-and
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>t</mi><mo>−</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">t-1</annotation></semantics></math>
-(see <span class="citation">Shankar et al. (2025)</span> for more
-details). The matrices in the DCRW model are given by</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtable><mtr><mtd columnalign="right" style="text-align: right"><mi>𝚽</mi></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><mrow><mo stretchy="true" form="prefix">[</mo><mtable><mtr><mtd columnalign="center" style="text-align: center"><mn>1</mn><mo>+</mo><mi>ϕ</mi></mtd><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd><mtd columnalign="center" style="text-align: center"><mo>−</mo><mi>ϕ</mi></mtd><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>1</mn><mo>+</mo><mi>ϕ</mi></mtd><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd><mtd columnalign="center" style="text-align: center"><mo>−</mo><mi>ϕ</mi></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><mn>1</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>1</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd></mtr></mtable><mo stretchy="true" form="postfix">]</mo></mrow></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"><mi>𝐀</mi></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><mrow><mo stretchy="true" form="prefix">[</mo><mtable><mtr><mtd columnalign="center" style="text-align: center"><mn>1</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>1</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd></mtr></mtable><mo stretchy="true" form="postfix">]</mo></mrow><mo>,</mo></mtd></mtr></mtable><annotation encoding="application/x-tex">
+\]</span></p>
+<p>where <span class="math inline">\(\boldsymbol y_t\)</span> is the
+observation process, <span class="math inline">\(\boldsymbol
+x_t\)</span> is the state process, <span class="math inline">\(\boldsymbol v_t \sim N(\boldsymbol 0,
+\boldsymbol\Sigma_{\boldsymbol v})\)</span> and <span class="math inline">\(\boldsymbol w_t \sim N(\boldsymbol 0,
+\boldsymbol\Sigma_{\boldsymbol w})\)</span>. The state-space model we
+want to use to model our data is the first-differenced correlated random
+walk (DCRW) model. The DCRW model has a 2-dimensional <span class="math inline">\(\boldsymbol y_t\)</span> and a 4-dimensional <span class="math inline">\(\boldsymbol x_t\)</span> because <span class="math inline">\(\boldsymbol x_t\)</span> tries to capture the true
+location of the object at times <span class="math inline">\(t\)</span>
+and <span class="math inline">\(t-1\)</span> (see <span class="citation">Shankar et al. (2025)</span> for more details). The
+matrices in the DCRW model are given by</p>
+<p><span class="math display">\[
 \begin{align}
-\boldsymbol\Phi &amp;= 
+\boldsymbol\Phi &amp;=
 \left[
 \begin{matrix}
 1+\phi&amp;0&amp;-\phi&amp;0 \\
@@ -190,7 +178,7 @@ details). The matrices in the DCRW model are given by</p>
 0&amp;1&amp;0&amp;0 \\
 \end{matrix}
 \right] \\
-\boldsymbol A &amp;= 
+\boldsymbol A &amp;=
 \left[
 \begin{matrix}
 1&amp;0&amp;0&amp;0 \\
@@ -198,29 +186,24 @@ details). The matrices in the DCRW model are given by</p>
 \end{matrix}
 \right],
 \end{align}
-</annotation></semantics></math></p>
-<p>and the error variance matrices are
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>𝚺</mi><mi>𝐯</mi></msub><mo>=</mo><mtext mathvariant="normal">diag</mtext><mrow><mo stretchy="true" form="prefix">(</mo><msubsup><mi>σ</mi><mrow><mi>𝐯</mi><mo>,</mo><mn>1</mn></mrow><mn>2</mn></msubsup><mo>,</mo><msubsup><mi>σ</mi><mrow><mi>𝐯</mi><mo>,</mo><mn>2</mn></mrow><mn>2</mn></msubsup><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\boldsymbol\Sigma_{\boldsymbol v} = \text{diag}(\sigma^2_{\boldsymbol v,1}, \sigma^2_{\boldsymbol v,2})</annotation></semantics></math>
-and
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>𝚺</mi><mi>𝐰</mi></msub><mo>=</mo><mtext mathvariant="normal">diag</mtext><mrow><mo stretchy="true" form="prefix">(</mo><msubsup><mi>σ</mi><mrow><mi>𝐰</mi><mo>,</mo><mn>1</mn></mrow><mn>2</mn></msubsup><mo>,</mo><msubsup><mi>σ</mi><mrow><mi>𝐰</mi><mo>,</mo><mn>2</mn></mrow><mn>2</mn></msubsup><mo>,</mo><mn>0</mn><mo>,</mo><mn>0</mn><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\boldsymbol\Sigma_{\boldsymbol w} = \text{diag}(\sigma^2_{\boldsymbol w,1}, \sigma^2_{\boldsymbol w,2}, 0, 0)</annotation></semantics></math>.
-We assume at time
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>t</mi><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">t=0</annotation></semantics></math>,
-that
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>𝐱</mi><mn>0</mn></msub><mo>∼</mo><mi>N</mi><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>𝛍</mi><mn>0</mn></msub><mo>,</mo><msub><mi>𝐏</mi><mn>0</mn></msub><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\boldsymbol x_0 \sim N(\boldsymbol\mu_0, \boldsymbol P_0)</annotation></semantics></math>,
-where
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>𝛍</mi><mn>0</mn></msub><mo>=</mo><mrow><mo stretchy="true" form="prefix">[</mo><mn>0</mn><mo>,</mo><mn>0</mn><mo>,</mo><mn>0</mn><mo>,</mo><mn>0</mn><mo stretchy="true" form="postfix">]</mo></mrow></mrow><annotation encoding="application/x-tex">\boldsymbol\mu_0 = [0,0,0,0]</annotation></semantics></math>
-and
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>𝐏</mi><mn>0</mn></msub><mo>=</mo><mtext mathvariant="normal">diag</mtext><mrow><mo stretchy="true" form="prefix">(</mo><msup><mn>10</mn><mn>2</mn></msup><mo>,</mo><msup><mn>10</mn><mn>2</mn></msup><mo>,</mo><msup><mn>10</mn><mn>2</mn></msup><mo>,</mo><msup><mn>10</mn><mn>2</mn></msup><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\boldsymbol P_0 = \text{diag}(10^2, 10^2, 10^2, 10^2)</annotation></semantics></math>.</p>
-<p>There are a total of 5 unknown parameters in the DCRW model:
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>𝛉</mi><mo>:=</mo><mrow><mo stretchy="true" form="prefix">[</mo><mi>ϕ</mi><mo>,</mo><msubsup><mi>σ</mi><mrow><mi>𝐰</mi><mo>,</mo><mn>1</mn></mrow><mn>2</mn></msubsup><mo>,</mo><msubsup><mi>σ</mi><mrow><mi>𝐰</mi><mo>,</mo><mn>2</mn></mrow><mn>2</mn></msubsup><mo>,</mo><msubsup><mi>σ</mi><mrow><mi>𝐯</mi><mo>,</mo><mn>1</mn></mrow><mn>2</mn></msubsup><mo>,</mo><msubsup><mi>σ</mi><mrow><mi>𝐯</mi><mo>,</mo><mn>2</mn></mrow><mn>2</mn></msubsup><mo stretchy="true" form="postfix">]</mo></mrow></mrow><annotation encoding="application/x-tex">\boldsymbol\theta := [\phi,\sigma^2_{\boldsymbol w,1}, \sigma^2_{\boldsymbol w,2}, \sigma^2_{\boldsymbol v,1}, \sigma^2_{\boldsymbol v,2}]</annotation></semantics></math>.
-To specify this model, we define a function <code>build_fn()</code> that
-takes in
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝛉</mi><annotation encoding="application/x-tex">\boldsymbol\theta</annotation></semantics></math>
-as an argument and returns
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>𝐱</mi><mn>0</mn></msub><mo>,</mo><msub><mi>𝐏</mi><mn>0</mn></msub><mo>,</mo><mi>𝚽</mi><mo>,</mo><mi>𝐀</mi><mo>,</mo><msub><mi>𝚺</mi><mi>𝐯</mi></msub><mo>,</mo><msub><mi>𝚺</mi><mi>𝐰</mi></msub></mrow><annotation encoding="application/x-tex">\boldsymbol x_0, \boldsymbol P_0, \boldsymbol\Phi, \boldsymbol A, \boldsymbol\Sigma_{\boldsymbol v}, \boldsymbol\Sigma_{\boldsymbol w}</annotation></semantics></math>.
-The helper function <code><a href="../reference/specify_SSM.html">specify_SSM()</a></code> is used inside
-<code>build_fn()</code> to help return these values in the correct
-format.</p>
+\]</span></p>
+<p>and the error variance matrices are <span class="math inline">\(\boldsymbol\Sigma_{\boldsymbol v} =
+\text{diag}(\sigma^2_{\boldsymbol v,1}, \sigma^2_{\boldsymbol
+v,2})\)</span> and <span class="math inline">\(\boldsymbol\Sigma_{\boldsymbol w} =
+\text{diag}(\sigma^2_{\boldsymbol w,1}, \sigma^2_{\boldsymbol w,2}, 0,
+0)\)</span>. We assume at time <span class="math inline">\(t=0\)</span>,
+that <span class="math inline">\(\boldsymbol x_0 \sim
+N(\boldsymbol\mu_0, \boldsymbol P_0)\)</span>, where <span class="math inline">\(\boldsymbol\mu_0 = [0,0,0,0]\)</span> and <span class="math inline">\(\boldsymbol P_0 = \text{diag}(10^2, 10^2, 10^2,
+10^2)\)</span>.</p>
+<p>There are a total of 5 unknown parameters in the DCRW model: <span class="math inline">\(\boldsymbol\theta := [\phi,\sigma^2_{\boldsymbol
+w,1}, \sigma^2_{\boldsymbol w,2}, \sigma^2_{\boldsymbol v,1},
+\sigma^2_{\boldsymbol v,2}]\)</span>. To specify this model, we define a
+function <code>build_fn()</code> that takes in <span class="math inline">\(\boldsymbol\theta\)</span> as an argument and
+returns <span class="math inline">\(\boldsymbol x_0, \boldsymbol P_0,
+\boldsymbol\Phi, \boldsymbol A, \boldsymbol\Sigma_{\boldsymbol v},
+\boldsymbol\Sigma_{\boldsymbol w}\)</span>. The helper function
+<code><a href="../reference/specify_SSM.html">specify_SSM()</a></code> is used inside <code>build_fn()</code> to
+help return these values in the correct format.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">build_fn</span> <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">par</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  </span>
@@ -249,16 +232,14 @@ format.</p>
 <p>To fit the model using the ROAMS procedure, we use the function
 <code><a href="../reference/roams_SSM.html">roams_SSM()</a></code> and pass in the observations <code>y</code> as
 well as our model specification function <code>build_fn()</code>. Since
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>ϕ</mi><mo>∈</mo><mrow><mo stretchy="true" form="prefix">[</mo><mn>0</mn><mo>,</mo><mn>1</mn><mo stretchy="true" form="postfix">]</mo></mrow></mrow><annotation encoding="application/x-tex">\phi \in[0,1]</annotation></semantics></math>
-and
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>σ</mi><mrow><mi>𝐰</mi><mo>,</mo><mn>1</mn></mrow><mn>2</mn></msubsup><mo>,</mo><msubsup><mi>σ</mi><mrow><mi>𝐰</mi><mo>,</mo><mn>2</mn></mrow><mn>2</mn></msubsup><mo>,</mo><msubsup><mi>σ</mi><mrow><mi>𝐯</mi><mo>,</mo><mn>1</mn></mrow><mn>2</mn></msubsup><mo>,</mo><msubsup><mi>σ</mi><mrow><mi>𝐯</mi><mo>,</mo><mn>2</mn></mrow><mn>2</mn></msubsup><mo>&gt;</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">\sigma^2_{\boldsymbol w,1}, \sigma^2_{\boldsymbol w,2}, \sigma^2_{\boldsymbol v,1}, \sigma^2_{\boldsymbol v,2} &gt; 0</annotation></semantics></math>,
-we add in these parameter box constraints via the <code>lower</code> and
-<code>upper</code> arguments. We provide initial parameter values
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="true" form="prefix">[</mo><mn>0.5</mn><mo>,</mo><mn>1</mn><mo>,</mo><mn>1</mn><mo>,</mo><mn>1</mn><mo>,</mo><mn>1</mn><mo stretchy="true" form="postfix">]</mo></mrow><annotation encoding="application/x-tex">[0.5, 1, 1, 1, 1]</annotation></semantics></math>
+<span class="math inline">\(\phi \in[0,1]\)</span> and <span class="math inline">\(\sigma^2_{\boldsymbol w,1}, \sigma^2_{\boldsymbol
+w,2}, \sigma^2_{\boldsymbol v,1}, \sigma^2_{\boldsymbol v,2} &gt;
+0\)</span>, we add in these parameter box constraints via the
+<code>lower</code> and <code>upper</code> arguments. We provide initial
+parameter values <span class="math inline">\([0.5, 1, 1, 1, 1]\)</span>
 and we set <code>num_lambdas = 20</code> to let <code><a href="../reference/roams_SSM.html">roams_SSM()</a></code>
-automatically select a sequence of 20
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>λ</mi><annotation encoding="application/x-tex">\lambda</annotation></semantics></math>
-values to fit candidate models.</p>
+automatically select a sequence of 20 <span class="math inline">\(\lambda\)</span> values to fit candidate
+models.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">model_list</span> <span class="op">=</span> <span class="fu"><a href="../reference/roams_SSM.html">roams_SSM</a></span><span class="op">(</span></span>
 <span>  y <span class="op">=</span> <span class="va">y</span>, </span>
@@ -281,12 +262,11 @@ values to fit candidate models.</p>
 </h2>
 <p>Once the models have been fit and assigned to the variable
 <code>model_list</code>, we can plot BIC and proportion-outlying curves
-across the values of
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>λ</mi><annotation encoding="application/x-tex">\lambda</annotation></semantics></math>
-using the <code><a href="https://ggplot2.tidyverse.org/reference/autoplot.html" class="external-link">autoplot()</a></code> function:</p>
+across the values of <span class="math inline">\(\lambda\)</span> using
+the <code><a href="https://ggplot2.tidyverse.org/reference/autoplot.html" class="external-link">autoplot()</a></code> function:</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/autoplot.html" class="external-link">autoplot</a></span><span class="op">(</span><span class="va">model_list</span><span class="op">)</span></span></code></pre></div>
-<p><img src="introduction_files/figure-html/unnamed-chunk-10-1.png" width="700"></p>
+<p><img src="introduction_files/figure-html/unnamed-chunk-10-1.png" class="r-plt" alt="" width="700"></p>
 <p>The exact BIC or proportion-outlying values can be obtained using the
 <code><a href="../reference/get_attribute.html">get_attribute()</a></code> function:</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
@@ -307,10 +287,9 @@ variable <code>final_model</code>:</p>
 <span><span class="co">#&gt;  * Iterations: 6</span></span>
 <span><span class="co">#&gt; Use $ to see more attributes.</span></span></code></pre></div>
 <p>As shown above, printing <code>final_model</code> provides a brief
-summary of the model. It tells us which
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>λ</mi><annotation encoding="application/x-tex">\lambda</annotation></semantics></math>
-value was selected, the proportion of timepoints detected as outlying,
-the BIC, log-likelihood, and the number of ROAMS iterations.</p>
+summary of the model. It tells us which <span class="math inline">\(\lambda\)</span> value was selected, the
+proportion of timepoints detected as outlying, the BIC, log-likelihood,
+and the number of ROAMS iterations.</p>
 <p>Other model-specific attributes such as <code>par</code> (parameter
 estimates) can be viewed using <code>$</code>:</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
@@ -346,7 +325,7 @@ observations detected as outliers in red.</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">plot_data</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">outliers</span><span class="op">)</span>,</span>
 <span>             colour <span class="op">=</span> <span class="st">"red"</span>, pch <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_viridis.html" class="external-link">scale_colour_viridis_c</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p><img src="introduction_files/figure-html/unnamed-chunk-15-1.png" width="700"></p>
+<p><img src="introduction_files/figure-html/unnamed-chunk-15-1.png" class="r-plt" alt="" width="700"></p>
 <p>The fit looks good and the suspected outliers have been correctly
 detected.</p>
 </div>
@@ -354,17 +333,13 @@ detected.</p>
 <h2 id="out-of-sample-oos-filtering">Out-of-sample (OOS) filtering<a class="anchor" aria-label="anchor" href="#out-of-sample-oos-filtering"></a>
 </h2>
 <p>The simulated data set that we generated contains another column
-named <code>y_oos</code>, which contains
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>n</mi><mtext mathvariant="normal">oos</mtext></msub><mo>=</mo><mn>20</mn></mrow><annotation encoding="application/x-tex">n_{\text{oos}} = 20</annotation></semantics></math>
-out-of-sample observations. We will use our <code>final_model</code> to
-obtain filtered values for <code>y_oos</code>.</p>
+named <code>y_oos</code>, which contains <span class="math inline">\(n_{\text{oos}} = 20\)</span> out-of-sample
+observations. We will use our <code>final_model</code> to obtain
+filtered values for <code>y_oos</code>.</p>
 <p>The out-of-sample data has the same characteristics as the in-sample
 data, except that it starts where the in-sample data ends. We re-define
-our <code>build_fn()</code> to set the initial state mean
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>𝛍</mi><mn>0</mn></msub><annotation encoding="application/x-tex">\boldsymbol\mu_0</annotation></semantics></math>
-to be our best guess of the hidden state at the last in-sample
-timepoint,
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>t</mi><mo>=</mo><mn>100</mn></mrow><annotation encoding="application/x-tex">t=100</annotation></semantics></math>:</p>
+our <code>build_fn()</code> to set the initial state mean <span class="math inline">\(\boldsymbol\mu_0\)</span> to be our best guess of
+the hidden state at the last in-sample timepoint, <span class="math inline">\(t=100\)</span>:</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">final_model</span><span class="op">$</span><span class="va">smoothed_states</span><span class="op">[</span><span class="fl">100</span>,<span class="op">]</span></span>
 <span><span class="co">#&gt; [1]  5.374293 -6.914360  5.149415 -7.047400</span></span></code></pre></div>
@@ -428,11 +403,10 @@ values. The fit is pretty good:</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_path</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">y1_filter</span>, y <span class="op">=</span> <span class="va">y2_filter</span><span class="op">)</span>, </span>
 <span>            linewidth <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_viridis.html" class="external-link">scale_colour_viridis_c</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p><img src="introduction_files/figure-html/unnamed-chunk-19-1.png" width="700"></p>
+<p><img src="introduction_files/figure-html/unnamed-chunk-19-1.png" class="r-plt" alt="" width="700"></p>
 <p>Notice that there are no visible outliers in the out-of-sample data.
 Let’s see what happens to our filtered values if there is an outlier. We
-can contaminate the
-10<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi></mi><mtext mathvariant="normal">th</mtext></msup><annotation encoding="application/x-tex">^\text{th}</annotation></semantics></math>
+can contaminate the 10<span class="math inline">\(^\text{th}\)</span>
 observation to be outlying:</p>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">y_oos</span><span class="op">[</span><span class="fl">10</span>,<span class="op">]</span> <span class="op">=</span> <span class="va">y_oos</span><span class="op">[</span><span class="fl">10</span>,<span class="op">]</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">10</span>,<span class="fl">10</span><span class="op">)</span></span>
@@ -448,9 +422,8 @@ outliers. If the usual Kalman filter is desired, we can set the argument
 <code class="sourceCode R"><span><span class="va">result_FUT</span> <span class="op">=</span> <span class="fu"><a href="../reference/oos_filter.html">oos_filter</a></span><span class="op">(</span><span class="va">y_oos</span>, <span class="va">final_model</span>, <span class="va">build_fn_oos</span><span class="op">)</span></span>
 <span><span class="va">result_kalman</span> <span class="op">=</span> <span class="fu"><a href="../reference/oos_filter.html">oos_filter</a></span><span class="op">(</span><span class="va">y_oos</span>, <span class="va">final_model</span>, <span class="va">build_fn_oos</span>, threshold <span class="op">=</span> <span class="cn">Inf</span><span class="op">)</span></span></code></pre></div>
 <p>Below, we plot the filtered values against the out-of-sample data
-(where the
-10<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi></mi><mtext mathvariant="normal">th</mtext></msup><annotation encoding="application/x-tex">^\text{th}</annotation></semantics></math>
-point has been contaminated) for both filtering methods:</p>
+(where the 10<span class="math inline">\(^\text{th}\)</span> point has
+been contaminated) for both filtering methods:</p>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">plot_data</span> <span class="op">=</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span></span>
 <span>  y1 <span class="op">=</span> <span class="va">y_oos</span><span class="op">[</span>,<span class="fl">1</span><span class="op">]</span>,</span>
@@ -479,7 +452,7 @@ point has been contaminated) for both filtering methods:</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_viridis.html" class="external-link">scale_colour_viridis_c</a></span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">p_FUT</span> <span class="op">+</span> <span class="va">p_kalman</span> <span class="op">+</span> <span class="fu"><a href="https://patchwork.data-imaginist.com/reference/plot_layout.html" class="external-link">plot_layout</a></span><span class="op">(</span>guides <span class="op">=</span> <span class="st">"collect"</span>, axes <span class="op">=</span> <span class="st">"collect"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="introduction_files/figure-html/unnamed-chunk-22-1.png" width="700"></p>
+<p><img src="introduction_files/figure-html/unnamed-chunk-22-1.png" class="r-plt" alt="" width="700"></p>
 <p>As you can see, the FUT filter is able to ignore the outlier whereas
 the Kalman filter gets pulled towards it.</p>
 </div>
@@ -492,9 +465,8 @@ began by simulating bivariate time series data using
 <code><a href="../reference/simulate_data_study1.html">simulate_data_study1()</a></code>, then specified a state-space model
 (the DCRW model) through the helper function <code><a href="../reference/specify_SSM.html">specify_SSM()</a></code>.
 Using <code><a href="../reference/roams_SSM.html">roams_SSM()</a></code>, we fitted a sequence of models across
-different values of the tuning parameter
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>λ</mi><annotation encoding="application/x-tex">\lambda</annotation></semantics></math>
-and identified the optimal model via the BIC criterion.</p>
+different values of the tuning parameter <span class="math inline">\(\lambda\)</span> and identified the optimal model
+via the BIC criterion.</p>
 <p>We then explored how to inspect fitted models, extract key quantities
 (such as parameter estimates and detected outliers), and visualise model
 diagnostics using <code><a href="https://ggplot2.tidyverse.org/reference/autoplot.html" class="external-link">autoplot()</a></code> and smoothed states using
@@ -506,7 +478,7 @@ standard Kalman filter.</p>
 <div class="section level3 unnumbered">
 <h3 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h3>
-<div id="refs" class="references csl-bib-body hanging-indent" line-spacing="2">
+<div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0" line-spacing="2">
 <div id="ref-shankar2025" class="csl-entry">
 Shankar, R., Wilms, I., Raymaekers, J., &amp; Tarr, G. (2025). Robust
 outlier-adjusted mean-shift estimation of state-space models. <a href="https://arxiv.org/abs/????.?????" class="external-link">https://arxiv.org/abs/????.?????</a>
@@ -525,7 +497,7 @@ outlier-adjusted mean-shift estimation of state-space models. <a href="https://a
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
     </footer>

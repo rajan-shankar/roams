@@ -6,15 +6,20 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>DCRW examples • roams</title>
-<!-- favicons --><link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
-<link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
-<link rel="apple-touch-icon" type="image/png" sizes="180x180" href="../apple-touch-icon.png">
-<link rel="apple-touch-icon" type="image/png" sizes="120x120" href="../apple-touch-icon-120x120.png">
-<link rel="apple-touch-icon" type="image/png" sizes="76x76" href="../apple-touch-icon-76x76.png">
-<link rel="apple-touch-icon" type="image/png" sizes="60x60" href="../apple-touch-icon-60x60.png">
-<script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png">
+<link rel="icon" type="”image/svg+xml”" href="../favicon.svg">
+<link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
+<link rel="icon" sizes="any" href="../favicon.ico">
+<link rel="manifest" href="../site.webmanifest">
+<!-- mathjax math --><script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js" integrity="sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI=" crossorigin="anonymous"></script><script>
+  window.MathJax = {
+    chtml: {
+      fontURL: "https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/output/chtml/fonts/woff-v2"
+    }
+  };
+</script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="DCRW examples">
 </head>
@@ -26,7 +31,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">roams</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.6</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -92,47 +97,31 @@
 <p>The four data sets in this vignette are all modelled using the
 first-differenced correlated random walk (DCRW) model, a type of linear
 Gaussian SSM. This model is detailed in <span class="citation">Auger-Méthé et al. (2021)</span>. The DCRW model has
-the following observation and state processes,
-<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtable><mtr><mtd columnalign="right" style="text-align: right"><mtable><mtr><mtd columnalign="right" style="text-align: right"><msub><mi>𝐲</mi><mi>t</mi></msub></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><msub><mi>𝐳</mi><mi>t</mi></msub><mo>+</mo><msub><mi>𝐯</mi><mi>t</mi></msub></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"><msub><mi>𝐳</mi><mi>t</mi></msub></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><msub><mi>𝐳</mi><mrow><mi>t</mi><mo>−</mo><mn>1</mn></mrow></msub><mo>+</mo><mi>ϕ</mi><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>𝐳</mi><mrow><mi>t</mi><mo>−</mo><mn>1</mn></mrow></msub><mo>−</mo><msub><mi>𝐳</mi><mrow><mi>t</mi><mo>−</mo><mn>2</mn></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo>+</mo><msub><mi>𝐰</mi><mi>t</mi></msub><mo>,</mo></mtd></mtr></mtable></mtd></mtr></mtable><annotation encoding="application/x-tex">\begin{align} \label{eq:DCRW_equations}
+the following observation and state processes, <span class="math display">\[\begin{align} \label{eq:DCRW_equations}
 \begin{split}
     \mathbf{y}_t &amp;= \mathbf{z}_{t} + \mathbf{v}_t \\
-    \mathbf{z}_t &amp;= \mathbf{z}_{t-1} + \phi(\mathbf{z}_{t-1} - \mathbf{z}_{t-2}) + \mathbf{w}_t,
+    \mathbf{z}_t &amp;= \mathbf{z}_{t-1} + \phi(\mathbf{z}_{t-1} -
+\mathbf{z}_{t-2}) + \mathbf{w}_t,
 \end{split}
-\end{align}</annotation></semantics></math> where
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>𝐲</mi><mi>t</mi></msub><annotation encoding="application/x-tex">\mathbf{y}_t</annotation></semantics></math>
-is the location observed by the satellite,
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>𝐯</mi><mi>t</mi></msub><annotation encoding="application/x-tex">\mathbf{v}_t</annotation></semantics></math>
-is the error from the satellite measurements,
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>𝐳</mi><mi>t</mi></msub><annotation encoding="application/x-tex">\mathbf{z}_t</annotation></semantics></math>
-is the true location of the whale, and
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>𝐰</mi><mi>t</mi></msub><annotation encoding="application/x-tex">\mathbf{w}_t</annotation></semantics></math>
-captures the randomness in the whale’s movement. Both
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>𝐲</mi><mi>t</mi></msub><annotation encoding="application/x-tex">\mathbf{y}_t</annotation></semantics></math>
-and
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>𝐳</mi><mi>t</mi></msub><annotation encoding="application/x-tex">\mathbf{z}_t</annotation></semantics></math>
-are 2-dimensional vectors containing longitude and latitude coordinates.
-The DCRW model assumes that the whale’s location depends on the previous
-location
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>𝐳</mi><mrow><mi>t</mi><mo>−</mo><mn>1</mn></mrow></msub><annotation encoding="application/x-tex">\mathbf{z}_{t-1}</annotation></semantics></math>,
-and the previous direction and speed of movement
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>𝐳</mi><mrow><mi>t</mi><mo>−</mo><mn>1</mn></mrow></msub><mo>−</mo><msub><mi>𝐳</mi><mrow><mi>t</mi><mo>−</mo><mn>2</mn></mrow></msub></mrow><annotation encoding="application/x-tex">\mathbf{z}_{t-1} - \mathbf{z}_{t-2}</annotation></semantics></math>.
-The amount of dependence on
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>𝐳</mi><mrow><mi>t</mi><mo>−</mo><mn>1</mn></mrow></msub><mo>−</mo><msub><mi>𝐳</mi><mrow><mi>t</mi><mo>−</mo><mn>2</mn></mrow></msub></mrow><annotation encoding="application/x-tex">\mathbf{z}_{t-1} - \mathbf{z}_{t-2}</annotation></semantics></math>
-is determined by the correlation parameter
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>ϕ</mi><mo>∈</mo><mo stretchy="false" form="prefix">[</mo><mn>0</mn><mo>,</mo><mn>1</mn><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\phi\in [0,1)</annotation></semantics></math>.</p>
-<p>Notice the use of
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝐳</mi><annotation encoding="application/x-tex">\mathbf{z}</annotation></semantics></math>
-instead of
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝐱</mi><annotation encoding="application/x-tex">\mathbf{x}</annotation></semantics></math>
-for the state process; the DCRW model above is not in state-space form
-since the state process depends on the previous states,
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>𝐳</mi><mrow><mi>t</mi><mo>−</mo><mn>1</mn></mrow></msub><annotation encoding="application/x-tex">\mathbf{z}_{t-1}</annotation></semantics></math>
-and
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>𝐳</mi><mrow><mi>t</mi><mo>−</mo><mn>2</mn></mrow></msub><annotation encoding="application/x-tex">\mathbf{z}_{t-2}</annotation></semantics></math>.
-This presentation makes it easier to understand the model dynamics, but
-in order to estimate the parameters of the model, the model must be
-converted into state-space form. See the beginning of Section 4 of <span class="citation">Shankar et al. (2025)</span> for a summary on how this
-is done.</p>
+\end{align}\]</span> where <span class="math inline">\(\mathbf{y}_t\)</span> is the location observed by
+the satellite, <span class="math inline">\(\mathbf{v}_t\)</span> is the
+error from the satellite measurements, <span class="math inline">\(\mathbf{z}_t\)</span> is the true location of the
+whale, and <span class="math inline">\(\mathbf{w}_t\)</span> captures
+the randomness in the whale’s movement. Both <span class="math inline">\(\mathbf{y}_t\)</span> and <span class="math inline">\(\mathbf{z}_t\)</span> are 2-dimensional vectors
+containing longitude and latitude coordinates. The DCRW model assumes
+that the whale’s location depends on the previous location <span class="math inline">\(\mathbf{z}_{t-1}\)</span>, and the previous
+direction and speed of movement <span class="math inline">\(\mathbf{z}_{t-1} - \mathbf{z}_{t-2}\)</span>. The
+amount of dependence on <span class="math inline">\(\mathbf{z}_{t-1} -
+\mathbf{z}_{t-2}\)</span> is determined by the correlation parameter
+<span class="math inline">\(\phi\in [0,1)\)</span>.</p>
+<p>Notice the use of <span class="math inline">\(\mathbf{z}\)</span>
+instead of <span class="math inline">\(\mathbf{x}\)</span> for the state
+process; the DCRW model above is not in state-space form since the state
+process depends on the previous states, <span class="math inline">\(\mathbf{z}_{t-1}\)</span> and <span class="math inline">\(\mathbf{z}_{t-2}\)</span>. This presentation makes
+it easier to understand the model dynamics, but in order to estimate the
+parameters of the model, the model must be converted into state-space
+form. See the beginning of Section 4 of <span class="citation">Shankar
+et al. (2025)</span> for a summary on how this is done.</p>
 <div class="section level2 tabset">
 <h2 class="tabset" id="animals">Animals<a class="anchor" aria-label="anchor" href="#animals"></a>
 </h2>
@@ -215,7 +204,7 @@ is done.</p>
 <span>    expand <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span>  <span class="op">)</span></span>
 <span><span class="va">p1</span></span></code></pre></div>
-<p><img src="dcrw_examples_files/figure-html/raw-data-vis-cat-1.png" width="700"></p>
+<p><img src="dcrw_examples_files/figure-html/raw-data-vis-cat-1.png" class="r-plt" alt="" width="700"></p>
 </div>
 <div class="tab-pane" id="polar-bear" role="tabpanel" aria-labelledby="polar-bear-tab">
 
@@ -260,7 +249,7 @@ is done.</p>
 <span>  <span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Polar bear"</span><span class="op">)</span></span>
 <span><span class="va">p2</span></span></code></pre></div>
-<p><img src="dcrw_examples_files/figure-html/raw-data-vis-polar_bear-1.png" width="700"></p>
+<p><img src="dcrw_examples_files/figure-html/raw-data-vis-polar_bear-1.png" class="r-plt" alt="" width="700"></p>
 </div>
 <div class="tab-pane" id="seal" role="tabpanel" aria-labelledby="seal-tab">
 
@@ -301,7 +290,7 @@ is done.</p>
 <span>    expand <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Seal"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="dcrw_examples_files/figure-html/raw-data-vis-seal-1.png" width="700"></p>
+<p><img src="dcrw_examples_files/figure-html/raw-data-vis-seal-1.png" class="r-plt" alt="" width="700"></p>
 </div>
 <div class="tab-pane" id="blue-whale" role="tabpanel" aria-labelledby="blue-whale-tab">
 
@@ -344,7 +333,7 @@ is done.</p>
 <span>    expand <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Blue whale"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="dcrw_examples_files/figure-html/raw-data-vis-whale-1.png" width="700"></p>
+<p><img src="dcrw_examples_files/figure-html/raw-data-vis-whale-1.png" class="r-plt" alt="" width="700"></p>
 </div>
 </div>
 </div>
@@ -1023,7 +1012,7 @@ well, such as <code>lambda</code> chosen and number of
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html" class="external-link">pull</a></span><span class="op">(</span><span class="va">roams_model_list</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://purrr.tidyverse.org/reference/pluck.html" class="external-link">pluck</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/autoplot.html" class="external-link">autoplot</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p><img src="dcrw_examples_files/figure-html/unnamed-chunk-9-1.png" width="700"></p>
+<p><img src="dcrw_examples_files/figure-html/unnamed-chunk-9-1.png" class="r-plt" alt="" width="700"></p>
 </div>
 <div class="tab-pane" id="polar-bear-1" role="tabpanel" aria-labelledby="polar-bear-1-tab">
 
@@ -1033,7 +1022,7 @@ well, such as <code>lambda</code> chosen and number of
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html" class="external-link">pull</a></span><span class="op">(</span><span class="va">roams_model_list</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://purrr.tidyverse.org/reference/pluck.html" class="external-link">pluck</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/autoplot.html" class="external-link">autoplot</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p><img src="dcrw_examples_files/figure-html/unnamed-chunk-10-1.png" width="700"></p>
+<p><img src="dcrw_examples_files/figure-html/unnamed-chunk-10-1.png" class="r-plt" alt="" width="700"></p>
 </div>
 <div class="tab-pane" id="seal-1" role="tabpanel" aria-labelledby="seal-1-tab">
 
@@ -1043,7 +1032,7 @@ well, such as <code>lambda</code> chosen and number of
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html" class="external-link">pull</a></span><span class="op">(</span><span class="va">roams_model_list</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://purrr.tidyverse.org/reference/pluck.html" class="external-link">pluck</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/autoplot.html" class="external-link">autoplot</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p><img src="dcrw_examples_files/figure-html/unnamed-chunk-11-1.png" width="700"></p>
+<p><img src="dcrw_examples_files/figure-html/unnamed-chunk-11-1.png" class="r-plt" alt="" width="700"></p>
 </div>
 <div class="tab-pane" id="blue-whale-1" role="tabpanel" aria-labelledby="blue-whale-1-tab">
 
@@ -1053,7 +1042,7 @@ well, such as <code>lambda</code> chosen and number of
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html" class="external-link">pull</a></span><span class="op">(</span><span class="va">roams_model_list</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://purrr.tidyverse.org/reference/pluck.html" class="external-link">pluck</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/autoplot.html" class="external-link">autoplot</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p><img src="dcrw_examples_files/figure-html/unnamed-chunk-12-1.png" width="700"></p>
+<p><img src="dcrw_examples_files/figure-html/unnamed-chunk-12-1.png" class="r-plt" alt="" width="700"></p>
 </div>
 </div>
 </div>
@@ -1096,7 +1085,7 @@ methods.</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="op">~</span> <span class="va">name</span>, scales <span class="op">=</span> <span class="st">"free"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_bw</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"none"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="dcrw_examples_files/figure-html/oos-sfe-boxplots-1.png" width="700"></p>
+<p><img src="dcrw_examples_files/figure-html/oos-sfe-boxplots-1.png" class="r-plt" alt="" width="700"></p>
 </div>
 <div class="section level3">
 <h3 id="plot-in-sample-fit">Plot in-sample fit<a class="anchor" aria-label="anchor" href="#plot-in-sample-fit"></a>
@@ -1159,7 +1148,7 @@ methods.</p>
 <span><span class="op">}</span></span>
 <span></span>
 <span><span class="fu"><a href="https://patchwork.data-imaginist.com/reference/wrap_plots.html" class="external-link">wrap_plots</a></span><span class="op">(</span><span class="va">plots</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://patchwork.data-imaginist.com/reference/plot_layout.html" class="external-link">plot_layout</a></span><span class="op">(</span>ncol <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
-<p><img src="dcrw_examples_files/figure-html/in-sample-fits-1.png" width="700"></p>
+<p><img src="dcrw_examples_files/figure-html/in-sample-fits-1.png" class="r-plt" alt="" width="700"></p>
 </div>
 <div class="section level3">
 <h3 id="plot-one-step-ahead-out-of-sample-predictions">Plot one-step-ahead out-of-sample predictions<a class="anchor" aria-label="anchor" href="#plot-one-step-ahead-out-of-sample-predictions"></a>
@@ -1226,7 +1215,7 @@ these data sets).</p>
 <span><span class="op">}</span></span>
 <span></span>
 <span><span class="fu"><a href="https://patchwork.data-imaginist.com/reference/wrap_plots.html" class="external-link">wrap_plots</a></span><span class="op">(</span><span class="va">plots</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://patchwork.data-imaginist.com/reference/plot_layout.html" class="external-link">plot_layout</a></span><span class="op">(</span>ncol <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
-<p><img src="dcrw_examples_files/figure-html/one-step-ahead-preds-1.png" width="700"></p>
+<p><img src="dcrw_examples_files/figure-html/one-step-ahead-preds-1.png" class="r-plt" alt="" width="700"></p>
 </div>
 </div>
 <div class="section level2">
@@ -1361,7 +1350,7 @@ these data sets).</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/guides.html" class="external-link">guides</a></span><span class="op">(</span>colour <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/guide_legend.html" class="external-link">guide_legend</a></span><span class="op">(</span>ncol <span class="op">=</span> <span class="fl">2</span>, byrow <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">p1</span></span></code></pre></div>
-<p><img src="dcrw_examples_files/figure-html/unnamed-chunk-17-1.png" width="700"></p>
+<p><img src="dcrw_examples_files/figure-html/unnamed-chunk-17-1.png" class="r-plt" alt="" width="700"></p>
 </div>
 <div class="section level3">
 <h3 id="map-bic-and-proportion-outlying-curves">Map + BIC and proportion outlying curves<a class="anchor" aria-label="anchor" href="#map-bic-and-proportion-outlying-curves"></a>
@@ -1372,7 +1361,7 @@ these data sets).</p>
 <span></span>
 <span><span class="co"># Final plot</span></span>
 <span><span class="va">p1</span> <span class="op">+</span> <span class="va">p2</span></span></code></pre></div>
-<p><img src="dcrw_examples_files/figure-html/unnamed-chunk-18-1.png" width="864"></p>
+<p><img src="dcrw_examples_files/figure-html/unnamed-chunk-18-1.png" class="r-plt" alt="" width="864"></p>
 </div>
 <div class="section level3">
 <h3 id="table-of-parameter-estimates">Table of parameter estimates<a class="anchor" aria-label="anchor" href="#table-of-parameter-estimates"></a>
@@ -1435,22 +1424,14 @@ these data sets).</p>
 <div class="section level3">
 <h3 id="path-plot-of-gamma-shift-parameters">Path plot of gamma shift parameters<a class="anchor" aria-label="anchor" href="#path-plot-of-gamma-shift-parameters"></a>
 </h3>
-<p>This plot shows how the
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>L</mi><mn>2</mn></msub><annotation encoding="application/x-tex">L_2</annotation></semantics></math>-norm
-of the
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>𝛄</mi><mi>t</mi></msub><annotation encoding="application/x-tex">\boldsymbol{\gamma}_t</annotation></semantics></math>
-parameter changes as
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>λ</mi><annotation encoding="application/x-tex">\lambda</annotation></semantics></math>
-increases, for
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>t</mi><mo>=</mo><mn>1</mn><mo>,</mo><mi>…</mi><mo>,</mo><mi>n</mi></mrow><annotation encoding="application/x-tex">t=1,\dots,n</annotation></semantics></math>.
-It can give insight into how different timepoints are flagged/unflagged
-as outliers depending on the value of
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>λ</mi><annotation encoding="application/x-tex">\lambda</annotation></semantics></math>.
-The four timepoints with the largest
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>L</mi><mn>2</mn></msub><annotation encoding="application/x-tex">L_2</annotation></semantics></math>-norm
-at the lowest
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>λ</mi><annotation encoding="application/x-tex">\lambda</annotation></semantics></math>
-have been labelled.</p>
+<p>This plot shows how the <span class="math inline">\(L_2\)</span>-norm
+of the <span class="math inline">\(\boldsymbol{\gamma}_t\)</span>
+parameter changes as <span class="math inline">\(\lambda\)</span>
+increases, for <span class="math inline">\(t=1,\dots,n\)</span>. It can
+give insight into how different timepoints are flagged/unflagged as
+outliers depending on the value of <span class="math inline">\(\lambda\)</span>. The four timepoints with the
+largest <span class="math inline">\(L_2\)</span>-norm at the lowest
+<span class="math inline">\(\lambda\)</span> have been labelled.</p>
 <div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">roams_model_list</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="../reference/get_attribute.html">get_attribute</a></span><span class="op">(</span><span class="st">"gamma"</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
@@ -1474,11 +1455,11 @@ have been labelled.</p>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fu">latex2exp</span><span class="fu">::</span><span class="fu"><a href="https://www.stefanom.io/latex2exp/reference/TeX.html" class="external-link">TeX</a></span><span class="op">(</span><span class="st">"$\\lambda$"</span><span class="op">)</span>,</span>
 <span>         y <span class="op">=</span> <span class="fu">latex2exp</span><span class="fu">::</span><span class="fu"><a href="https://www.stefanom.io/latex2exp/reference/TeX.html" class="external-link">TeX</a></span><span class="op">(</span><span class="st">"$L_2 \\ norm \\ of \\ \\gamma_t$"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"none"</span><span class="op">)</span><span class="op">)</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p><img src="dcrw_examples_files/figure-html/unnamed-chunk-20-1.png" width="700"></p>
+<p><img src="dcrw_examples_files/figure-html/unnamed-chunk-20-1.png" class="r-plt" alt="" width="700"></p>
 <div class="section level4 unnumbered">
 <h4 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h4>
-<div id="refs" class="references csl-bib-body hanging-indent" line-spacing="2">
+<div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0" line-spacing="2">
 <div id="ref-auger-methe_guide_2021" class="csl-entry">
 Auger-Méthé, M., Newman, K., Cole, D., Empacher, F., Gryba, R., King, A.
 A., … Thomas, L. (2021). A guide to state–space modeling of ecological
@@ -1503,7 +1484,7 @@ outlier-adjusted mean-shift estimation of state-space models. <a href="https://a
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
     </footer>
