@@ -151,25 +151,23 @@ taken by the object. We suspect that these points are outliers.</p>
 state-space model:</p>
 <p><span class="math display">\[
 \begin{align}
-\boldsymbol y_t &amp;= \boldsymbol A \boldsymbol x_t + \boldsymbol v_t
-\\
-\boldsymbol x_t &amp;= \boldsymbol \Phi \boldsymbol x_{t-1} +
-\boldsymbol w_t,
+\mathbf{y}_t &amp;= \mathbf{A} \mathbf{x}_t + \mathbf{v}_t \\
+\mathbf{x}_t &amp;= \mathbf{\Phi} \mathbf{x}_{t-1} + \mathbf{w}_t,
 \end{align}
 \]</span></p>
-<p>where <span class="math inline">\(\boldsymbol y_t\)</span> is the
-observation process, <span class="math inline">\(\boldsymbol
-x_t\)</span> is the state process, <span class="math inline">\(\boldsymbol v_t \sim N(\boldsymbol 0,
-\boldsymbol\Sigma_{\boldsymbol v})\)</span> and <span class="math inline">\(\boldsymbol w_t \sim N(\boldsymbol 0,
-\boldsymbol\Sigma_{\boldsymbol w})\)</span>. The state-space model we
-want to use to model our data is the first-differenced correlated random
-walk (DCRW) model. The DCRW model has a 2-dimensional <span class="math inline">\(\boldsymbol y_t\)</span> and a 4-dimensional <span class="math inline">\(\boldsymbol x_t\)</span> because <span class="math inline">\(\boldsymbol x_t\)</span> tries to capture the true
+<p>where <span class="math inline">\(\mathbf{y}_t\)</span> is the
+observation process, <span class="math inline">\(\mathbf{x}_t\)</span>
+is the state process, <span class="math inline">\(\mathbf{v}_t \sim
+N(\mathbf{0}, \mathbf{\Sigma}_{\mathbf{v}})\)</span> and <span class="math inline">\(\mathbf{w}_t \sim N(\mathbf{0},
+\mathbf{\Sigma}_{\mathbf{w}})\)</span>. The state-space model we want to
+use to model our data is the first-differenced correlated random walk
+(DCRW) model. The DCRW model has a 2-dimensional <span class="math inline">\(\mathbf{y}_t\)</span> and a 4-dimensional <span class="math inline">\(\mathbf{x}_t\)</span> because <span class="math inline">\(\mathbf{x}_t\)</span> tries to capture the true
 location of the object at times <span class="math inline">\(t\)</span>
 and <span class="math inline">\(t-1\)</span> (see <span class="citation">Shankar et al. (2025)</span> for more details). The
 matrices in the DCRW model are given by</p>
 <p><span class="math display">\[
 \begin{align}
-\boldsymbol\Phi &amp;=
+\mathbf{\Phi} &amp;=
 \left[
 \begin{matrix}
 1+\phi&amp;0&amp;-\phi&amp;0 \\
@@ -178,7 +176,7 @@ matrices in the DCRW model are given by</p>
 0&amp;1&amp;0&amp;0 \\
 \end{matrix}
 \right] \\
-\boldsymbol A &amp;=
+\mathbf{A} &amp;=
 \left[
 \begin{matrix}
 1&amp;0&amp;0&amp;0 \\
@@ -187,21 +185,22 @@ matrices in the DCRW model are given by</p>
 \right],
 \end{align}
 \]</span></p>
-<p>and the error variance matrices are <span class="math inline">\(\boldsymbol\Sigma_{\boldsymbol v} =
-\text{diag}(\sigma^2_{\boldsymbol v,1}, \sigma^2_{\boldsymbol
-v,2})\)</span> and <span class="math inline">\(\boldsymbol\Sigma_{\boldsymbol w} =
-\text{diag}(\sigma^2_{\boldsymbol w,1}, \sigma^2_{\boldsymbol w,2}, 0,
+<p>and the error variance matrices are <span class="math inline">\(\mathbf{\Sigma}_{\mathbf{v}} =
+\text{diag}(\sigma^2_{\mathbf{v},1}, \sigma^2_{\mathbf{v},2})\)</span>
+and <span class="math inline">\(\mathbf{\Sigma}_{\mathbf{w}} =
+\text{diag}(\sigma^2_{\mathbf{w},1}, \sigma^2_{\mathbf{w},2}, 0,
 0)\)</span>. We assume at time <span class="math inline">\(t=0\)</span>,
-that <span class="math inline">\(\boldsymbol x_0 \sim
-N(\boldsymbol\mu_0, \boldsymbol P_0)\)</span>, where <span class="math inline">\(\boldsymbol\mu_0 = [0,0,0,0]\)</span> and <span class="math inline">\(\boldsymbol P_0 = \text{diag}(10^2, 10^2, 10^2,
-10^2)\)</span>.</p>
-<p>There are a total of 5 unknown parameters in the DCRW model: <span class="math inline">\(\boldsymbol\theta := [\phi,\sigma^2_{\boldsymbol
-w,1}, \sigma^2_{\boldsymbol w,2}, \sigma^2_{\boldsymbol v,1},
-\sigma^2_{\boldsymbol v,2}]\)</span>. To specify this model, we define a
-function <code>build_fn()</code> that takes in <span class="math inline">\(\boldsymbol\theta\)</span> as an argument and
-returns <span class="math inline">\(\boldsymbol x_0, \boldsymbol P_0,
-\boldsymbol\Phi, \boldsymbol A, \boldsymbol\Sigma_{\boldsymbol v},
-\boldsymbol\Sigma_{\boldsymbol w}\)</span>. The helper function
+that <span class="math inline">\(\mathbf{x}_0 \sim N(\mathbf{\mu}_0,
+\mathbf{P}_0)\)</span>, where <span class="math inline">\(\mathbf{\mu}_0
+= [0,0,0,0]\)</span> and <span class="math inline">\(\mathbf{P}_0 =
+\text{diag}(10^2, 10^2, 10^2, 10^2)\)</span>.</p>
+<p>There are a total of 5 unknown parameters in the DCRW model: <span class="math inline">\(\mathbf{\theta} := [\phi,\sigma^2_{\mathbf{w},1},
+\sigma^2_{\mathbf{w},2}, \sigma^2_{\mathbf{v},1},
+\sigma^2_{\mathbf{v},2}]\)</span>. To specify this model, we define a
+function <code>build_fn()</code> that takes in <span class="math inline">\(\mathbf{\theta}\)</span> as an argument and
+returns <span class="math inline">\(\mathbf{x}_0, \mathbf{P}_0,
+\mathbf{\Phi}, \mathbf{A}, \mathbf{\Sigma}_{\mathbf{v}},
+\mathbf{\Sigma}_{\mathbf{w}}\)</span>. The helper function
 <code><a href="../reference/specify_SSM.html">specify_SSM()</a></code> is used inside <code>build_fn()</code> to
 help return these values in the correct format.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
@@ -232,12 +231,11 @@ help return these values in the correct format.</p>
 <p>To fit the model using the ROAMS procedure, we use the function
 <code><a href="../reference/roams_SSM.html">roams_SSM()</a></code> and pass in the observations <code>y</code> as
 well as our model specification function <code>build_fn()</code>. Since
-<span class="math inline">\(\phi \in[0,1]\)</span> and <span class="math inline">\(\sigma^2_{\boldsymbol w,1}, \sigma^2_{\boldsymbol
-w,2}, \sigma^2_{\boldsymbol v,1}, \sigma^2_{\boldsymbol v,2} &gt;
-0\)</span>, we add in these parameter box constraints via the
-<code>lower</code> and <code>upper</code> arguments. We provide initial
-parameter values <span class="math inline">\([0.5, 1, 1, 1, 1]\)</span>
-and we set <code>num_lambdas = 20</code> to let <code><a href="../reference/roams_SSM.html">roams_SSM()</a></code>
+<span class="math inline">\(\phi \in[0,1]\)</span> and <span class="math inline">\(\sigma^2_{\mathbf{w},1}, \sigma^2_{\mathbf{w},2},
+\sigma^2_{\mathbf{v},1}, \sigma^2_{\mathbf{v},2} &gt; 0\)</span>, we add
+in these parameter box constraints via the <code>lower</code> and
+<code>upper</code> arguments. We provide initial parameter values <span class="math inline">\([0.5, 1, 1, 1, 1]\)</span> and we set
+<code>num_lambdas = 20</code> to let <code><a href="../reference/roams_SSM.html">roams_SSM()</a></code>
 automatically select a sequence of 20 <span class="math inline">\(\lambda\)</span> values to fit candidate
 models.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
@@ -338,7 +336,7 @@ observations. We will use our <code>final_model</code> to obtain
 filtered values for <code>y_oos</code>.</p>
 <p>The out-of-sample data has the same characteristics as the in-sample
 data, except that it starts where the in-sample data ends. We re-define
-our <code>build_fn()</code> to set the initial state mean <span class="math inline">\(\boldsymbol\mu_0\)</span> to be our best guess of
+our <code>build_fn()</code> to set the initial state mean <span class="math inline">\(\mathbf{\mu}_0\)</span> to be our best guess of
 the hidden state at the last in-sample timepoint, <span class="math inline">\(t=100\)</span>:</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">final_model</span><span class="op">$</span><span class="va">smoothed_states</span><span class="op">[</span><span class="fl">100</span>,<span class="op">]</span></span>

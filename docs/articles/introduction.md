@@ -90,43 +90,47 @@ outliers.
 Here are the state and observation equations for a linear Gaussian
 state-space model:
 
-\\ \begin{align} \boldsymbol y_t &= \boldsymbol A \boldsymbol x_t +
-\boldsymbol v_t \\ \boldsymbol x_t &= \boldsymbol \Phi \boldsymbol
-x\_{t-1} + \boldsymbol w_t, \end{align} \\
+\\ \begin{align} \boldsymbol{y}\_t &= \boldsymbol{A} \boldsymbol{x}\_t +
+\boldsymbol{v}\_t \\ \boldsymbol{x}\_t &= \boldsymbol{\Phi}
+\boldsymbol{x}\_{t-1} + \boldsymbol{w}\_t, \end{align} \\
 
-where \\\boldsymbol y_t\\ is the observation process, \\\boldsymbol
-x_t\\ is the state process, \\\boldsymbol v_t \sim N(\boldsymbol 0,
-\boldsymbol\Sigma\_{\boldsymbol v})\\ and \\\boldsymbol w_t \sim
-N(\boldsymbol 0, \boldsymbol\Sigma\_{\boldsymbol w})\\. The state-space
-model we want to use to model our data is the first-differenced
-correlated random walk (DCRW) model. The DCRW model has a 2-dimensional
-\\\boldsymbol y_t\\ and a 4-dimensional \\\boldsymbol x_t\\ because
-\\\boldsymbol x_t\\ tries to capture the true location of the object at
-times \\t\\ and \\t-1\\ (see Shankar et al. (2025) for more details).
-The matrices in the DCRW model are given by
+where \\\boldsymbol{y}\_t\\ is the observation process,
+\\\boldsymbol{x}\_t\\ is the state process, \\\boldsymbol{v}\_t \sim
+N(\boldsymbol{0}, \boldsymbol{\Sigma}\_{\boldsymbol{v}})\\ and
+\\\boldsymbol{w}\_t \sim N(\boldsymbol{0},
+\boldsymbol{\Sigma}\_{\boldsymbol{w}})\\. The state-space model we want
+to use to model our data is the first-differenced correlated random walk
+(DCRW) model. The DCRW model has a 2-dimensional \\\boldsymbol{y}\_t\\
+and a 4-dimensional \\\boldsymbol{x}\_t\\ because \\\boldsymbol{x}\_t\\
+tries to capture the true location of the object at times \\t\\ and
+\\t-1\\ (see Shankar et al. (2025) for more details). The matrices in
+the DCRW model are given by
 
-\\ \begin{align} \boldsymbol\Phi &= \left\[ \begin{matrix}
+\\ \begin{align} \boldsymbol{\Phi} &= \left\[ \begin{matrix}
 1+\phi&0&-\phi&0 \\ 0&1+\phi&0&-\phi \\ 1&0&0&0 \\ 0&1&0&0 \\
-\end{matrix} \right\] \\ \boldsymbol A &= \left\[ \begin{matrix} 1&0&0&0
-\\ 0&1&0&0 \end{matrix} \right\], \end{align} \\
+\end{matrix} \right\] \\ \boldsymbol{A} &= \left\[ \begin{matrix}
+1&0&0&0 \\ 0&1&0&0 \end{matrix} \right\], \end{align} \\
 
-and the error variance matrices are \\\boldsymbol\Sigma\_{\boldsymbol v}
-= \text{diag}(\sigma^2\_{\boldsymbol v,1}, \sigma^2\_{\boldsymbol
-v,2})\\ and \\\boldsymbol\Sigma\_{\boldsymbol w} =
-\text{diag}(\sigma^2\_{\boldsymbol w,1}, \sigma^2\_{\boldsymbol w,2}, 0,
-0)\\. We assume at time \\t=0\\, that \\\boldsymbol x_0 \sim
-N(\boldsymbol\mu_0, \boldsymbol P_0)\\, where \\\boldsymbol\mu_0 =
-\[0,0,0,0\]\\ and \\\boldsymbol P_0 = \text{diag}(10^2, 10^2, 10^2,
+and the error variance matrices are
+\\\boldsymbol{\Sigma}\_{\boldsymbol{v}} =
+\text{diag}(\sigma^2\_{\boldsymbol{v},1},
+\sigma^2\_{\boldsymbol{v},2})\\ and
+\\\boldsymbol{\Sigma}\_{\boldsymbol{w}} =
+\text{diag}(\sigma^2\_{\boldsymbol{w},1}, \sigma^2\_{\boldsymbol{w},2},
+0, 0)\\. We assume at time \\t=0\\, that \\\boldsymbol{x}\_0 \sim
+N(\boldsymbol{\mu}\_0, \boldsymbol{P}\_0)\\, where \\\boldsymbol{\mu}\_0
+= \[0,0,0,0\]\\ and \\\boldsymbol{P}\_0 = \text{diag}(10^2, 10^2, 10^2,
 10^2)\\.
 
 There are a total of 5 unknown parameters in the DCRW model:
-\\\boldsymbol\theta := \[\phi,\sigma^2\_{\boldsymbol w,1},
-\sigma^2\_{\boldsymbol w,2}, \sigma^2\_{\boldsymbol v,1},
-\sigma^2\_{\boldsymbol v,2}\]\\. To specify this model, we define a
-function `build_fn()` that takes in \\\boldsymbol\theta\\ as an argument
-and returns \\\boldsymbol x_0, \boldsymbol P_0, \boldsymbol\Phi,
-\boldsymbol A, \boldsymbol\Sigma\_{\boldsymbol v},
-\boldsymbol\Sigma\_{\boldsymbol w}\\. The helper function
+\\\boldsymbol{\theta} := \[\phi,\sigma^2\_{\boldsymbol{w},1},
+\sigma^2\_{\boldsymbol{w},2}, \sigma^2\_{\boldsymbol{v},1},
+\sigma^2\_{\boldsymbol{v},2}\]\\. To specify this model, we define a
+function `build_fn()` that takes in \\\boldsymbol{\theta}\\ as an
+argument and returns \\\boldsymbol{x}\_0, \boldsymbol{P}\_0,
+\boldsymbol{\Phi}, \boldsymbol{A},
+\boldsymbol{\Sigma}\_{\boldsymbol{v}},
+\boldsymbol{\Sigma}\_{\boldsymbol{w}}\\. The helper function
 [`specify_SSM()`](https://rajan-shankar.github.io/roams/reference/specify_SSM.md)
 is used inside `build_fn()` to help return these values in the correct
 format.
@@ -163,9 +167,9 @@ To fit the model using the ROAMS procedure, we use the function
 [`roams_SSM()`](https://rajan-shankar.github.io/roams/reference/roams_SSM.md)
 and pass in the observations `y` as well as our model specification
 function `build_fn()`. Since \\\phi \in\[0,1\]\\ and
-\\\sigma^2\_{\boldsymbol w,1}, \sigma^2\_{\boldsymbol w,2},
-\sigma^2\_{\boldsymbol v,1}, \sigma^2\_{\boldsymbol v,2} \> 0\\, we add
-in these parameter box constraints via the `lower` and `upper`
+\\\sigma^2\_{\boldsymbol{w},1}, \sigma^2\_{\boldsymbol{w},2},
+\sigma^2\_{\boldsymbol{v},1}, \sigma^2\_{\boldsymbol{v},2} \> 0\\, we
+add in these parameter box constraints via the `lower` and `upper`
 arguments. We provide initial parameter values \\\[0.5, 1, 1, 1, 1\]\\
 and we set `num_lambdas = 20` to let
 [`roams_SSM()`](https://rajan-shankar.github.io/roams/reference/roams_SSM.md)
@@ -304,9 +308,9 @@ for `y_oos`.
 
 The out-of-sample data has the same characteristics as the in-sample
 data, except that it starts where the in-sample data ends. We re-define
-our `build_fn()` to set the initial state mean \\\boldsymbol\mu_0\\ to
-be our best guess of the hidden state at the last in-sample timepoint,
-\\t=100\\:
+our `build_fn()` to set the initial state mean \\\boldsymbol{\mu}\_0\\
+to be our best guess of the hidden state at the last in-sample
+timepoint, \\t=100\\:
 
 ``` r
 
