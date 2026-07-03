@@ -1,7 +1,17 @@
-library(roams)
 num_cores = 25
 num_samples = 5
 data_path = "/scratch/bp72/rs9777/sim_results_roams/"
+
+.libPaths("R_lib")
+library(roams)
+library(MASS)
+library(stringr)
+library(future)
+library(furrr)
+library(purrr)
+library(dplyr)
+library(tidyr)
+library(tibble)
 
 simulate_data_soft = function(
     sample_sizes = c(100, 200, 500, 1000),

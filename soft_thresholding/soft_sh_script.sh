@@ -16,6 +16,6 @@ module load nci-parallel/1.0.0a
 module load intel-compiler/2021.10.0
 module load openmpi/4.1.0
 module load gcc/12.2.0
-module load R/4.3.1
+module load R/4.4.2
 
 Rscript soft_simulation.R
