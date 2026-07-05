@@ -1,7 +1,7 @@
 # Simulation study 1
 
 > This page shows how the simulation results in Section 4.1 of Shankar
-> et al. (2025) are generated.
+> et al. (2026) are generated.
 
 ``` r
 
@@ -481,7 +481,7 @@ eval_metrics_study1 |>
 
 ### Mean sensitivity and specificity
 
-Figure 2 of Shankar et al. (2025):
+Figure 2 of Shankar et al. (2026):
 
 ``` r
 
@@ -611,7 +611,7 @@ eval_metrics_study1 |>
 
 ### Out-of-sample MSFE
 
-Mean-aggregated (Figure 3 of Shankar et al. (2025)) and raw box plots of
+Mean-aggregated (Figure 3 of Shankar et al. (2026)) and raw box plots of
 the one-step-ahead out-of-sample MSFE:
 
 - Mean MSFE
@@ -827,7 +827,7 @@ eval_metrics_study1 |>
 
 ### Table of parameter estimation mean RMSEs for n = 1000
 
-Table 1 of Shankar et al. (2025). For each outlier configuration, the
+Table 1 of Shankar et al. (2026). For each outlier configuration, the
 mean parameter estimation RMSEs of each method is reported relative to
 the oracle benchmark method:
 
@@ -985,6 +985,6 @@ eval_metrics_study1 |>
 
 ### References
 
-Shankar, R., Wilms, I., Raymaekers, J., & Tarr, G. (2025). Robust
-outlier-adjusted mean-shift estimation of state-space models.
-<https://arxiv.org/abs/????.?????>
+Shankar, R., Wilms, I., Raymaekers, J., & Tarr, G. (2026). Outlier
+detection in state-space models using mean-shift penalisation.
+<https://arxiv.org/abs/2511.15155>

@@ -1,7 +1,7 @@
 # Simulation study 3
 
 > This page shows how the simulation results in Section 4.3 of Shankar
-> et al. (2025) are generated.
+> et al. (2026) are generated.
 
 ``` r
 
@@ -200,7 +200,7 @@ eval_metrics_study3 |>
 
 ### Contaminated out-of-sample MSFE
 
-Mean-aggregated (Figure 6 of Shankar et al. (2025)) and raw box plots of
+Mean-aggregated (Figure 6 of Shankar et al. (2026)) and raw box plots of
 the one-step-ahead contaminated out-of-sample MSFE:
 
 - Mean MSFE
@@ -259,6 +259,6 @@ eval_metrics_study3 |>
 
 ### References
 
-Shankar, R., Wilms, I., Raymaekers, J., & Tarr, G. (2025). Robust
-outlier-adjusted mean-shift estimation of state-space models.
-<https://arxiv.org/abs/????.?????>
+Shankar, R., Wilms, I., Raymaekers, J., & Tarr, G. (2026). Outlier
+detection in state-space models using mean-shift penalisation.
+<https://arxiv.org/abs/2511.15155>

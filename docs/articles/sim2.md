@@ -1,7 +1,7 @@
 # Simulation study 2
 
 > This page shows how the simulation results in Section 4.2 of Shankar
-> et al. (2025) are generated.
+> et al. (2026) are generated.
 
 ``` r
 
@@ -454,7 +454,7 @@ Sensitivity and specificity of the ROAMS method:
 - Mean sensitivity/specificity
 - Raw sensitivity/specificity
 
-Figure 4 of Shankar et al. (2025):
+Figure 4 of Shankar et al. (2026):
 
 ``` r
 
@@ -540,7 +540,7 @@ p1 + p2 + plot_layout(ncol = 2, axes = "collect", guides = "collect")
 
 ### Out-of-sample MSFE
 
-Mean-aggregated (Figure 5 of Shankar et al. (2025)) and raw box plots of
+Mean-aggregated (Figure 5 of Shankar et al. (2026)) and raw box plots of
 the one-step-ahead out-of-sample MSFE:
 
 - Mean MSFE
@@ -1026,6 +1026,6 @@ p1 + p2 + plot_layout(ncol = 2, axes = "collect", guides = "collect")
 
 ### References
 
-Shankar, R., Wilms, I., Raymaekers, J., & Tarr, G. (2025). Robust
-outlier-adjusted mean-shift estimation of state-space models.
-<https://arxiv.org/abs/????.?????>
+Shankar, R., Wilms, I., Raymaekers, J., & Tarr, G. (2026). Outlier
+detection in state-space models using mean-shift penalisation.
+<https://arxiv.org/abs/2511.15155>

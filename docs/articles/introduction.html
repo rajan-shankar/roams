@@ -104,7 +104,7 @@ ggplot2 theme for consistent plotting.</p>
 </h2>
 <p><code>roams</code> provides a helper function
 <code><a href="../reference/simulate_data_study1.html">simulate_data_study1()</a></code> which generates example data sets
-used in the simulations results of Study 1 in <span class="citation">Shankar et al. (2025)</span>. We use this function to
+used in the simulations results of Study 1 in <span class="citation">Shankar et al. (2026)</span>. We use this function to
 simulate a single sample (<code>samples = 1</code>) for each of the
 different sample sizes and outlier settings, and extract specifically
 the <em>cluster</em> setting with <span class="math inline">\(n=100\)</span> timepoints.</p>
@@ -163,7 +163,7 @@ N(\mathbf{0}, \mathbf{\Sigma}_{\mathbf{v}})\)</span> and <span class="math inlin
 use to model our data is the first-differenced correlated random walk
 (DCRW) model. The DCRW model has a 2-dimensional <span class="math inline">\(\mathbf{y}_t\)</span> and a 4-dimensional <span class="math inline">\(\mathbf{x}_t\)</span> because <span class="math inline">\(\mathbf{x}_t\)</span> tries to capture the true
 location of the object at times <span class="math inline">\(t\)</span>
-and <span class="math inline">\(t-1\)</span> (see <span class="citation">Shankar et al. (2025)</span> for more details). The
+and <span class="math inline">\(t-1\)</span> (see <span class="citation">Shankar et al. (2026)</span> for more details). The
 matrices in the DCRW model are given by</p>
 <p><span class="math display">\[
 \begin{align}
@@ -412,7 +412,7 @@ observation to be outlying:</p>
 <span><span class="co">#&gt; [1] 22.746904 -3.882899</span></span></code></pre></div>
 <p>If the model passed to <code><a href="../reference/oos_filter.html">oos_filter()</a></code> is of class
 <code>roams_SSM</code>, then by default the <code><a href="../reference/oos_filter.html">oos_filter()</a></code>
-function uses the fast-updating threshold (FUT) filter (see <span class="citation">Shankar et al. (2025)</span>) to do out-of-sample
+function uses the fast-updating threshold (FUT) filter (see <span class="citation">Shankar et al. (2026)</span>) to do out-of-sample
 filtering. The FUT filter provides robustness against out-of-sample
 outliers. If the usual Kalman filter is desired, we can set the argument
 <code>threshold = Inf</code>. We try both filters:</p>
@@ -478,8 +478,8 @@ standard Kalman filter.</p>
 </h3>
 <div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0" line-spacing="2">
 <div id="ref-shankar2025" class="csl-entry">
-Shankar, R., Wilms, I., Raymaekers, J., &amp; Tarr, G. (2025). Robust
-outlier-adjusted mean-shift estimation of state-space models. <a href="https://arxiv.org/abs/????.?????" class="external-link">https://arxiv.org/abs/????.?????</a>
+Shankar, R., Wilms, I., Raymaekers, J., &amp; Tarr, G. (2026). Outlier
+detection in state-space models using mean-shift penalisation. <a href="https://arxiv.org/abs/2511.15155" class="external-link">https://arxiv.org/abs/2511.15155</a>
 </div>
 </div>
 </div>

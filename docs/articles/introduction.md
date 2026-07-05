@@ -31,7 +31,7 @@ theme_set(
 `roams` provides a helper function
 [`simulate_data_study1()`](https://rajan-shankar.github.io/roams/reference/simulate_data_study1.md)
 which generates example data sets used in the simulations results of
-Study 1 in Shankar et al. (2025). We use this function to simulate a
+Study 1 in Shankar et al. (2026). We use this function to simulate a
 single sample (`samples = 1`) for each of the different sample sizes and
 outlier settings, and extract specifically the *cluster* setting with
 \\n=100\\ timepoints.
@@ -90,47 +90,42 @@ outliers.
 Here are the state and observation equations for a linear Gaussian
 state-space model:
 
-\\ \begin{align} \boldsymbol{y}\_t &= \boldsymbol{A} \boldsymbol{x}\_t +
-\boldsymbol{v}\_t \\ \boldsymbol{x}\_t &= \boldsymbol{\Phi}
-\boldsymbol{x}\_{t-1} + \boldsymbol{w}\_t, \end{align} \\
+\\ \begin{align} \mathbf{y}\_t &= \mathbf{A} \mathbf{x}\_t +
+\mathbf{v}\_t \\ \mathbf{x}\_t &= \mathbf{\Phi} \mathbf{x}\_{t-1} +
+\mathbf{w}\_t, \end{align} \\
 
-where \\\boldsymbol{y}\_t\\ is the observation process,
-\\\boldsymbol{x}\_t\\ is the state process, \\\boldsymbol{v}\_t \sim
-N(\boldsymbol{0}, \boldsymbol{\Sigma}\_{\boldsymbol{v}})\\ and
-\\\boldsymbol{w}\_t \sim N(\boldsymbol{0},
-\boldsymbol{\Sigma}\_{\boldsymbol{w}})\\. The state-space model we want
-to use to model our data is the first-differenced correlated random walk
-(DCRW) model. The DCRW model has a 2-dimensional \\\boldsymbol{y}\_t\\
-and a 4-dimensional \\\boldsymbol{x}\_t\\ because \\\boldsymbol{x}\_t\\
-tries to capture the true location of the object at times \\t\\ and
-\\t-1\\ (see Shankar et al. (2025) for more details). The matrices in
-the DCRW model are given by
+where \\\mathbf{y}\_t\\ is the observation process, \\\mathbf{x}\_t\\ is
+the state process, \\\mathbf{v}\_t \sim N(\mathbf{0},
+\mathbf{\Sigma}\_{\mathbf{v}})\\ and \\\mathbf{w}\_t \sim N(\mathbf{0},
+\mathbf{\Sigma}\_{\mathbf{w}})\\. The state-space model we want to use
+to model our data is the first-differenced correlated random walk (DCRW)
+model. The DCRW model has a 2-dimensional \\\mathbf{y}\_t\\ and a
+4-dimensional \\\mathbf{x}\_t\\ because \\\mathbf{x}\_t\\ tries to
+capture the true location of the object at times \\t\\ and \\t-1\\ (see
+Shankar et al. (2026) for more details). The matrices in the DCRW model
+are given by
 
-\\ \begin{align} \boldsymbol{\Phi} &= \left\[ \begin{matrix}
+\\ \begin{align} \mathbf{\Phi} &= \left\[ \begin{matrix}
 1+\phi&0&-\phi&0 \\ 0&1+\phi&0&-\phi \\ 1&0&0&0 \\ 0&1&0&0 \\
-\end{matrix} \right\] \\ \boldsymbol{A} &= \left\[ \begin{matrix}
-1&0&0&0 \\ 0&1&0&0 \end{matrix} \right\], \end{align} \\
+\end{matrix} \right\] \\ \mathbf{A} &= \left\[ \begin{matrix} 1&0&0&0 \\
+0&1&0&0 \end{matrix} \right\], \end{align} \\
 
-and the error variance matrices are
-\\\boldsymbol{\Sigma}\_{\boldsymbol{v}} =
-\text{diag}(\sigma^2\_{\boldsymbol{v},1},
-\sigma^2\_{\boldsymbol{v},2})\\ and
-\\\boldsymbol{\Sigma}\_{\boldsymbol{w}} =
-\text{diag}(\sigma^2\_{\boldsymbol{w},1}, \sigma^2\_{\boldsymbol{w},2},
-0, 0)\\. We assume at time \\t=0\\, that \\\boldsymbol{x}\_0 \sim
-N(\boldsymbol{\mu}\_0, \boldsymbol{P}\_0)\\, where \\\boldsymbol{\mu}\_0
-= \[0,0,0,0\]\\ and \\\boldsymbol{P}\_0 = \text{diag}(10^2, 10^2, 10^2,
-10^2)\\.
+and the error variance matrices are \\\mathbf{\Sigma}\_{\mathbf{v}} =
+\text{diag}(\sigma^2\_{\mathbf{v},1}, \sigma^2\_{\mathbf{v},2})\\ and
+\\\mathbf{\Sigma}\_{\mathbf{w}} = \text{diag}(\sigma^2\_{\mathbf{w},1},
+\sigma^2\_{\mathbf{w},2}, 0, 0)\\. We assume at time \\t=0\\, that
+\\\mathbf{x}\_0 \sim N(\mathbf{\mu}\_0, \mathbf{P}\_0)\\, where
+\\\mathbf{\mu}\_0 = \[0,0,0,0\]\\ and \\\mathbf{P}\_0 =
+\text{diag}(10^2, 10^2, 10^2, 10^2)\\.
 
 There are a total of 5 unknown parameters in the DCRW model:
-\\\boldsymbol{\theta} := \[\phi,\sigma^2\_{\boldsymbol{w},1},
-\sigma^2\_{\boldsymbol{w},2}, \sigma^2\_{\boldsymbol{v},1},
-\sigma^2\_{\boldsymbol{v},2}\]\\. To specify this model, we define a
-function `build_fn()` that takes in \\\boldsymbol{\theta}\\ as an
-argument and returns \\\boldsymbol{x}\_0, \boldsymbol{P}\_0,
-\boldsymbol{\Phi}, \boldsymbol{A},
-\boldsymbol{\Sigma}\_{\boldsymbol{v}},
-\boldsymbol{\Sigma}\_{\boldsymbol{w}}\\. The helper function
+\\\mathbf{\theta} := \[\phi,\sigma^2\_{\mathbf{w},1},
+\sigma^2\_{\mathbf{w},2}, \sigma^2\_{\mathbf{v},1},
+\sigma^2\_{\mathbf{v},2}\]\\. To specify this model, we define a
+function `build_fn()` that takes in \\\mathbf{\theta}\\ as an argument
+and returns \\\mathbf{x}\_0, \mathbf{P}\_0, \mathbf{\Phi}, \mathbf{A},
+\mathbf{\Sigma}\_{\mathbf{v}}, \mathbf{\Sigma}\_{\mathbf{w}}\\. The
+helper function
 [`specify_SSM()`](https://rajan-shankar.github.io/roams/reference/specify_SSM.md)
 is used inside `build_fn()` to help return these values in the correct
 format.
@@ -167,11 +162,11 @@ To fit the model using the ROAMS procedure, we use the function
 [`roams_SSM()`](https://rajan-shankar.github.io/roams/reference/roams_SSM.md)
 and pass in the observations `y` as well as our model specification
 function `build_fn()`. Since \\\phi \in\[0,1\]\\ and
-\\\sigma^2\_{\boldsymbol{w},1}, \sigma^2\_{\boldsymbol{w},2},
-\sigma^2\_{\boldsymbol{v},1}, \sigma^2\_{\boldsymbol{v},2} \> 0\\, we
-add in these parameter box constraints via the `lower` and `upper`
-arguments. We provide initial parameter values \\\[0.5, 1, 1, 1, 1\]\\
-and we set `num_lambdas = 20` to let
+\\\sigma^2\_{\mathbf{w},1}, \sigma^2\_{\mathbf{w},2},
+\sigma^2\_{\mathbf{v},1}, \sigma^2\_{\mathbf{v},2} \> 0\\, we add in
+these parameter box constraints via the `lower` and `upper` arguments.
+We provide initial parameter values \\\[0.5, 1, 1, 1, 1\]\\ and we set
+`num_lambdas = 20` to let
 [`roams_SSM()`](https://rajan-shankar.github.io/roams/reference/roams_SSM.md)
 automatically select a sequence of 20 \\\lambda\\ values to fit
 candidate models.
@@ -308,9 +303,9 @@ for `y_oos`.
 
 The out-of-sample data has the same characteristics as the in-sample
 data, except that it starts where the in-sample data ends. We re-define
-our `build_fn()` to set the initial state mean \\\boldsymbol{\mu}\_0\\
-to be our best guess of the hidden state at the last in-sample
-timepoint, \\t=100\\:
+our `build_fn()` to set the initial state mean \\\mathbf{\mu}\_0\\ to be
+our best guess of the hidden state at the last in-sample timepoint,
+\\t=100\\:
 
 ``` r
 
@@ -407,7 +402,7 @@ If the model passed to
 is of class `roams_SSM`, then by default the
 [`oos_filter()`](https://rajan-shankar.github.io/roams/reference/oos_filter.md)
 function uses the fast-updating threshold (FUT) filter (see Shankar et
-al. (2025)) to do out-of-sample filtering. The FUT filter provides
+al. (2026)) to do out-of-sample filtering. The FUT filter provides
 robustness against out-of-sample outliers. If the usual Kalman filter is
 desired, we can set the argument `threshold = Inf`. We try both filters:
 
@@ -486,6 +481,6 @@ standard Kalman filter.
 
 ### References
 
-Shankar, R., Wilms, I., Raymaekers, J., & Tarr, G. (2025). Robust
-outlier-adjusted mean-shift estimation of state-space models.
-<https://arxiv.org/abs/????.?????>
+Shankar, R., Wilms, I., Raymaekers, J., & Tarr, G. (2026). Outlier
+detection in state-space models using mean-shift penalisation.
+<https://arxiv.org/abs/2511.15155>

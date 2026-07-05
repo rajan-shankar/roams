@@ -79,7 +79,7 @@
     
     
 <blockquote>
-<p>This page shows how the examples in Sections 5.1 and 5.2 of <span class="citation">Shankar et al. (2025)</span> are generated.</p>
+<p>This page shows how the examples in Sections 5.1 and 5.2 of <span class="citation">Shankar et al. (2026)</span> are generated.</p>
 </blockquote>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/rajan-shankar/roams" class="external-link">roams</a></span><span class="op">)</span></span>
@@ -121,7 +121,7 @@ process depends on the previous states, <span class="math inline">\(\mathbf{z}_{
 it easier to understand the model dynamics, but in order to estimate the
 parameters of the model, the model must be converted into state-space
 form. See the beginning of Section 4 of <span class="citation">Shankar
-et al. (2025)</span> for a summary on how this is done.</p>
+et al. (2026)</span> for a summary on how this is done.</p>
 <div class="section level2 tabset">
 <h2 class="tabset" id="animals">Animals<a class="anchor" aria-label="anchor" href="#animals"></a>
 </h2>
@@ -683,7 +683,7 @@ reported.</p>
 <h3 id="table-of-msfes-per-animal">Table of MSFEs per animal<a class="anchor" aria-label="anchor" href="#table-of-msfes-per-animal"></a>
 </h3>
 <p>This table forms part of Table 3 of <span class="citation">Shankar et
-al. (2025)</span>. The MSFEs are reported relative to the classical
+al. (2026)</span>. The MSFEs are reported relative to the classical
 method.</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">results</span> <span class="op">|&gt;</span> </span>
@@ -886,7 +886,7 @@ method.</p>
 <h3 id="table-of-data-set-information">Table of data set information<a class="anchor" aria-label="anchor" href="#table-of-data-set-information"></a>
 </h3>
 <p>This table forms part of Table 2 of <span class="citation">Shankar et
-al. (2025)</span>. Other ROAMS fit-related information is displayed as
+al. (2026)</span>. Other ROAMS fit-related information is displayed as
 well, such as <code>lambda</code> chosen and number of
 <code>iterations</code>.</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
@@ -1221,7 +1221,7 @@ these data sets).</p>
 <div class="section level2">
 <h2 id="blue-whale-plots">Blue whale plots<a class="anchor" aria-label="anchor" href="#blue-whale-plots"></a>
 </h2>
-<p>This section reproduces the outputs in Section 5.2 of <span class="citation">Shankar et al. (2025)</span>.</p>
+<p>This section reproduces the outputs in Section 5.2 of <span class="citation">Shankar et al. (2026)</span>.</p>
 <div class="section level3">
 <h3 id="map">Map<a class="anchor" aria-label="anchor" href="#map"></a>
 </h3>
@@ -1355,7 +1355,7 @@ these data sets).</p>
 <div class="section level3">
 <h3 id="map-bic-and-proportion-outlying-curves">Map + BIC and proportion outlying curves<a class="anchor" aria-label="anchor" href="#map-bic-and-proportion-outlying-curves"></a>
 </h3>
-<p>Figure 7 of <span class="citation">Shankar et al. (2025)</span>:</p>
+<p>Figure 7 of <span class="citation">Shankar et al. (2026)</span>:</p>
 <div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">p2</span> <span class="op">=</span> <span class="va">roams_model_list</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/autoplot.html" class="external-link">autoplot</a></span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
@@ -1366,7 +1366,7 @@ these data sets).</p>
 <div class="section level3">
 <h3 id="table-of-parameter-estimates">Table of parameter estimates<a class="anchor" aria-label="anchor" href="#table-of-parameter-estimates"></a>
 </h3>
-<p>Table 4 of <span class="citation">Shankar et al. (2025)</span>:</p>
+<p>Table 4 of <span class="citation">Shankar et al. (2026)</span>:</p>
 <div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">roams_model</span> <span class="op">=</span> <span class="fu"><a href="../reference/best_BIC_model.html">best_BIC_model</a></span><span class="op">(</span><span class="va">roams_model_list</span><span class="op">)</span></span>
 <span><span class="va">roams_model</span> <span class="op">=</span> <span class="fu"><a href="../reference/attach_insample_info.html">attach_insample_info</a></span><span class="op">(</span><span class="va">roams_model</span><span class="op">)</span></span>
@@ -1466,8 +1466,8 @@ A., … Thomas, L. (2021). A guide to state–space modeling of ecological
 time series. <em>Ecological Monographs</em>, 91(4), e01470. DOI:<a href="https://doi.org/10.1002/ecm.1470" class="external-link">10.1002/ecm.1470</a>
 </div>
 <div id="ref-shankar2025" class="csl-entry">
-Shankar, R., Wilms, I., Raymaekers, J., &amp; Tarr, G. (2025). Robust
-outlier-adjusted mean-shift estimation of state-space models. <a href="https://arxiv.org/abs/????.?????" class="external-link">https://arxiv.org/abs/????.?????</a>
+Shankar, R., Wilms, I., Raymaekers, J., &amp; Tarr, G. (2026). Outlier
+detection in state-space models using mean-shift penalisation. <a href="https://arxiv.org/abs/2511.15155" class="external-link">https://arxiv.org/abs/2511.15155</a>
 </div>
 </div>
 </div>

@@ -1,7 +1,7 @@
 # DCRW examples
 
 > This page shows how the examples in Sections 5.1 and 5.2 of Shankar et
-> al. (2025) are generated.
+> al. (2026) are generated.
 
 ``` r
 
@@ -44,7 +44,7 @@ process depends on the previous states, \\\mathbf{z}\_{t-1}\\ and
 \\\mathbf{z}\_{t-2}\\. This presentation makes it easier to understand
 the model dynamics, but in order to estimate the parameters of the
 model, the model must be converted into state-space form. See the
-beginning of Section 4 of Shankar et al. (2025) for a summary on how
+beginning of Section 4 of Shankar et al. (2026) for a summary on how
 this is done.
 
 ## Animals
@@ -593,7 +593,7 @@ results = read_rds("data/results.rds")
 
 ### Table of MSFEs per animal
 
-This table forms part of Table 3 of Shankar et al. (2025). The MSFEs are
+This table forms part of Table 3 of Shankar et al. (2026). The MSFEs are
 reported relative to the classical method.
 
 ``` r
@@ -669,7 +669,7 @@ results |>
 
 ### Table of data set information
 
-This table forms part of Table 2 of Shankar et al. (2025). Other ROAMS
+This table forms part of Table 2 of Shankar et al. (2026). Other ROAMS
 fit-related information is displayed as well, such as `lambda` chosen
 and number of `iterations`.
 
@@ -940,7 +940,7 @@ wrap_plots(plots) + plot_layout(ncol = 2)
 ## Blue whale plots
 
 This section reproduces the outputs in Section 5.2 of Shankar et al.
-(2025).
+(2026).
 
 ### Map
 
@@ -1089,7 +1089,7 @@ p1
 
 ### Map + BIC and proportion outlying curves
 
-Figure 7 of Shankar et al. (2025):
+Figure 7 of Shankar et al. (2026):
 
 ``` r
 
@@ -1103,7 +1103,7 @@ p1 + p2
 
 ### Table of parameter estimates
 
-Table 4 of Shankar et al. (2025):
+Table 4 of Shankar et al. (2026):
 
 ``` r
 
@@ -1173,6 +1173,6 @@ A., … Thomas, L. (2021). A guide to state–space modeling of ecological
 time series. *Ecological Monographs*, 91(4), e01470.
 DOI:[10.1002/ecm.1470](https://doi.org/10.1002/ecm.1470)
 
-Shankar, R., Wilms, I., Raymaekers, J., & Tarr, G. (2025). Robust
-outlier-adjusted mean-shift estimation of state-space models.
-<https://arxiv.org/abs/????.?????>
+Shankar, R., Wilms, I., Raymaekers, J., & Tarr, G. (2026). Outlier
+detection in state-space models using mean-shift penalisation.
+<https://arxiv.org/abs/2511.15155>

@@ -195,7 +195,8 @@ for (tb in tbs) {
         sigma2_v_lat = true_par[5],
         initial_state = c(0, 0, 0, 0),
         seed = as.numeric(str_remove(seed, "seed"))
-      )
+      ) |>
+        mutate(trajectory_bias = tb)
     ) |>
     filter(setting == "velocity-biased")
 }
