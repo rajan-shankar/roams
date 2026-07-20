@@ -82,7 +82,7 @@ The ROAMS procedure alternates between estimating model parameters via maximum l
   \item The adjusted data \code{adj_y} is updated and passed to the next iteration.
 }
 
-Under \strong{hard thresholding}, observations whose penalised Mahalanobis score \eqn{d_t^2 + \log|\mathbf{S}_{t|t-1}|} exceeds \eqn{\lambda^2} are fully removed (set to missing), equivalent to setting \eqn{\hat{\gamma}_t = r_t}. Under \strong{soft thresholding}, a group-LASSO shrinkage operator is applied: \eqn{\hat{\gamma}_t = \max(1 - \lambda / d_t,\, 0)\, r_t}, where \eqn{d_t} is the Mahalanobis distance of the one-step-ahead residual. Partial adjustments are retained in the data (\code{adj_y = y - gamma}) rather than treating observations as missing.
+Under \strong{hard thresholding}, observations whose penalised Mahalanobis score \eqn{d_t^2 + \log|\mathbf{S}_{t|t-1}|} exceeds \eqn{\lambda^2} are fully removed (set to missing), equivalent to setting \eqn{\hat{\gamma}_t = r_t}. Under \strong{soft thresholding}, a LASSO shrinkage operator is applied: \eqn{\hat{\gamma}_t = \max(1 - \lambda / d_t,\, 0)\, r_t}, where \eqn{d_t} is the Mahalanobis distance of the one-step-ahead residual. Partial adjustments are retained in the data (\code{adj_y = y - gamma}) rather than treating observations as missing.
 
 The algorithm stops when the change in parameters and outlier estimates is sufficiently small or if too many outliers are detected (more than 50\% of complete observations).
 }
