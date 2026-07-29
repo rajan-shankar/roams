@@ -120,7 +120,7 @@ roams_SSM(
   `"hard"` (default) or `"soft"`. Hard thresholding fully removes
   flagged observations (sets them to missing), corresponding to an L0
   penalty on the outlier shifts \\\gamma\\. Soft thresholding applies a
-  continuous LASSO shrinkage to each \\\gamma_t\\, partially adjusting
+  continuous LASSO shrinkage to each \\\pmb{\gamma}_t\\, partially adjusting
   observations rather than discarding them entirely, which corresponds
   to an L1 penalty.
 
@@ -169,7 +169,7 @@ Mahalanobis distance of residuals. For each iteration:
 2.  Mahalanobis distance of residuals (Mahalanobis residuals) are
     computed.
 
-3.  Outlier shift estimates \\\gamma_t\\ are updated using the selected
+3.  Outlier shift estimates \\\pmb{\gamma}_t\\ are updated using the selected
     thresholding rule.
 
 4.  The adjusted data `adj_y` is updated and passed to the next

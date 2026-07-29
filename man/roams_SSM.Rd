@@ -51,7 +51,7 @@ roams_SSM(
 
 \item{control}{A named list of control options to pass to \code{optim} via \code{dlm::dlmMLE()}. Default is \code{list(parscale = init_par)}, which can help the optimizer if parameters are on vastly different scales.}
 
-\item{thresholding}{Character string specifying the outlier thresholding rule. Either \code{"hard"} (default) or \code{"soft"}. Hard thresholding fully removes flagged observations (sets them to missing), corresponding to an L0 penalty on the outlier shifts \eqn{\gamma}. Soft thresholding applies a continuous LASSO shrinkage to each \eqn{\gamma_t}, partially adjusting observations rather than discarding them entirely, which corresponds to an L1 penalty.}
+\item{thresholding}{Character string specifying the outlier thresholding rule. Either \code{"hard"} (default) or \code{"soft"}. Hard thresholding fully removes flagged observations (sets them to missing), corresponding to an L0 penalty on the outlier shifts \eqn{\pmb{\gamma}}. Soft thresholding applies a continuous LASSO shrinkage to each \eqn{\pmb{\gamma}_t}, partially adjusting observations rather than discarding them entirely, which corresponds to an L1 penalty.}
 }
 \value{
 If more than one \eqn{\lambda} values are used, returns an object of class \code{roams_SSM_list} — a list containing a \code{roams_SSM} model for each \eqn{\lambda}. If only one \eqn{\lambda} value is used (i.e. \code{custom_lambdas} is manually specified as a single value), returns a single \code{roams_SSM} object.
@@ -78,11 +78,11 @@ The ROAMS procedure alternates between estimating model parameters via maximum l
 \enumerate{
   \item A \code{dlm} model is fit using \code{dlm::dlmMLE()}.
   \item Mahalanobis distance of residuals (Mahalanobis residuals) are computed.
-  \item Outlier shift estimates \eqn{\gamma_t} are updated using the selected thresholding rule.
+  \item Outlier shift estimates \eqn{\pmb{\gamma}_t} are updated using the selected thresholding rule.
   \item The adjusted data \code{adj_y} is updated and passed to the next iteration.
 }
 
-Under \strong{hard thresholding}, observations whose penalised Mahalanobis score \eqn{d_t^2 + \log|\mathbf{S}_{t|t-1}|} exceeds \eqn{\lambda^2} are fully removed (set to missing), equivalent to setting \eqn{\hat{\gamma}_t = r_t}. Under \strong{soft thresholding}, a LASSO shrinkage operator is applied: \eqn{\hat{\gamma}_t = \max(1 - \lambda / d_t,\, 0)\, r_t}, where \eqn{d_t} is the Mahalanobis distance of the one-step-ahead residual. Partial adjustments are retained in the data (\code{adj_y = y - gamma}) rather than treating observations as missing.
+Under \strong{hard thresholding}, observations whose penalised Mahalanobis score \eqn{d_t^2 + \log|\mathbf{S}_{t|t-1}|} exceeds \eqn{\lambda^2} are fully removed (set to missing), equivalent to setting \eqn{\hat{\pmb{\gamma}}_t = \mathbf{r}_t}. Under \strong{soft thresholding}, a LASSO shrinkage operator is applied: \eqn{\hat{\pmb{\gamma}}_t = \max(1 - \lambda / d_t,\, 0)\, \mathbf{r}_t}, where \eqn{d_t} is the Mahalanobis distance of the one-step-ahead residual. Partial adjustments are retained in the data (\code{adj_y = y - gamma}) rather than treating observations as missing.
 
 The algorithm stops when the change in parameters and outlier estimates is sufficiently small or if too many outliers are detected (more than 50\% of complete observations).
 }

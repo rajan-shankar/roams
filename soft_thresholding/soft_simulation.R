@@ -1,5 +1,5 @@
 num_cores = 25
-num_samples = 5
+num_samples = 100
 data_path = "/scratch/bp72/rs9777/sim_results_roams/"
 
 .libPaths("R_lib")

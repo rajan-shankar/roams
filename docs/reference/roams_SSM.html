@@ -131,7 +131,7 @@
 
 
 <dt id="arg-thresholding">thresholding<a class="anchor" aria-label="anchor" href="#arg-thresholding"></a></dt>
-<dd><p>Character string specifying the outlier thresholding rule. Either <code>"hard"</code> (default) or <code>"soft"</code>. Hard thresholding fully removes flagged observations (sets them to missing), corresponding to an L0 penalty on the outlier shifts \(\gamma\). Soft thresholding applies a continuous LASSO shrinkage to each \(\gamma_t\), partially adjusting observations rather than discarding them entirely, which corresponds to an L1 penalty.</p></dd>
+<dd><p>Character string specifying the outlier thresholding rule. Either <code>"hard"</code> (default) or <code>"soft"</code>. Hard thresholding fully removes flagged observations (sets them to missing), corresponding to an L0 penalty on the outlier shifts \(\gamma\). Soft thresholding applies a continuous LASSO shrinkage to each \(\pmb{\gamma}_t\), partially adjusting observations rather than discarding them entirely, which corresponds to an L1 penalty.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -152,7 +152,7 @@
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>The ROAMS procedure alternates between estimating model parameters via maximum likelihood and identifying outlying observations based on Mahalanobis distance of residuals. For each iteration:</p><ol><li><p>A <code>dlm</code> model is fit using <code><a href="https://rdrr.io/pkg/dlm/man/dlmMLE.html" class="external-link">dlm::dlmMLE()</a></code>.</p></li>
 <li><p>Mahalanobis distance of residuals (Mahalanobis residuals) are computed.</p></li>
-<li><p>Outlier shift estimates \(\gamma_t\) are updated using the selected thresholding rule.</p></li>
+<li><p>Outlier shift estimates \(\pmb{\gamma}_t\) are updated using the selected thresholding rule.</p></li>
 <li><p>The adjusted data <code>adj_y</code> is updated and passed to the next iteration.</p></li>
 </ol><p>Under <strong>hard thresholding</strong>, observations whose penalised Mahalanobis score \(d_t^2 + \log|\mathbf{S}_{t|t-1}|\) exceeds \(\lambda^2\) are fully removed (set to missing), equivalent to setting \(\hat{\gamma}_t = r_t\). Under <strong>soft thresholding</strong>, a group-LASSO shrinkage operator is applied: \(\hat{\gamma}_t = \max(1 - \lambda / d_t,\, 0)\, r_t\), where \(d_t\) is the Mahalanobis distance of the one-step-ahead residual. Partial adjustments are retained in the data (<code>adj_y = y - gamma</code>) rather than treating observations as missing.</p>
 <p>The algorithm stops when the change in parameters and outlier estimates is sufficiently small or if too many outliers are detected (more than 50% of complete observations).</p>

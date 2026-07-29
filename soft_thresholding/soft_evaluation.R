@@ -1,6 +1,6 @@
 # Evals
-roams_hard = read_rds("soft_thresholding/roams_hard_B5_2025.4.rds")
-roams_soft = read_rds("soft_thresholding/roams_soft_B5_2025.4.rds")
+roams_hard = read_rds("soft_thresholding/roams_hard_B100_2025.4.rds") |> dplyr::select(best_BIC_model)
+roams_soft = read_rds("soft_thresholding/roams_soft_B100_2025.4.rds") |> dplyr::select(best_BIC_model)
 model_fits = bind_cols(
   data_study4,
   roams_hard |> select(best_BIC_model) |> rename(roams_hard = best_BIC_model),
@@ -45,11 +45,63 @@ get_MSFE = function(model, method, y_oos) {
 }
 get_insample_fit_error = function(model, x) {
   model_extra = attach_insample_info(model)
-  fit = model_extra$smoothed_observations
+  fit = model_extra$predicted_observations
   squared_errors = rowSums((fit - x[,1:2])^2)
   RMSE = sqrt(mean(squared_errors))
   return(RMSE)
 }
+
+
+row_num = 400
+rs = roams_soft |>
+  slice(row_num) |>
+  pull(best_BIC_model) |>
+  pluck(1)
+
+rh = roams_hard |>
+  slice(row_num) |>
+  pull(best_BIC_model) |>
+  pluck(1)
+
+# Plot
+
+tibble(soft_gamma = sqrt(rowSums((rs$gamma)^2)),
+       hard_gamma = sqrt(rowSums((rh$gamma)^2)),
+       true_outliers = data_study4 |> slice(row_num) |> pull(outlier_locs) |> pluck(1)) |>
+ggplot() +
+  aes(x = soft_gamma, y = hard_gamma, colour = factor(true_outliers)) +
+  geom_point() +
+  geom_abline()
+
+res_ml = data_study4 |> slice(row_num)
+path_data = tibble(
+  y1 = res_ml$y[[1]][,1],
+  y2 = res_ml$y[[1]][,2],
+  x1 = res_ml$x[[1]][,1],
+  x2 = res_ml$x[[1]][,2],
+  outlier_locs = factor(res_ml$outlier_locs[[1]]),
+  y1_hard_fit = attach_insample_info(rh)$smoothed_observations[,1],
+  y2_hard_fit = attach_insample_info(rh)$smoothed_observations[,2],
+  flagged = (sqrt(rowSums((rh$gamma)^2)) != 0)
+)
+
+path_data |>
+  ggplot() +
+  geom_point(aes(x = y1, y = y2, colour = outlier_locs)) +
+  geom_point(data = path_data |>
+               filter(flagged),
+             aes(x = y1, y = y2),
+             pch = 1, colour = "orange", size = 3) +
+  geom_path(aes(x = x1, y = x2), colour = "black",
+            linewidth = 0.8) +
+  geom_path(aes(x = y1_hard_fit, y = y2_hard_fit), colour = "orange",
+            linewidth = 0.8) +
+  scale_color_manual(values = c("darkgrey", "red")) +
+  theme_bw() +
+  theme(legend.position = "none")
+#
+
+
 
 eval_start = Sys.time()
 eval_metrics = model_fits |>
@@ -85,14 +137,33 @@ eval_metrics = model_fits |>
 eval_end = Sys.time()
 eval_end - eval_start
 
+
+theme_set(theme_bw(base_size = 14))
 eval_metrics |>
   group_by(n, method, trajectory_bias) |>
-  summarise(metric = mean(fit_error)) |>
+  summarise(mean = mean(MSFE),
+            se = sd(MSFE) / sqrt(n())) |>
   ggplot() +
-  aes(x = trajectory_bias, y = metric, colour = method,
-      group = method) +
-  geom_point() +
-  geom_line() +
-  facet_wrap(~ factor(n))
+  aes(x = trajectory_bias, y = mean, colour = method,
+      group = method, ymin = mean - se, ymax = mean + se) +
+  geom_point(size = 2) +
+  geom_line(linewidth = 0.8) +
+  geom_ribbon(aes(fill = method), alpha = 0.2, colour = NA) +
+  facet_wrap(~ factor(n), nrow = 1,
+             labeller = as_labeller(function(x) paste0("n = ", x))) +
+  scale_colour_discrete(labels = c("roams_hard" = "ROAMS (hard thresholding)",
+                                   "roams_soft" = "ROAMS (soft thresholding)")) +
+  scale_fill_discrete(labels = c("roams_hard" = "ROAMS (hard thresholding)",
+                                 "roams_soft" = "ROAMS (soft thresholding)")) +
+  scale_x_continuous(breaks = c(0, 0.25, 0.5, 0.75, 1),
+                     labels = c("0", "0.25", "0.5", "0.75", "1")) +
+  # scale_y_continuous(labels = scales::percent) +
+  theme(legend.position = "bottom") +
+  labs(y = "MSFE",
+       x = "Velocity bias", colour = NULL, fill = NULL)
 
+ggsave(paste0("soft_thresholding/soft_MSFE.pdf"),
+       width = 7, height = 3)
+# ggsave(paste0("soft_thresholding/soft_insample_forecast_error.pdf"),
+#        width = 7, height = 3)
 

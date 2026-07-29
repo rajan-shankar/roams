@@ -1132,7 +1132,7 @@ tibble(
 
 ### Path plot of gamma shift parameters
 
-This plot shows how the \\L_2\\-norm of the \\\boldsymbol{\gamma}\_t\\
+This plot shows how the \\L_2\\-norm of the \\\pmb{\gamma}\_t\\
 parameter changes as \\\lambda\\ increases, for \\t=1,\dots,n\\. It can
 give insight into how different timepoints are flagged/unflagged as
 outliers depending on the value of \\\lambda\\. The four timepoints with
@@ -1160,7 +1160,7 @@ roams_model_list |>
               slice_max(gamma_L2, n = 4),
             aes(label = timepoint)) +
     labs(x = latex2exp::TeX("$\\lambda$"),
-         y = latex2exp::TeX("$L_2 \\ norm \\ of \\ \\gamma_t$")) +
+         y = latex2exp::TeX("$L_2 \\ norm \\ of \\ \\pmb{\\gamma}_t$")) +
   theme(legend.position = "none"))()
 ```
 

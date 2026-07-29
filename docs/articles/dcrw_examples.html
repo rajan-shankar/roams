@@ -70,14 +70,14 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>DCRW examples</h1>
-            
-      
+
+
       <small class="dont-index">Source: <a href="https://github.com/rajan-shankar/roams/blob/HEAD/vignettes/dcrw_examples.Rmd" class="external-link"><code>vignettes/dcrw_examples.Rmd</code></a></small>
       <div class="d-none name"><code>dcrw_examples.Rmd</code></div>
     </div>
 
-    
-    
+
+
 <blockquote>
 <p>This page shows how the examples in Sections 5.1 and 5.2 of <span class="citation">Shankar et al. (2026)</span> are generated.</p>
 </blockquote>
@@ -1425,7 +1425,7 @@ these data sets).</p>
 <h3 id="path-plot-of-gamma-shift-parameters">Path plot of gamma shift parameters<a class="anchor" aria-label="anchor" href="#path-plot-of-gamma-shift-parameters"></a>
 </h3>
 <p>This plot shows how the <span class="math inline">\(L_2\)</span>-norm
-of the <span class="math inline">\(\boldsymbol{\gamma}_t\)</span>
+of the <span class="math inline">\(\pmb{\gamma}_t\)</span>
 parameter changes as <span class="math inline">\(\lambda\)</span>
 increases, for <span class="math inline">\(t=1,\dots,n\)</span>. It can
 give insight into how different timepoints are flagged/unflagged as
@@ -1453,7 +1453,7 @@ largest <span class="math inline">\(L_2\)</span>-norm at the lowest
 <span>              <span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html" class="external-link">slice_max</a></span><span class="op">(</span><span class="va">gamma_L2</span>, n <span class="op">=</span> <span class="fl">4</span><span class="op">)</span>,</span>
 <span>            <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>label <span class="op">=</span> <span class="va">timepoint</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fu">latex2exp</span><span class="fu">::</span><span class="fu"><a href="https://www.stefanom.io/latex2exp/reference/TeX.html" class="external-link">TeX</a></span><span class="op">(</span><span class="st">"$\\lambda$"</span><span class="op">)</span>,</span>
-<span>         y <span class="op">=</span> <span class="fu">latex2exp</span><span class="fu">::</span><span class="fu"><a href="https://www.stefanom.io/latex2exp/reference/TeX.html" class="external-link">TeX</a></span><span class="op">(</span><span class="st">"$L_2 \\ norm \\ of \\ \\gamma_t$"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>         y <span class="op">=</span> <span class="fu">latex2exp</span><span class="fu">::</span><span class="fu"><a href="https://www.stefanom.io/latex2exp/reference/TeX.html" class="external-link">TeX</a></span><span class="op">(</span><span class="st">"$L_2 \\ norm \\ of \\ \\pmb{\\gamma}_t$"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"none"</span><span class="op">)</span><span class="op">)</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <p><img src="dcrw_examples_files/figure-html/unnamed-chunk-20-1.png" class="r-plt" alt="" width="700"></p>
 <div class="section level4 unnumbered">
