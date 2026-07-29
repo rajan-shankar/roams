@@ -119,10 +119,10 @@ roams_SSM(
   Character string specifying the outlier thresholding rule. Either
   `"hard"` (default) or `"soft"`. Hard thresholding fully removes
   flagged observations (sets them to missing), corresponding to an L0
-  penalty on the outlier shifts \\\gamma\\. Soft thresholding applies a
-  continuous LASSO shrinkage to each \\\pmb{\gamma}_t\\, partially adjusting
-  observations rather than discarding them entirely, which corresponds
-  to an L1 penalty.
+  penalty on the outlier shifts \\\pmb{\gamma}\\. Soft thresholding
+  applies a continuous LASSO shrinkage to each \\\pmb{\gamma}\_t\\,
+  partially adjusting observations rather than discarding them entirely,
+  which corresponds to an L1 penalty.
 
 ## Value
 
@@ -169,20 +169,21 @@ Mahalanobis distance of residuals. For each iteration:
 2.  Mahalanobis distance of residuals (Mahalanobis residuals) are
     computed.
 
-3.  Outlier shift estimates \\\pmb{\gamma}_t\\ are updated using the selected
-    thresholding rule.
+3.  Outlier shift estimates \\\pmb{\gamma}\_t\\ are updated using the
+    selected thresholding rule.
 
 4.  The adjusted data `adj_y` is updated and passed to the next
     iteration.
 
 Under **hard thresholding**, observations whose penalised Mahalanobis
 score \\d_t^2 + \log\|\mathbf{S}\_{t\|t-1}\|\\ exceeds \\\lambda^2\\ are
-fully removed (set to missing), equivalent to setting \\\hat{\gamma}\_t
-= r_t\\. Under **soft thresholding**, a group-LASSO shrinkage operator
-is applied: \\\hat{\gamma}\_t = \max(1 - \lambda / d_t,\\ 0)\\ r_t\\,
-where \\d_t\\ is the Mahalanobis distance of the one-step-ahead
-residual. Partial adjustments are retained in the data
-(`adj_y = y - gamma`) rather than treating observations as missing.
+fully removed (set to missing), equivalent to setting
+\\\hat{\pmb{\gamma}}\_t = \mathbf{r}\_t\\. Under **soft thresholding**,
+a LASSO shrinkage operator is applied: \\\hat{\pmb{\gamma}}\_t =
+\max(1 - \lambda / d_t,\\ 0)\\ \mathbf{r}\_t\\, where \\d_t\\ is the
+Mahalanobis distance of the one-step-ahead residual. Partial adjustments
+are retained in the data (`adj_y = y - gamma`) rather than treating
+observations as missing.
 
 The algorithm stops when the change in parameters and outlier estimates
 is sufficiently small or if too many outliers are detected (more than

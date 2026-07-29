@@ -70,14 +70,14 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>DCRW examples</h1>
-
-
+            
+      
       <small class="dont-index">Source: <a href="https://github.com/rajan-shankar/roams/blob/HEAD/vignettes/dcrw_examples.Rmd" class="external-link"><code>vignettes/dcrw_examples.Rmd</code></a></small>
       <div class="d-none name"><code>dcrw_examples.Rmd</code></div>
     </div>
 
-
-
+    
+    
 <blockquote>
 <p>This page shows how the examples in Sections 5.1 and 5.2 of <span class="citation">Shankar et al. (2026)</span> are generated.</p>
 </blockquote>
@@ -1425,13 +1425,12 @@ these data sets).</p>
 <h3 id="path-plot-of-gamma-shift-parameters">Path plot of gamma shift parameters<a class="anchor" aria-label="anchor" href="#path-plot-of-gamma-shift-parameters"></a>
 </h3>
 <p>This plot shows how the <span class="math inline">\(L_2\)</span>-norm
-of the <span class="math inline">\(\pmb{\gamma}_t\)</span>
-parameter changes as <span class="math inline">\(\lambda\)</span>
-increases, for <span class="math inline">\(t=1,\dots,n\)</span>. It can
-give insight into how different timepoints are flagged/unflagged as
-outliers depending on the value of <span class="math inline">\(\lambda\)</span>. The four timepoints with the
-largest <span class="math inline">\(L_2\)</span>-norm at the lowest
-<span class="math inline">\(\lambda\)</span> have been labelled.</p>
+of the <span class="math inline">\(\pmb{\gamma}_t\)</span> parameter
+changes as <span class="math inline">\(\lambda\)</span> increases, for
+<span class="math inline">\(t=1,\dots,n\)</span>. It can give insight
+into how different timepoints are flagged/unflagged as outliers
+depending on the value of <span class="math inline">\(\lambda\)</span>.
+The four timepoints with the largest <span class="math inline">\(L_2\)</span>-norm at the lowest <span class="math inline">\(\lambda\)</span> have been labelled.</p>
 <div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">roams_model_list</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="../reference/get_attribute.html">get_attribute</a></span><span class="op">(</span><span class="st">"gamma"</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
