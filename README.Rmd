@@ -23,7 +23,7 @@ It includes functionality for fitting benchmark models, visualizing model select
 Simulation tools for generating synthetic data under a first-differenced correlated random walk (DCRW) model are also included. 
 Designed with flexibility for user-defined model structures via the `specify_SSM()` interface. 
 
-See the corresponding ROAMS paper (pre-print) here: [arxiv.org/abs/2511.15155](https://arxiv.org/abs/2511.15155)
+See the corresponding ROAMS paper published in *Statistics and Computing* here: [https://doi.org/10.1007/s11222-026-10935-4](https://doi.org/10.1007/s11222-026-10935-4)
 
 ## Installation
 

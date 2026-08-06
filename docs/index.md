@@ -11,8 +11,8 @@ structures via the
 [`specify_SSM()`](https://rajan-shankar.github.io/roams/reference/specify_SSM.md)
 interface.
 
-See the corresponding ROAMS paper (pre-print) here:
-[arxiv.org/abs/2511.15155](https://arxiv.org/abs/2511.15155)
+See the corresponding ROAMS paper published in *Statistics and
+Computing* here: <https://doi.org/10.1007/s11222-026-10935-4>
 
 ## Installation
 

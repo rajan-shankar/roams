@@ -1028,4 +1028,5 @@ p1 + p2 + plot_layout(ncol = 2, axes = "collect", guides = "collect")
 
 Shankar, R., Wilms, I., Raymaekers, J., & Tarr, G. (2026). Outlier
 detection in state-space models using mean-shift penalisation.
-<https://arxiv.org/abs/2511.15155>
+*Statistics and Computing*, 36(4), 176.
+DOI:[10.1007/s11222-026-10935-4](https://doi.org/10.1007/s11222-026-10935-4)
