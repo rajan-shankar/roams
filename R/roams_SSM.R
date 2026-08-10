@@ -74,6 +74,16 @@ roams_SSM = function(
     warning("Input data has more columns than rows. Did you forget to transpose your data? This function expects each row to represent a time point (i.e., observations in rows).")
   }
 
+  if (!is.null(control$parscale) && any(control$parscale == 0)) {
+    stop(
+      "control$parscale contains zeros, which will cause optim() to fail. ",
+      "This typically happens when init_par contains zeros, since the default ",
+      "control sets parscale = init_par. ",
+      "Either use non-zero initial values or supply a custom control, e.g. ",
+      "control = list(parscale = rep(1, length(init_par)))."
+    )
+  }
+
   if (any(is.na(custom_lambdas))) {
   # Completely automatic fit
 
@@ -345,6 +355,13 @@ run_IPOD = function(
   return(model)
 }
 
+# dlm returns state vectors (not matrices) when dim_state = 1.
+# This coerces them back to proper matrices so all downstream code
+# can use consistent two-dimensional indexing.
+ensure_state_matrix = function(x, dim_state) {
+  if (!is.matrix(x)) matrix(x, ncol = dim_state) else x
+}
+
 # Wrap a build function to pre-supply named extra arguments.
 # When build_args is empty, returns build unchanged — no closure overhead,
 # and model$build remains the user's original function.
@@ -486,11 +503,15 @@ dlmInfo = function(y, adj_y, model, build) {
   filter_output   = dlm::dlmFilter(adj_y, mod = build(model$par))
   smoother_output = dlm::dlmSmooth(filter_output)
 
-  A_base = filter_output$mod$FF
-  X_cov  = filter_output$mod$X    # NULL when no covariates
-  JFF    = filter_output$mod$JFF  # NULL when no covariates
-  V      = filter_output$mod$V
-  n      = nrow(y)
+  A_base    = filter_output$mod$FF
+  X_cov     = filter_output$mod$X    # NULL when no covariates
+  JFF       = filter_output$mod$JFF  # NULL when no covariates
+  V         = filter_output$mod$V
+  n         = nrow(y)
+  dim_state = nrow(filter_output$mod$GG)
+
+  filter_output$m   = ensure_state_matrix(filter_output$m,   dim_state)
+  smoother_output$s = ensure_state_matrix(smoother_output$s, dim_state)
 
   P_tt_1_list = dlm::dlmSvd2var(filter_output$U.R, filter_output$D.R)
   S     = compute_S_list(P_tt_1_list, A_base, JFF, X_cov, V)
@@ -585,11 +606,16 @@ attach_insample_info = function(model) {
   filter_output   = dlm::dlmFilter(adj_y, mod = model$build(model$par))
   smoother_output = dlm::dlmSmooth(filter_output)
 
-  A_base = filter_output$mod$FF
-  X_cov  = filter_output$mod$X    # NULL when no covariates
-  JFF    = filter_output$mod$JFF  # NULL when no covariates
-  V      = filter_output$mod$V
-  n      = nrow(y)
+  A_base    = filter_output$mod$FF
+  X_cov     = filter_output$mod$X    # NULL when no covariates
+  JFF       = filter_output$mod$JFF  # NULL when no covariates
+  V         = filter_output$mod$V
+  n         = nrow(y)
+  dim_state = nrow(filter_output$mod$GG)
+
+  filter_output$m   = ensure_state_matrix(filter_output$m,   dim_state)
+  filter_output$a   = ensure_state_matrix(filter_output$a,   dim_state)
+  smoother_output$s = ensure_state_matrix(smoother_output$s, dim_state)
 
   P_tt_1      = dlm::dlmSvd2var(filter_output$U.R, filter_output$D.R)
   S           = compute_S_list(P_tt_1, A_base, JFF, X_cov, V)
@@ -701,11 +727,15 @@ oos_filter = function(y_oos, model, build,
 
   filter_output = dlm::dlmFilter(adj_y, mod = build(model$par))
 
-  A_base = filter_output$mod$FF
-  X_cov  = filter_output$mod$X    # NULL when no covariates
-  JFF    = filter_output$mod$JFF  # NULL when no covariates
-  V      = filter_output$mod$V
-  n      = nrow(y)
+  A_base    = filter_output$mod$FF
+  X_cov     = filter_output$mod$X    # NULL when no covariates
+  JFF       = filter_output$mod$JFF  # NULL when no covariates
+  V         = filter_output$mod$V
+  n         = nrow(y)
+  dim_state = nrow(filter_output$mod$GG)
+
+  filter_output$m = ensure_state_matrix(filter_output$m, dim_state)
+  filter_output$a = ensure_state_matrix(filter_output$a, dim_state)
 
   P_tt_1 = dlm::dlmSvd2var(filter_output$U.R, filter_output$D.R)
   S      = compute_S_list(P_tt_1, A_base, JFF, X_cov, V)
