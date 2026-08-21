@@ -2,7 +2,7 @@
 % Please edit documentation in R/roams_SSM.R
 \name{roams_SSM}
 \alias{roams_SSM}
-\title{Robust Outlier-Adjusted Mean-Shift Estimation of State Space Models}
+\title{Robust Outlier-Adjusted Mean-Shift Estimation of State-Space Models}
 \usage{
 roams_SSM(
   y,
@@ -71,7 +71,7 @@ Each \code{roams_SSM} object includes:
 }
 }
 \description{
-Fits a robust state space model to multivariate time series data using iterative parameter estimation and outlier detection. This procedure is inspired by the Iterative Procedure for Outlier Detection (IPOD) algorithm of She and Owen (2011) and is applied over a sequence of regularization parameters (\eqn{\lambda}'s), identifying outliers via Mahalanobis residuals and re-fitting the model iteratively.
+Fits a robust state-space model to time-varying data using iterative parameter estimation and outlier detection. This procedure is inspired by the Iterative Procedure for Outlier Detection (IPOD) algorithm of She and Owen (2011) and is applied over a sequence of regularization parameters (\eqn{\lambda}'s), identifying outliers via Mahalanobis residuals and re-fitting the model iteratively.
 }
 \details{
 The ROAMS procedure alternates between estimating model parameters via maximum likelihood and identifying outlying observations based on Mahalanobis distance of residuals. For each iteration:

@@ -78,7 +78,7 @@ print.trimmed_robust_SSM = function(x, ...) {
 #' Generates diagnostic plots for a list of robust state space models fit across a sequence of \eqn{\lambda} values. Two model attributes are plotted against \eqn{\lambda}, each in its own panel, with a vertical dashed line indicating the model with the lowest BIC among those with fewer than 50\% outliers.
 #'
 #' @param object An object of class \code{roams_SSM_list} as returned by \code{\link{roams_SSM}} when multiple \eqn{\lambda} values are used.
-#' @param attribute1 A character string indicating the first model attribute to plot on the top panel. Options include \code{"lambda"}, \code{"prop_outlying"}, \code{"BIC"}, \code{"loglik"}, \code{"RSS"}, \code{"iterations"}, \code{"value"}, and \code{"counts"}. Defaults to \code{"BIC"}.
+#' @param attribute1 A character string indicating the first model attribute to plot on the top panel. Options include \code{"lambda"}, \code{"prop_outlying"}, \code{"BIC"}, \code{"AIC"}, \code{"HQIC"}, \code{"loglik"}, \code{"RSS"}, \code{"iterations"}, and \code{"value"}. Defaults to \code{"BIC"}.
 #' @param attribute2 A character string indicating the second model attribute to plot on the bottom panel. Uses the same options as \code{attribute1}. Defaults to \code{"prop_outlying"}.
 #' @param ... Other arguments passed to specific methods. Not used in this method.
 #'
@@ -90,6 +90,7 @@ print.trimmed_robust_SSM = function(x, ...) {
 #' @seealso \code{\link{roams_SSM}}, \code{\link{get_attribute}}
 #'
 #' @importFrom ggplot2 autoplot
+#' @importFrom patchwork wrap_plots
 #'
 #' @export
 #' @method autoplot roams_SSM_list
@@ -105,6 +106,8 @@ autoplot.roams_SSM_list = function(object,
     "lambda",
     "prop_outlying",
     "BIC",
+    "AIC",
+    "HQIC",
     "loglik",
     "RSS",
     "iterations",
@@ -116,13 +119,30 @@ autoplot.roams_SSM_list = function(object,
     stop("At least one of the attributes specified does not exist or is not numeric.")
   }
 
+  # Compute derived ICs from stored components
+  loglik    = get_attribute(model_list, "loglik")
+  nz        = get_attribute(model_list, "gamma") |>
+    purrr::map_dbl(\(g) sum(rowSums(abs(g)) != 0))
+  n_complete = get_attribute(model_list, "y") |>
+    purrr::map_dbl(\(y) sum(!is.na(y)))
+
+  computed_ics = list(
+    AIC  = 2 * nz - 2 * loglik,
+    HQIC = 2 * log(log(n_complete)) * nz - 2 * loglik
+  )
+
+  get_attr = function(attr) {
+    if (attr %in% names(computed_ics)) computed_ics[[attr]]
+    else get_attribute(model_list, attr)
+  }
+
   data = data.frame(
-    lambda = get_attribute(model_list, "lambda"),
-    BIC = get_attribute(model_list, "BIC"),
+    lambda        = get_attribute(model_list, "lambda"),
+    BIC           = get_attribute(model_list, "BIC"),
     prop_outlying = get_attribute(model_list, "prop_outlying"),
-    attribute1 = get_attribute(model_list, attribute1),
-    attribute2 = get_attribute(model_list, attribute2)
-    )
+    attribute1    = get_attr(attribute1),
+    attribute2    = get_attr(attribute2)
+  )
 
   # Compute line position (same for both panels)
   vline_data = dplyr::filter(data, prop_outlying < 0.5) |>
@@ -168,7 +188,7 @@ autoplot.roams_SSM_list = function(object,
       ggplot2::scale_y_continuous(labels = scales::percent)
   }
 
-  p1 + p2 + patchwork::plot_layout(
+  patchwork::wrap_plots(p1, p2,
     nrow = 2, axes = "collect_x", axis_titles = "collect_x"
   )
 }

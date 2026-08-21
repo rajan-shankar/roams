@@ -2,26 +2,46 @@
 % Please edit documentation in R/best_model.R
 \name{best_BIC_model}
 \alias{best_BIC_model}
-\title{Select Best Model Based on BIC}
+\title{Select Best Model Based on an Information Criterion}
 \usage{
-best_BIC_model(model_list)
+best_BIC_model(model_list, ic = c("BIC", "AIC", "HQIC"), k = NULL)
 }
 \arguments{
-\item{model_list}{An object of class \code{roams_SSM_list}}
+\item{model_list}{An object of class \code{roams_SSM_list}.}
+
+\item{ic}{Character string specifying the information criterion. One of
+\code{"BIC"} (default), \code{"AIC"}, or \code{"HQIC"} (Hannan-Quinn).
+Ignored if \code{k} is supplied.}
+
+\item{k}{Optional numeric penalty multiplier per model parameter, as in
+\code{\link[stats]{step}}. Overrides \code{ic} when non-\code{NULL}.
+Common values: \code{2} (AIC), \code{log(n)} (BIC), \code{2 * log(log(n))} (HQIC).}
 }
 \value{
-A single \code{roams_SSM} object corresponding to the model with the smallest BIC
-among those with fewer than 50\% outlying observations.
+A single \code{roams_SSM} object corresponding to the model with the smallest
+  value of the chosen information criterion among those with fewer than 50\% outlying observations.
 }
 \description{
 Extracts the best-fitting model from a \code{roams_SSM_list} object according to
-the Bayesian Information Criterion (BIC), while excluding models with more than 50\% outlying observations.
+a chosen information criterion, while excluding models with more than 50\% outlying observations.
+}
+\details{
+The criterion is computed as \eqn{-2\ell + k \cdot p}, where \eqn{\ell} is the
+log-likelihood, \eqn{p} is the number of non-zero components, and \eqn{k} is
+the penalty multiplier. The \code{ic} argument provides named shortcuts; \code{k}
+allows a fully custom penalty and overrides \code{ic} when non-\code{NULL}.
 }
 \examples{
 \dontrun{
-# Assuming `models` is a roams_SSM_list:
-best_model <- best_BIC_model(models)
-}
+# BIC (default)
+best_BIC_model(models)
 
+# Named shortcuts
+best_BIC_model(models, ic = "AIC")
+best_BIC_model(models, ic = "HQIC")
+
+# Custom penalty via k (overrides ic)
+best_BIC_model(models, k = 2)
+}
 
 }

@@ -9,4 +9,5 @@ inst/doc
 *_seed1303.rds
 *_oldpenalty.rds
 R code/
-.positai
+.posit/assistant
+soft_thresholding/

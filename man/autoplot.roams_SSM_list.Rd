@@ -9,7 +9,7 @@
 \arguments{
 \item{object}{An object of class \code{roams_SSM_list} as returned by \code{\link{roams_SSM}} when multiple \eqn{\lambda} values are used.}
 
-\item{attribute1}{A character string indicating the first model attribute to plot on the top panel. Options include \code{"lambda"}, \code{"prop_outlying"}, \code{"BIC"}, \code{"loglik"}, \code{"RSS"}, \code{"iterations"}, \code{"value"}, and \code{"counts"}. Defaults to \code{"BIC"}.}
+\item{attribute1}{A character string indicating the first model attribute to plot on the top panel. Options include \code{"lambda"}, \code{"prop_outlying"}, \code{"BIC"}, \code{"AIC"}, \code{"HQIC"}, \code{"loglik"}, \code{"RSS"}, \code{"iterations"}, and \code{"value"}. Defaults to \code{"BIC"}.}
 
 \item{attribute2}{A character string indicating the second model attribute to plot on the bottom panel. Uses the same options as \code{attribute1}. Defaults to \code{"prop_outlying"}.}
 

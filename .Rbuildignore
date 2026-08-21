@@ -5,3 +5,4 @@
 ^pkgdown$
 ^README\.Rmd$
 ^\.positai$
+^\.posit/assistant$
