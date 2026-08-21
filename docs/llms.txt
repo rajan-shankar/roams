@@ -41,7 +41,7 @@ devtools::install_github("rajan-shankar/roams")
 - [`autoplot(`*`<roams_SSM_list>`*`)`](https://rajan-shankar.github.io/roams/reference/autoplot.roams_SSM_list.md)
   : Autoplot for a ROAMS SSM List
 - [`best_BIC_model()`](https://rajan-shankar.github.io/roams/reference/best_BIC_model.md)
-  : Select Best Model Based on BIC
+  : Select Best Model Based on an Information Criterion
 - [`classical_SSM()`](https://rajan-shankar.github.io/roams/reference/classical_SSM.md)
   : Classical State Space Model Fit
 - [`get_attribute()`](https://rajan-shankar.github.io/roams/reference/get_attribute.md)
@@ -55,7 +55,7 @@ devtools::install_github("rajan-shankar/roams")
 - [`outlier_target_model()`](https://rajan-shankar.github.io/roams/reference/outlier_target_model.md)
   : Select Model Based on Target Outlier Proportion
 - [`roams_SSM()`](https://rajan-shankar.github.io/roams/reference/roams_SSM.md)
-  : Robust Outlier-Adjusted Mean-Shift Estimation of State Space Models
+  : Robust Outlier-Adjusted Mean-Shift Estimation of State-Space Models
 - [`simulate_data_study1()`](https://rajan-shankar.github.io/roams/reference/simulate_data_study1.md)
   : Simulate DCRW Data for Study 1: Different Outlier Configurations
 - [`simulate_data_study2()`](https://rajan-shankar.github.io/roams/reference/simulate_data_study2.md)

@@ -19,12 +19,12 @@ Source:
 
 Shankar R, Tarr G, Wilms I, Raymaekers J (2026). *roams: Robust
 Outlier-Adjusted Mean-Shift Estimation of State-Space Models*. R package
-version 0.7.0, <https://github.com/rajan-shankar/roams>.
+version 0.9.0, <https://github.com/rajan-shankar/roams>.
 
     @Manual{,
       title = {roams: Robust Outlier-Adjusted Mean-Shift Estimation of State-Space Models},
       author = {Rajan Shankar and Garth Tarr and Ines Wilms and Jakob Raymaekers},
       year = {2026},
-      note = {R package version 0.7.0},
+      note = {R package version 0.9.0},
       url = {https://github.com/rajan-shankar/roams},
     }

@@ -1,11 +1,11 @@
-# Robust Outlier-Adjusted Mean-Shift Estimation of State Space Models
+# Robust Outlier-Adjusted Mean-Shift Estimation of State-Space Models
 
-Fits a robust state space model to multivariate time series data using
-iterative parameter estimation and outlier detection. This procedure is
-inspired by the Iterative Procedure for Outlier Detection (IPOD)
-algorithm of She and Owen (2011) and is applied over a sequence of
-regularization parameters (\\\lambda\\'s), identifying outliers via
-Mahalanobis residuals and re-fitting the model iteratively.
+Fits a robust state-space model to time-varying data using iterative
+parameter estimation and outlier detection. This procedure is inspired
+by the Iterative Procedure for Outlier Detection (IPOD) algorithm of She
+and Owen (2011) and is applied over a sequence of regularization
+parameters (\\\lambda\\'s), identifying outliers via Mahalanobis
+residuals and re-fitting the model iteratively.
 
 ## Usage
 

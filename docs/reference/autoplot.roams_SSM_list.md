@@ -25,7 +25,7 @@ autoplot(object, attribute1 = "BIC", attribute2 = "prop_outlying", ...)
 
   A character string indicating the first model attribute to plot on the
   top panel. Options include `"lambda"`, `"prop_outlying"`, `"BIC"`,
-  `"loglik"`, `"RSS"`, `"iterations"`, `"value"`, and `"counts"`.
+  `"AIC"`, `"HQIC"`, `"loglik"`, `"RSS"`, `"iterations"`, and `"value"`.
   Defaults to `"BIC"`.
 
 - attribute2:
