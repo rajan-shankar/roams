@@ -298,6 +298,9 @@ run_IPOD = function(
       mah_resid = info_output$mahalanobis_residuals
       scale_factor = ifelse(mah_resid > 0, pmax(1 - lambda / mah_resid, 0), 0)
       gamma = r * scale_factor
+      # NA rows (missing observations) have r = NA and scale_factor = 0, but
+      # NA * 0 = NA in R, so gamma must be zeroed out explicitly for these rows.
+      gamma[is.na(y)] = 0
       which_nz = which(scale_factor > 0)
 
       # Too many outliers detected will cause instability
@@ -309,6 +312,7 @@ run_IPOD = function(
         keep_scale = ifelse(mah_resid[keep_rows] > 0,
                             pmax(1 - lambda / mah_resid[keep_rows], 0), 0)
         gamma[keep_rows,] = r[keep_rows,] * keep_scale
+        gamma[is.na(y)] = 0
         which_nz = keep_rows[keep_scale > 0]
       }
 
